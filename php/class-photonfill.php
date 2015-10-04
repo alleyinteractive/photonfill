@@ -11,6 +11,16 @@ if ( !class_exists( 'Photonfill' ) ) {
 		public $breakpoints = array();
 
 		/**
+		 * All known image sizes
+		 */
+		public $image_sizes = array();
+
+		/**
+		 * Valid units accepted
+		 */
+		private $valid_units = array( 'px', 'em', 'vw' );
+
+		/**
 		 * Class params.
 		 */
 		public $params = array();
@@ -36,12 +46,23 @@ if ( !class_exists( 'Photonfill' ) ) {
 
 		public function setup() {
 			// Set our breakpoints
+			/**
+			 * A breakpoint can accept the following parameters
+			 * 'breakpoint_name' => array(
+			 *		'default' => boolean, // Must set with hook. Set a breakpoint as the default img element. Defaults to full size.
+			 *		'max' => int,
+			 *		'min' => int,
+			 *		'unit' => string, // [px(default),em,vw] Currently does not support multi units or calc function.
+			 *		'pixel-density'	=> boolean, // [false(default)] If set, this will override the image srcset widths with 2x.
+			 * )
+			 * wp_get_attachment_image does not use pixel density.
+			 */
 			$this->breakpoints = apply_filters( 'photonfill_breakpoints', array(
-				'mobile' => array( 'max' => 640 ), // Max
-				'mini-tablet' => 640, // Min
-				'tablet' => 800, // Min
-				'desktop' => 1040, // Min
-				'hd-desktop' => 1280, // Min
+				'mobile' => array( 'max' => 640 ),
+				'mini-tablet' => array( 'min' => 640 ),
+				'tablet' => array( 'min' => 800 ),
+				'desktop' => array( 'min' => 1040 ),
+				'hd-desktop' => array( 'min' => 1280 ),
 			) );
 
 			// Make sure to set image sizes after all image sizes have been added in theme.
@@ -49,6 +70,8 @@ if ( !class_exists( 'Photonfill' ) ) {
 
 			// wp_get_attachment_image can use srcset attributes and not the picture elements
 			add_filter( 'wp_get_attachment_image_attributes', array( $this, 'add_img_srcset_attr' ), 20, 3 );
+			// Make sure stringed sources go back w/ the full source.
+			add_filter( 'wp_get_attachment_image_src', array( $this, 'set_original_src' ), 20, 4 );
 
 			// Create our picture element
 			add_filter( 'post_thumbnail_html', array( $this, 'get_picturefill_html' ), 20, 5 );
@@ -87,23 +110,53 @@ if ( !class_exists( 'Photonfill' ) ) {
 			global $_wp_additional_image_sizes;
 
 			$images_sizes = array();
-			foreach( array_merge( array( 'full' ), get_intermediate_image_sizes() ) as $size ) {
-				if ( 'full' !== $size ) {
-					$width = isset( $_wp_additional_image_sizes[ $size ]['width'] ) ? intval( $_wp_additional_image_sizes[$size]['width'] ) : get_option( "{$size}_size_w" );
-					$height = isset( $_wp_additional_image_sizes[ $size ]['height'] ) ? intval( $_wp_additional_image_sizes[$size]['height'] ) : get_option( "{$size}_size_h" );
-				}
+			foreach ( get_intermediate_image_sizes() as $size ) {
+				$width = isset( $_wp_additional_image_sizes[ $size ]['width'] ) ? intval( $_wp_additional_image_sizes[$size]['width'] ) : get_option( "{$size}_size_w" );
+				$height = isset( $_wp_additional_image_sizes[ $size ]['height'] ) ? intval( $_wp_additional_image_sizes[$size]['height'] ) : get_option( "{$size}_size_h" );
 
-				foreach( $this->breakpoints as $breakpoint => $breakpoint_width ) {
-					if ( 'full' === $size ) {
-						$image_sizes[ $size ][ $breakpoint ] = array();
-					} else {
-						// Don't constrain the height.
-						$new_size = wp_constrain_dimensions( $width, $height, $breakpoint_width, $height );
-						$image_sizes[ $size ][ $breakpoint ] = $new_size;
+				foreach ( $this->breakpoints as $breakpoint => $breakpoint_widths ) {
+					// If a max breakpoint is set, the use it. Otherwise get the next closest larger min valueas the constraint.
+					$breakpoint_width = ( ! empty( $breakpoint_widths['max'] ) ) ? $breakpoint_widths['max'] : $this->get_closest_min_breakpoint( $breakpoint_widths['min'] );
+
+					// Don't constrain the height.
+					$new_size = wp_constrain_dimensions( $width, $height, $breakpoint_width, $height );
+					$image_sizes[ $size ][ $breakpoint ] = $new_size;
+				}
+			}
+
+			$image_sizes = apply_filters( 'photonfill_image_sizes', $image_sizes );
+			if ( ! array_key_exists( 'full', $image_sizes ) ) {
+				// Make sure the 'full' breakpoint exists
+				foreach ( $this->breakpoints as $breakpoint => $breakpoint_widths ) {
+					$image_sizes[ 'full' ][ $breakpoint ] = array();
+				}
+			}
+			return $image_sizes;
+
+		}
+
+		/**
+		 * Used when guessing image sizes.  Will grab the closest larger min breakpoint width.
+		 * @param int. A min breakpoint width.
+		 * @return int
+		 */
+		public function get_closest_min_breakpoint( $size ) {
+			if ( ! empty( $size ) ) {
+				$mins = array();
+				foreach ( array_values( $this->breakpoints ) as $values ) {
+					if ( ! empty( $values['min'] ) ) {
+						$mins[] = $values['min'];
+					}
+				}
+				if ( ! empty( $mins ) ) {
+					sort( $mins );
+					$index = array_search( $size, $mins );
+					if ( $index && ! empty( $mins[ $index + 1 ] ) ) {
+						return $mins[ $index + 1 ];
 					}
 				}
 			}
-			return apply_filters( 'photonfill_image_sizes', $image_sizes );
+			return $size;
 		}
 
 		/**
@@ -129,10 +182,27 @@ if ( !class_exists( 'Photonfill' ) ) {
 				$srcset = array();
 				$sizes = array();
 
+				$maxsize = 0;
 				foreach ( $image['sizes'] as $breakpoint => $breakpoint_data ) {
-					$srcset[] = "{$breakpoint_data['src']['url']} {$breakpoint_data['width']}w";
-					$sizes[] = "(min-width: {$breakpoint_data['width']}px) {$breakpoint_data['src']['width']}px";
+					$maxsize = $breakpoint_data['src']['width'] > $maxsize ? $breakpoint_data['src']['width'] : $maxsize;
+					// We don't allow pixel density here. Only in the picture element.
+					$srcset[] = esc_url( $breakpoint_data['src']['url'] ) . ' ' . esc_attr( $breakpoint_data['src']['width'] . 'w' );
+
+					$unit = ( ! empty( $breakpoint_data['size']['unit'] ) && in_array( $breakpoint_data['size']['unit'], $this->valid_units ) ) ? $breakpoint_data['size']['unit'] : 'px';
+
+					$breakpoint_size_string = '';
+					if ( ! empty( $breakpoint_data['size']['min'] ) ) {
+						$breakpoint_size_string .= '(min-width: ' . esc_attr( $breakpoint_data['size']['min'] . $unit ) . ') ';
+					}
+					if ( ! empty( $breakpoint_data['size']['max'] ) ) {
+						$breakpoint_size_string .= ( ! empty( $breakpoint_data['size']['min'] ) ) ? ' and ' : '';
+						$breakpoint_size_string .= '(max-width: ' . esc_attr( $breakpoint_data['size']['max'] . $unit ) . ') ';
+					}
+					$sizes[] = $breakpoint_size_string . esc_attr( $breakpoint_data['src']['width'] ) . 'px';
 				}
+				// Add in our default length
+				$sizes[] = esc_attr( $maxsize . 'px' );
+
 				$attr['draggable'] = 'false';
 				$attr['sizes'] = implode( ',' ,  $sizes );
 				$attr['srcset'] = implode( ',' ,  $srcset );
@@ -155,13 +225,13 @@ if ( !class_exists( 'Photonfill' ) ) {
 			if ( ! is_array( $current_size ) && ! empty( $sizes[ $current_size ] ) ) {
 				foreach ( $sizes[ $current_size ] as $breakpoint => $img_size ) {
 					$img_src = $this->get_img_src( $attachment_id, $img_size );
-					$image_sizes[ $breakpoint ] = array( 'width' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
+					$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
 				}
 			} elseif ( is_array( $current_size ) ) {
 				foreach ( $this->breakpoints as $breakpoint => $breakpoint_width ) {
 					$new_size = wp_constrain_dimensions( $current_size[0], $current_size[1], $breakpoint_width, 9999 );
 					$img_src = $this->get_img_src( $attachment_id, $new_size );
-					$image_sizes[ $breakpoint ] = array( 'width' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
+					$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
 				}
 			}
 
@@ -170,22 +240,33 @@ if ( !class_exists( 'Photonfill' ) ) {
 
 		/**
 		 * Manipulate our img src
+		 * @param int
+		 * @param array. This should always be an array of breakpoint width and height
 		 */
 		private function get_img_src( $attachment_id, $size ) {
-			$size = empty( $size ) ? 'full' : $size;
-			$attachment_src = wp_get_attachment_image_src( $attachment_id, $size );
+			if ( empty( $size ) ) {
+				$attachment_meta = wp_get_attachment_metadata( $attachment_id );
+				$size = array( $attachment_meta['width'], $attachment_meta['height'] );
+			} elseif ( is_string( $size ) ) {
 
-			// Lets make this more readable and remove any unwanted data.
+			}
+
+			$width = $size[0];
+			$height = $size[1];
+			$attachment_src = wp_get_attachment_image_src( $attachment_id, $size );
+			$attachment_src_2x = wp_get_attachment_image_src( $attachment_id, array( absint( $width ) * 2, absint( $height ) * 2 ) );
+
 			$img_src = array(
 				'url' => $attachment_src[0],
-				'width' => $attachment_src[1],
-				'height' => $attachment_src[2],
+				'url2x' => $attachment_src_2x[0],
+				'width' => $width,
+				'height' => $height,
 			);
 
 			// A hack for the fact that photon doesn't work with wp_ajax calls due to is_admin forcing image downsizing to return the original image
 			if ( is_admin() && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-				$photon_url = jetpack_photon_url( $img_src['url'], array( 'resize' => $img_src['width'] . ',' . $img_src['height'] ) );
-				$img_src['url'] = $photon_url;
+				$img_src['url'] = jetpack_photon_url( $img_src['url'], array( 'resize' => $img_src['width'] . ',' . $img_src['height'] ) );
+				$img_src['url2x'] = jetpack_photon_url( $img_src['url2x'], array( 'resize' => (string) ( absint( $img_src['width'] ) * 2 ) . ',' . (string) ( absint( $img_src['height'] ) * 2 ) ) );
 			}
 			return $img_src;
 		}
@@ -203,7 +284,7 @@ if ( !class_exists( 'Photonfill' ) ) {
 		}
 
 		public function get_picturefill_html( $html, $post_id, $post_thumbnail_id, $size, $attr ) {
-			$html = $this->get_attachment_image( $post_thumbnail_id, $size, $attr );
+			$html = $this->get_attachment_picture( $post_thumbnail_id, $size, $attr );
 			return $html;
 		}
 
@@ -219,26 +300,43 @@ if ( !class_exists( 'Photonfill' ) ) {
 				$attr['class'] = array( 'align' . esc_attr( $align ) );
 			}
 
-			$html = $this->get_attachment_image( $id, $size, $attr );
+			$html = $this->get_attachment_picture( $id, $size, $attr );
 			return $html;
 		}
 
 		/**
 		 * Generate a picture element for any attachment id.
 		 */
-		public function get_attachment_image( $attachment_id, $size, $attr ) {
+		public function get_attachment_picture( $attachment_id, $size, $attr ) {
 			$featured_image = $this->create_image_object( $attachment_id, $size );
-
 			$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
+			$default_breakpoint = $size;
 			$html = '';
 			if ( ! empty( $featured_image['id'] ) ) {
 				$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id=' . esc_attr( $featured_image['id'] ) . '">';
-				foreach ( $featured_image['sizes'] as $breakpoint => $src ) {
-					$html .= '<source srcset="' . esc_url( $src['src']['url'] ) . '" media="(max-width: ' . intval( $src['width'] ) . 'px)" />';
+				foreach ( $featured_image['sizes'] as $breakpoint => $breakpoint_data ) {
+					$default_breakpoint = ( ! empty( $breakpoint_data['size']['default'] ) ) ? array( $breakpoint_data['src']['width'], $breakpoint_data['src']['height'] ) : $default_breakpoint;
+					$html .= '<source srcset="' . esc_url( $breakpoint_data['src']['url'] );
+					$use_pixel_density = ( ! empty( $breakpoint_data['size']['pixel-density'] ) ) ? true : false;
+					if ( $use_pixel_density ) {
+						// Need to grab scaled up photon args here
+						$html .= ', ' . esc_url( $breakpoint_data['src']['url2x'] ) . ' 2x';
+					}
+
+					$unit = ( ! empty( $breakpoint_data['size']['unit'] ) && in_array( $breakpoint_data['size']['unit'], $this->valid_units ) ) ? $breakpoint_data['size']['unit'] : 'px';
+					$html .= '" media="';
+					if ( ! empty( $breakpoint_data['size']['min'] ) ) {
+						$html .= '(min-width: ' . esc_attr( $breakpoint_data['size']['min'] . $unit ) . ')';
+					}
+					if ( ! empty( $breakpoint_data['size']['max'] ) ) {
+						$html .= ( ! empty( $breakpoint_data['size']['min'] ) ) ? ' and ' : '';
+						$html .= '(max-width: ' . esc_attr( $breakpoint_data['size']['max'] . $unit ) . ')';
+					}
+					$html .= '" />';
 				}
-				add_filter( 'wp_get_attachment_image_src', array( $this, 'set_original_src' ), 20, 4 );
-				$html .= wp_get_attachment_image( $attachment_id, $size );
-				remove_filter( 'wp_get_attachment_image_src', array( $this, 'set_original_src' ), 20, 4 );
+				$alt = ( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '';
+				$default_src = wp_get_attachment_image_src( $attachment_id, $default_breakpoint );
+				$html .= '<img srcset="' . esc_url( $default_src[0] ) . '"' . $alt . '>';
 				$html .= '</picture>';
 			}
 			return $html;
