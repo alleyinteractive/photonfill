@@ -16,6 +16,7 @@ Author URI: http://www.alleyinteractive.com/
 require_once( dirname( __FILE__ ) . '/php/class-plugin-dependency.php' );
 
 function photonfill_init() {
+	require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
 	require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
 	require_once( dirname( __FILE__ ) . '/functions.php' );
 

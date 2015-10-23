@@ -26,6 +26,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public $params = array();
 
 		/**
+		 * Transform object.
+		 * Used for hooking photon
+		 */
+		public $transform = null;
+
+		/**
 		 * Constructor
 		 *
 		 * @params string $name
@@ -85,8 +91,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			add_filter( 'intermediate_image_sizes_advanced', array( $this, 'disable_image_multi_resize' ) );
 
 			// Set filter hooks for both my-photon local dev and jetpack photon
-			add_filter( 'jetpack_photon_pre_args', array( $this, 'set_photon_args' ), 10, 3 );
-			add_filter( 'my_photon_pre_args', array( $this, 'set_photon_args' ), 10, 3 );
+			add_filter( 'jetpack_photon_pre_args', array( $this, 'set_photon_args' ), 100, 3 );
+			add_filter( 'my_photon_pre_args', array( $this, 'set_photon_args' ), 100, 3 );
 		}
 
 		/**
@@ -203,6 +209,25 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		}
 
 		/**
+		 * Add in necessary args expected with photonfill
+		 */
+		public function set_photon_args( $args, $image_url, $scheme = null ) {
+			// If a callback is defined use it to alter our args
+			if ( ! empty( $args['callback'] ) && function_exists( $args['callback'] ) ) {
+				// Set these args for any non transform callbacks
+				$args['breakpoint'] = $this->transform->breakpoint;
+				$args['image_size'] = $this->transform->image_size;
+				return $args['callback']( $args );
+			} elseif ( ! empty( $args['callback'] ) && is_object( $this->transform ) && function_exists( $this->transform->$args['callback'] ) ) {
+				return $this->transform->$this->transform->$args['callback']( $args );
+			} elseif ( is_object( $this->transform ) ) {
+				return $this->transform->default_transform( $args );
+			}
+
+			return $args;
+		}
+
+		/**
 		 * Add picturefill img srcset attibute to wp_get_attachment_image
 		 */
 		public function add_img_srcset_attr( $attr, $attachment, $size ) {
@@ -255,6 +280,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$image_sizes = array();
 			if ( ! is_array( $current_size ) && ! empty( $sizes[ $current_size ] ) ) {
 				foreach ( $sizes[ $current_size ] as $breakpoint => $img_size ) {
+					$this->transform = Photonfill_Transform( array(), $breakpoint, $current_size, $img_size );
 					$img_src = $this->get_img_src( $attachment_id, $img_size );
 					$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
 				}
@@ -263,6 +289,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$breakpoint_width = $this->get_breakpoint_width( $breakpoint );
 					$breakpoint_height = ( ! empty( $breakpoint_widths['height'] ) ) ? $breakpoint_widths['height'] : 9999;
 					$new_size = wp_constrain_dimensions( $current_size[0], $current_size[1], $breakpoint_width, $breakpoint_height );
+					$this->transform = Photonfill_Transform( array(), $breakpoint, 'full', $new_size );
 					$img_src = $this->get_img_src( $attachment_id, $new_size );
 					$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
 				}
@@ -272,28 +299,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		}
 
 		/**
-		 * Filter incoming photon args
-		 */
-		public function set_photon_args( $args, $image_url, $scheme = null ) {
-			$size = explode( ',', reset( $args ) );
-			$w = empty( $size[0] ) ? 0 : absint( $size[0] );
-			$h = empty( $size[1] ) ? 0 : absint( $size[1] );
-			if ( empty( $h ) ) {
-				$h = 100;
-			} else {
-				$h = strval( $h ) . 'px';
-			}
-			$args = array( 'fit' => $w . ', 9999', 'crop' => '0,0,100,' . $h );
-
-			return $args;
-		}
-
-		/**
 		 * Manipulate our img src
 		 * @param int
 		 * @param array. This should always be an array of breakpoint width and height
 		 */
 		private function get_img_src( $attachment_id, $size ) {
+			add_filter( 'jetpack_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
+			add_filter( 'my_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
+
 			if ( empty( $size ) ) {
 				$attachment_meta = wp_get_attachment_metadata( $attachment_id );
 				$size = array( $attachment_meta['width'], $attachment_meta['height'] );
@@ -316,6 +329,11 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$img_src['url'] = jetpack_photon_url( $img_src['url'], array( 'resize' => $img_src['width'] . ',' . $img_src['height'] ) );
 				$img_src['url2x'] = jetpack_photon_url( $img_src['url2x'], array( 'resize' => (string) ( absint( $img_src['width'] ) * 2 ) . ',' . (string) ( absint( $img_src['height'] ) * 2 ) ) );
 			}
+
+			remove_filter( 'jetpack_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
+			remove_filter( 'my_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
+			$this->image = array();
+
 			return $img_src;
 		}
 
