@@ -369,7 +369,11 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Generate a picture element for any attachment id.
 		 */
-		public function get_attachment_picture( $attachment_id, $size, $attr ) {
+		public function get_attachment_picture( $attachment_id, $size = 'full', $attr ) {
+			// This means post thumbnail was called w/o a size arg.
+			if ( 'post-thumbnail' == $size ) {
+				$size = 'full';
+			}
 			$featured_image = $this->create_image_object( $attachment_id, $size );
 			$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
 			$default_breakpoint = $size;
