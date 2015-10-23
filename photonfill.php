@@ -15,17 +15,18 @@ Author URI: http://www.alleyinteractive.com/
 
 require_once( dirname( __FILE__ ) . '/php/class-plugin-dependency.php' );
 
-function photonfill_init(){
+function photonfill_init() {
+	require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
 	require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
 	require_once( dirname( __FILE__ ) . '/functions.php' );
 
 	add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
 }
-add_action('plugins_loaded', 'photonfill_init');
+add_action( 'plugins_loaded', 'photonfill_init' );
 
 function photonfill_dependency() {
 	$photonfill_dependency = new Plugin_Dependency( 'Jetpack', 'Jetpack by WordPress.com', 'http://jetpack.me/' );
-	if( ! $photonfill_dependency->verify() ) {
+	if ( ! $photonfill_dependency->verify() ) {
 		// Cease activation
 	 	die( $photonfill_dependency->message() );
 	}
