@@ -89,10 +89,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 			// Disable creating multiple images for newly uploaded images
 			add_filter( 'intermediate_image_sizes_advanced', array( $this, 'disable_image_multi_resize' ) );
-
-			// Set filter hooks for both my-photon local dev and jetpack photon
-			add_filter( 'jetpack_photon_pre_args', array( $this, 'set_photon_args' ), 100, 3 );
-			add_filter( 'my_photon_pre_args', array( $this, 'set_photon_args' ), 100, 3 );
 		}
 
 		/**
