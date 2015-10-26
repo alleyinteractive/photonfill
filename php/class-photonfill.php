@@ -274,6 +274,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public function create_image_object( $attachment_id, $current_size, $args = array() ) {
 			$sizes = $this->image_sizes;
 			$image_sizes = array();
+
 			if ( ! is_array( $current_size ) && ! empty( $sizes[ $current_size ] ) ) {
 				foreach ( $sizes[ $current_size ] as $breakpoint => $img_size ) {
 					$this->transform = Photonfill_Transform( array(), $breakpoint, $current_size, $img_size );
@@ -305,7 +306,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 			if ( empty( $size ) ) {
 				$attachment_meta = wp_get_attachment_metadata( $attachment_id );
-				$size = array( $attachment_meta['width'], $attachment_meta['height'] );
+				$attachment_width = ( ! empty( $attachment_meta['width'] ) ) ? $attachment_meta['width'] : 0;
+				$attachment_height = ( ! empty( $attachment_meta['height'] ) ) ? $attachment_meta['height'] : 0;
+				$size = array( $attachment_width, $attachment_height );
 			}
 
 			$width = $size[0];
