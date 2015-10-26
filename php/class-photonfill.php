@@ -506,6 +506,39 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			}
 			return;
 		}
+
+		/**
+		 * Return an array of urls for each breakpoint of an image size
+		 * @param int. $attachment_id.
+		 * @param string. $img_size.
+		 * @param int. $pixeldensity. (1 or 2)
+		 * @return array.
+		 */
+		public function get_breakpoint_urls( $attachment_id, $img_size, $pixel_density = 1 ) {
+			$image_object = $this->create_image_object( $attachment_id, $img_size );
+			$breakpoint_urls = array();
+			foreach ( $image_object['sizes'] as $breakpoint => $data ) {
+				if ( $pixel_density > 1 ) {
+					$breakpoint_urls[ $breakpoint ] = $data['src']['url2x'];
+				} else {
+					$breakpoint_urls[ $breakpoint ] = $data['src']['url'];
+				}
+			}
+			return $breakpoint_urls;
+		}
+
+		/**
+		 * Returns a single breakpoint url for a specific image size.
+		 * @param int. $attachment_id.
+		 * @param string. $img_size.
+		 * @param string. $breakpoint.
+		 * @param int. $pixeldensity. (1 or 2)
+		 * @return string.
+		 */
+		public function get_breakpoint_url( $attachment_id, $img_size, $breakpoint, $pixel_density = 1 ) {
+			$breakpoint_urls = $this->get_breakpoint_urls( $attachment_id, $img_size, $breakpoint, $pixel_density );
+			return ( ! empty( $breakpoint_urls[ $breakpoint ] ) ) ? $breakpoint_urls[ $breakpoint ] : false;
+		}
 	}
 }
 
