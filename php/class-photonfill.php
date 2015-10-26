@@ -99,7 +99,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Set the src to the original when hooked
 		 */
 		public function set_original_src( $image, $attachment_id, $size, $icon ) {
-			if ( is_string( $size ) && 'full' !== $size ) {
+			if ( is_string( $size ) && 'full' !== $size && wp_attachment_is_image( $attachment_id ) ) {
 				remove_filter( 'wp_get_attachment_image_src', array( $this, 'set_original_src' ), 20, 4 );
 				$full_src = wp_get_attachment_image_src( $attachment_id, 'full' );
 				$image[0] = $full_src[0];
@@ -160,7 +160,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public function get_breakpoint_width( $breakpoint ) {
 			if ( ! empty( $this->breakpoints[ $breakpoint ] ) ) {
 				$breakpoint_widths = $this->breakpoints[ $breakpoint ];
-
+				$breakpoint_width = 0;
 				if ( ! empty( $breakpoint_widths['width'] ) ) {
 					$breakpoint_width = $breakpoint_widths['width'];
 				} elseif ( ! empty( $breakpoint_widths['max'] ) ) {
@@ -409,7 +409,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Generate a picture element for any attachment id.
 		 */
 		public function get_attachment_picture( $attachment_id, $size = 'full', $attr ) {
-			if ( ! empty( $attachment_id ) ) {
+			if ( ! empty( $attachment_id ) && wp_attachment_is_image( $attachment_id ) ) {
 				// This means post thumbnail was called w/o a size arg.
 				if ( 'post-thumbnail' == $size ) {
 					$size = 'full';
