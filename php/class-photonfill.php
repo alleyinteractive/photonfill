@@ -55,6 +55,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			/**
 			 * A breakpoint can accept the following parameters
 			 * 'breakpoint_name' => array(
+			 *		'crop' => boolean, // Default is true
 			 *		'width' => int, // Size of the photon image that will be served. Will guess if empty.
 			 *		'height' => int, // Size of the photon image that will be served. Will guess if empty.
 			 *		'default' => boolean, // Must set with hook. Set a breakpoint as the default img element. Defaults to full size.
@@ -74,6 +75,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				'hd-desktop' => array( 'min' => 1280 ),
 			) );
 
+			// Set our url transform class
+			$this->transform = Photonfill_Transform();
+
 			// Make sure to set image sizes after all image sizes have been added in theme.  Set priority to a high number to ensure images have been added.
 			add_action( 'after_setup_theme', array( $this, 'set_image_sizes' ), 100 );
 
@@ -84,7 +88,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 			// Create our picture element
 			add_filter( 'post_thumbnail_html', array( $this, 'get_picturefill_html' ), 20, 5 );
-			add_filter( 'get_image_tag', array( $this, 'get_picturefill_html' ), 20, 5 );
 			add_filter( 'get_image_tag', array( $this, 'get_image_tag_html' ), 20, 6 );
 
 			// Disable creating multiple images for newly uploaded images
@@ -142,7 +145,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					if ( ! empty( $breakpoint_width ) ) {
 						// Don't constrain the height.
 						$new_size = wp_constrain_dimensions( $width, $height, $breakpoint_width, $height );
-						$image_sizes[ $size ][ $breakpoint ] = $new_size;
+						$image_sizes[ $size ][ $breakpoint ] = array( 'width' => $new_size[0], 'height' => $new_size[1] );
 					}
 				}
 			}
@@ -274,10 +277,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public function create_image_object( $attachment_id, $current_size, $args = array() ) {
 			$sizes = $this->image_sizes;
 			$image_sizes = array();
+
 			if ( ! is_array( $current_size ) && ! empty( $sizes[ $current_size ] ) ) {
 				foreach ( $sizes[ $current_size ] as $breakpoint => $img_size ) {
-					$this->transform = Photonfill_Transform( array(), $breakpoint, $current_size, $img_size );
-					$img_src = $this->get_img_src( $attachment_id, $img_size );
+					$default = ( ! empty( $img_size['default'] ) ) ? true : false;
+					$this->transform->setup( array( 'crop' => ( isset( $img_size['crop'] ) ) ? $img_size['crop'] : true ), $breakpoint, $current_size, $img_size['width'], $img_size['height'] );
+					$img_src = $this->get_img_src( $attachment_id, array( $img_size['width'], $img_size['height'] ), $default );
 					$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
 				}
 			} elseif ( is_array( $current_size ) ) {
@@ -285,7 +290,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$breakpoint_width = $this->get_breakpoint_width( $breakpoint );
 					$breakpoint_height = ( ! empty( $breakpoint_widths['height'] ) ) ? $breakpoint_widths['height'] : 9999;
 					$new_size = wp_constrain_dimensions( $current_size[0], $current_size[1], $breakpoint_width, $breakpoint_height );
-					$this->transform = Photonfill_Transform( array(), $breakpoint, 'full', $new_size );
+					$this->transform->setup( array( 'crop' => ( isset( $img_size['crop'] ) ) ? $img_size['crop'] : true ), $breakpoint, 'full', $new_size[0], $new_size[1] );
 					$img_src = $this->get_img_src( $attachment_id, $new_size );
 					$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
 				}
@@ -298,14 +303,17 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Manipulate our img src
 		 * @param int
 		 * @param array. This should always be an array of breakpoint width and height
+		 * @param boolean. Should this be the default srcset for the img element.
 		 */
-		private function get_img_src( $attachment_id, $size ) {
+		private function get_img_src( $attachment_id, $size, $default = false ) {
 			add_filter( 'jetpack_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
 			add_filter( 'my_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
 
 			if ( empty( $size ) ) {
 				$attachment_meta = wp_get_attachment_metadata( $attachment_id );
-				$size = array( $attachment_meta['width'], $attachment_meta['height'] );
+				$attachment_width = ( ! empty( $attachment_meta['width'] ) ) ? $attachment_meta['width'] : 0;
+				$attachment_height = ( ! empty( $attachment_meta['height'] ) ) ? $attachment_meta['height'] : 0;
+				$size = array( $attachment_width, $attachment_height );
 			}
 
 			$width = $size[0];
@@ -318,6 +326,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				'url2x' => $attachment_src_2x[0],
 				'width' => $width,
 				'height' => $height,
+				'default' => $default,
 			);
 
 			// A hack for the fact that photon doesn't work with wp_ajax calls due to is_admin forcing image downsizing to return the original image
@@ -328,7 +337,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 			remove_filter( 'jetpack_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
 			remove_filter( 'my_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
-			$this->image = array();
 
 			return $img_src;
 		}
@@ -345,11 +353,17 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			return apply_filters( 'photonfill_picture_class', rtrim( implode( ' ', $class ) ), $attachment_id, $size );
 		}
 
+		/**
+		 * Alter the_post_thumbnail html.
+		 */
 		public function get_picturefill_html( $html, $post_id, $post_thumbnail_id, $size, $attr ) {
 			$html = $this->get_attachment_picture( $post_thumbnail_id, $size, $attr );
 			return $html;
 		}
 
+		/**
+		 * Alter get_image_tag html.
+		 */
 		public function get_image_tag_html( $html, $id, $alt, $title, $align, $size ) {
 			$attr = array();
 			if ( ! empty( $alt ) ) {
@@ -383,12 +397,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 				// Here we set our source elements
 				foreach ( $featured_image['sizes'] as $breakpoint => $breakpoint_data ) {
-					$default_breakpoint = ( ! empty( $breakpoint_data['size']['default'] ) ) ? array( $breakpoint_data['src']['width'], $breakpoint_data['src']['height'] ) : $default_breakpoint;
+					$default_breakpoint = ( ! empty( $breakpoint_data['src']['default'] ) ) ? array( $breakpoint_data['src']['width'], $breakpoint_data['src']['height'] ) : $default_breakpoint;
 
 					// Set our source element
 					$srcset_url = esc_url( $breakpoint_data['src']['url'] );
 					$use_pixel_density = ( ! empty( $breakpoint_data['size']['pixel-density'] ) ) ? true : false;
-					if ( $use_pixel_density ) {
+					if ( $use_pixel_density && $breakpoint_data['size']['pixel-density'] > 1 ) {
 						// Need to grab scaled up photon args here
 						$srcset_url .= ', ' . esc_url( $breakpoint_data['src']['url2x'] ) . ' 2x';
 					}

@@ -41,10 +41,9 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			/* Don't do anything, needs to be initialized via instance() method */
 		}
 
-		public static function instance( $args = array(), $breakpoint = null, $image_size = null, $dimensions = array() ) {
+		public static function instance() {
 			if ( ! isset( self::$instance ) ) {
 				self::$instance = new Photonfill_Transform();
-				self::$instance->setup( $args, $breakpoint, $image_size, $dimensions );
 			}
 			return self::$instance;
 		}
@@ -52,14 +51,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		/**
 		 * Set our transform attributes
 		 */
-		public function setup( $args = array(), $breakpoint = null, $image_size = null, $dimensions = array() ) {
+		public function setup( $args = array(), $breakpoint = null, $image_size = null, $width = null, $height = null ) {
 			$this->args = $args;
 			$this->breakpoint = $breakpoint;
 			$this->image_size = $image_size;
-			if ( is_array( $dimensions ) && count( $dimensions ) == 2 ) {
-				$this->width = $dimensions[0];
-				$this->height = $dimensions[1];
-			}
+			$this->width = $width;
+			$this->height = $height;
 		}
 
 		/**
@@ -68,7 +65,9 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		public function default_transform( $args ) {
 			// We are only going to use the size if none are defined in the transform, which shouldn't happen.
 			$size = explode( ',', reset( $args ) );
-			if ( empty( $this->height ) ) {
+			if ( isset( $this->args['crop'] ) && false === $this->args['crop'] ) {
+				$h = 9999;
+			} elseif ( empty( $this->height ) ) {
 				$h = ( ! empty( $size[1] ) ) ? strval( absint( $size[1] ) ) . 'px' : 100;
 			} else {
 				$h = $this->height . 'px';
@@ -87,6 +86,6 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 	}
 }
 
-function Photonfill_Transform( $args = array(), $breakpoint = null, $image_size = null, $dimensions = array() ) {
-	return Photonfill_Transform::instance( $args, $breakpoint, $image_size, $dimensions );
+function Photonfill_Transform() {
+	return Photonfill_Transform::instance();
 }
