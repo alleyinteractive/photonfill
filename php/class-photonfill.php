@@ -209,25 +209,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		}
 
 		/**
-		 * Add in necessary args expected with photonfill
-		 */
-		public function set_photon_args( $args, $image_url, $scheme = null ) {
-			// If a callback is defined use it to alter our args
-			if ( ! empty( $args['callback'] ) && function_exists( $args['callback'] ) ) {
-				// Set these args for any non transform callbacks
-				$args['breakpoint'] = $this->transform->breakpoint;
-				$args['image_size'] = $this->transform->image_size;
-				return $args['callback']( $args );
-			} elseif ( ! empty( $args['callback'] ) && is_object( $this->transform ) && function_exists( $this->transform->$args['callback'] ) ) {
-				return $this->transform->$this->transform->$args['callback']( $args );
-			} elseif ( is_object( $this->transform ) ) {
-				return $this->transform->default_transform( $args );
-			}
-
-			return $args;
-		}
-
-		/**
 		 * Add picturefill img srcset attibute to wp_get_attachment_image
 		 */
 		public function add_img_srcset_attr( $attr, $attachment, $size ) {
@@ -283,17 +264,20 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				if ( ! is_array( $current_size ) && ! empty( $sizes[ $current_size ] ) ) {
 					foreach ( $sizes[ $current_size ] as $breakpoint => $img_size ) {
 						$default = ( ! empty( $img_size['default'] ) ) ? true : false;
+						$current_w = empty( $img_size['width'] ) ? 0 : $img_size['width'];
+						$current_h = empty( $img_size['height'] ) ? 0 : $img_size['height'];
 						$transform_args = array(
 							'attachment_id' => $attachment_id,
+							'callback' => ( isset( $img_size['callback'] ) ) ? $img_size['callback'] : null,
 							'crop' => ( isset( $img_size['crop'] ) ) ? $img_size['crop'] : true,
 							'breakpoint' => $breakpoint,
 							'image_size' => $current_size,
-							'width' => $img_size['width'],
-							'height' => $img_size['height'],
+							'width' => $current_w,
+							'height' => $current_h,
 							'quality' => ( isset( $img_size['quality'] ) ) ? $img_size['quality'] : null,
 						);
 						$this->transform->setup( $transform_args );
-						$img_src = $this->get_img_src( $attachment_id, array( $img_size['width'], $img_size['height'] ), $default );
+						$img_src = $this->get_img_src( $attachment_id, array( $current_w, $current_h ), $default );
 						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
 					}
 				} elseif ( is_array( $current_size ) ) {
@@ -303,6 +287,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$new_size = wp_constrain_dimensions( $current_size[0], $current_size[1], $breakpoint_width, $breakpoint_height );
 						$transform_args = array(
 							'attachment_id' => $attachment_id,
+							'callback' => ( isset( $img_size['callback'] ) ) ? $img_size['callback'] : null,
 							'crop' => ( isset( $breakpoint_widths['crop'] ) ) ? $breakpoint_widths['crop'] : true,
 							'breakpoint' => $breakpoint,
 							'image_size' => 'full',
@@ -329,9 +314,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		private function get_img_src( $attachment_id, $size, $default = false ) {
 			if ( ! empty( $attachment_id ) ) {
-				add_filter( 'jetpack_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
-				add_filter( 'my_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
-
 				if ( empty( $size ) ) {
 					$attachment_meta = wp_get_attachment_metadata( $attachment_id );
 					$attachment_width = ( ! empty( $attachment_meta['width'] ) ) ? $attachment_meta['width'] : 0;
@@ -357,10 +339,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$img_src['url'] = jetpack_photon_url( $img_src['url'], array( 'resize' => $img_src['width'] . ',' . $img_src['height'] ) );
 					$img_src['url2x'] = jetpack_photon_url( $img_src['url2x'], array( 'resize' => (string) ( absint( $img_src['width'] ) * 2 ) . ',' . (string) ( absint( $img_src['height'] ) * 2 ) ) );
 				}
-
-				remove_filter( 'jetpack_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
-				remove_filter( 'my_photon_pre_args', array( $this, 'set_photon_args' ), 2, 3 );
-
 				return $img_src;
 			}
 			return false;
