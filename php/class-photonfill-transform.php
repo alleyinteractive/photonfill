@@ -29,25 +29,65 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		public static function instance() {
 			if ( ! isset( self::$instance ) ) {
 				self::$instance = new Photonfill_Transform();
+				self::$instance->set_hooks();
 			}
 			return self::$instance;
+		}
+
+		/**
+		 * Set our transform hooks
+		 *
+		 */
+		public function set_hooks() {
+			// Override photon args
+			add_filter( 'my_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( 'my_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( 'jetpack_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( 'jetpack_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
+
+			// Transform our photon url
+			add_filter( 'jetpack_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
+			add_filter( 'my_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
 		}
 
 		/**
 		 * Set our transform attributes
 		 */
 		public function setup( $args = array() ) {
+
 			$this->args = $args;
 		}
 
 		/**
-		 * Set the quality for any transforms
+		 * Add in necessary args expected with photonfill
 		 */
-		public function set_quality( $args ) {
-			if ( ! empty( $this->args['quality'] && empty( $args['quality'] ) ) ) {
-				$args['quality'] = $this->args['quality'];
+		public function set_photon_args( $args, $data ) {
+			$args = $this->args;
+			// Fall back on data if empty
+			if ( ! empty( $data['size'] ) && ! empty( $data['transform'] ) ) {
+				$args['width'] = empty( $args['width'] ) ? $data['image_args']['width'] : $args['width'];
+				$args['height'] = empty( $args['height'] ) ? $data['image_args']['height'] : $args['height'];
+			} else {
+				$args['width'] = empty( $args['width'] ) ? $data['width'] : $args['width'];
+				$args['height'] = empty( $args['height'] ) ? $data['height'] : $args['height'];
 			}
+			$args['attachment_id'] = empty( $args['attachment_id'] ) ? $data['attachment_id'] : $args['attachment_id'];
+
 			return $args;
+		}
+
+		/**
+		 * Transform our photon url
+		 */
+		public function transform_photon_url( $args, $image_url, $scheme = null ) {
+			// If a callback is defined use it to alter our args
+			if ( ! empty( $args['callback'] ) && function_exists( $args['callback'] ) ) {
+				return $args['callback']( $args );
+			} elseif ( ! empty( $args['callback'] ) && method_exists( $this, $args['callback'] ) ) {
+				return $this->$args['callback']( $args );
+			}
+
+			return $this->default_transform( $args );
 		}
 
 		/**
@@ -55,22 +95,13 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function get_dimensions( $args ) {
 			// We are only going to use the size if none are defined in the transform, which shouldn't happen.
-			$size = explode( ',', reset( $args ) );
-			if ( isset( $this->args['crop'] ) && false === $this->args['crop'] ) {
+			if ( isset( $args['crop'] ) && false === $args['crop'] ) {
 				$h = 100;
-			} elseif ( empty( $this->args['height'] ) ) {
-				$h = ( ! empty( $size[1] ) ) ? strval( absint( $size[1] ) ) . 'px' : 100;
 			} else {
-				$h = $this->args['height'] . 'px';
+				$h = $args['height'] . 'px';
 			}
 
-			if ( empty( $this->args['width'] ) ) {
-				$w = ( ! empty( $size[0] ) ) ? absint( $size[0] ) : 0;
-			} else {
-				$w = $this->args['width'];
-			}
-
-			return array( 'width' => $w, 'height' => $h );
+			return array( 'width' => $args['width'], 'height' => $h );
 		}
 
 		/**
@@ -79,8 +110,8 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		public function get_center_crop_offset( $size ) {
 			// Return the whole image
 			$offset = 0;
-			$width = $size[0];
-			$height = $size[1];
+			$width = $size['width'];
+			$height = $size['height'];
 			if ( 100 != $height && preg_match( '/^(\d+)px$/i',  $height, $matches ) ) {
 				$height = $matches[1];
 				if ( ! empty( $this->args['attachment_id'] ) ) {
@@ -97,19 +128,27 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			return $offset;
 		}
 
+		/**
+		 * Only set photon args if they have been set. This allows default photon functionality to work.
+		 */
+		public function set_conditional_args( $args ) {
+			if ( ! empty( $this->args['quality'] ) ) {
+				$args['quality'] = $this->args['quality'];
+			}
+			return $args;
+		}
+
 		### All transform functions can be found below. ###
 
 		/**
 		 * Our default photon transform sets it to fit to width and crop the height from the top left if crop value is not false.
 		 */
 		public function default_transform( $args ) {
-			$args = $this->set_quality( $args );
-
 			$size = $this->get_dimensions( $args );
-
-			$args['fit'] = $size['width'] . ', 9999';
-			$args['crop'] = '0,0,100,' . $size['height'];
-			return $args;
+			return array(
+				'fit' => $size['width'] . ', 9999',
+				'crop' => '0,0,100,' . $size['height'],
+			);
 		}
 
 		/**
@@ -117,18 +156,18 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * Will always fit width of image.  Will only crop height from center if scaled height is greater than defined height.
 		 */
 		public function center_crop( $args ) {
-			$this->set_quality( $args );
-			// We won't crop if crop is explicitly set to false.
-			if ( isset( $this->args['crop'] ) && false === $this->args['crop'] ) {
-				return $args;
-			} else {
-				$size = $this->get_dimensions( $args );
-				$horizontal_offset = $this->get_center_crop_offset( $size );
-				$args['fit'] = $size[0] . ', 9999';
-				$args['crop'] = '0,' . $horizontal_offset . ',100,' . $size[1];
-			}
+			$size = $this->get_dimensions( $args );
 
-			return $args;
+			// We won't crop if crop is explicitly set to false.
+			if ( isset( $args['crop'] ) && false === $args['crop'] ) {
+				$horizontal_offset = 0;
+			} else {
+				$horizontal_offset = $this->get_center_crop_offset( $size );
+			}
+			return $this->set_conditional_args( array(
+				'fit' => $size['width'] . ', 9999',
+				'crop' => '0,' . $horizontal_offset . 'px,100,' . $size['height'],
+			) );
 		}
 	}
 }

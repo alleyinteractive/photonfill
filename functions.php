@@ -1,5 +1,17 @@
 <?php
 /**
+ * Returns the photonfill picture element markup. For use out of loop.
+ * @param int. $attachment_id.
+ * @param string. $img_size.
+ * @param array. $attr. (can set alt and class)
+ * @return array.
+ */
+function photonfill_get_image( $attachment_id, $img_size, $attr = array() ) {
+	$photonfill = Photonfill();
+	return $photonfill->get_attachment_picture( $attachment_id, $img_size, $attr );
+}
+
+/**
  * Returns the photonfill image object which contains the image stack for the specified size w/ corresponding breakpoints.
  * @param int. $attachment_id.
  * @param string. $img_size.
