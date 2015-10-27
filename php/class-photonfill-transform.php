@@ -54,7 +54,6 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * Set our transform attributes
 		 */
 		public function setup( $args = array() ) {
-
 			$this->args = $args;
 		}
 
@@ -144,6 +143,22 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * Our default photon transform sets it to fit to width and crop the height from the top left if crop value is not false.
 		 */
 		public function default_transform( $args ) {
+			// Override the default transform
+			$default_method = apply_filters( 'photonfill_default_transform', 'top_down_crop' );
+			// If an external method is defined use it as default
+			if ( function_exists( $default_method ) ) {
+				return $default_method( $args );
+			} elseif ( method_exists( $this, $default_method ) ) {
+				return $this->$default_method( $args );
+			}
+			return $this->top_down_crop( $args );
+		}
+
+		/**
+		 * Crop image from the top down
+		 * Will fit width of image first
+		 */
+		public function top_down_crop( $args ) {
 			$size = $this->get_dimensions( $args );
 			return array(
 				'fit' => $size['width'] . ', 9999',
