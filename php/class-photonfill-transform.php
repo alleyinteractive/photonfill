@@ -161,7 +161,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		public function top_down_crop( $args ) {
 			$size = $this->get_dimensions( $args );
 			return array(
-				'fit' => $size['width'] . ', 9999',
+				'w' => $size['width'],
 				'crop' => '0,0,100,' . $size['height'],
 			);
 		}
@@ -180,7 +180,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				$horizontal_offset = $this->get_center_crop_offset( $size );
 			}
 			return $this->set_conditional_args( array(
-				'fit' => $size['width'] . ', 9999',
+				'w' => $size['width'],
 				'crop' => '0,' . $horizontal_offset . 'px,100,' . $size['height'],
 			) );
 		}
