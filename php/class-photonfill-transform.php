@@ -39,15 +39,14 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 *
 		 */
 		public function set_hooks() {
+			$hook_prefix = photonfill_hook_prefix();
+
 			// Override photon args
-			add_filter( 'my_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
-			add_filter( 'my_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
-			add_filter( 'jetpack_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
-			add_filter( 'jetpack_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( $hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( $hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
 
 			// Transform our photon url
-			add_filter( 'jetpack_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
-			add_filter( 'my_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
+			add_filter( $hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
 		}
 
 		/**
@@ -79,6 +78,19 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * Transform our photon url
 		 */
 		public function transform_photon_url( $args, $image_url, $scheme = null ) {
+			// Make sure we've properly instantiated our args.
+			// If not then photon_url is being called directly and image downsize has been skipped.
+			// We can only set width and height at this point.
+			// This is easily remidied by simply passing the minimum args of attachment_id, width & height to the jetpack_photon_url() function.
+			if ( empty( $args['attachment_id'] ) && ! empty( $this->args['attachment_id'] ) ) {
+				if ( empty( $this->args['width'] ) && empty( $this->args['height'] ) ) {
+					$size = explode( ',', reset( $args ) );
+					$this->args['width'] = empty( $size[0] ) ? 0 : absint( $size[0] );
+					$this->args['height'] = empty( $size[1] ) ? 0 : absint( $size[1] );
+				}
+				$args = $this->args;
+			}
+
 			// If a callback is defined use it to alter our args
 			if ( ! empty( $args['callback'] ) && function_exists( $args['callback'] ) ) {
 				return $args['callback']( $args );
@@ -134,6 +146,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			if ( ! empty( $this->args['quality'] ) ) {
 				$args['quality'] = $this->args['quality'];
 			}
+			// Remove cropping if crop is false.
+			if ( isset( $this->args['crop'] ) && false === $this->args['crop'] ) {
+				unset( $args['crop'] );
+			}
 			return $args;
 		}
 
@@ -144,14 +160,14 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function default_transform( $args ) {
 			// Override the default transform
-			$default_method = apply_filters( 'photonfill_default_transform', 'top_down_crop' );
+			$default_method = apply_filters( 'photonfill_default_transform', 'center_crop' );
 			// If an external method is defined use it as default
 			if ( function_exists( $default_method ) ) {
 				return $default_method( $args );
 			} elseif ( method_exists( $this, $default_method ) ) {
 				return $this->$default_method( $args );
 			}
-			return $this->top_down_crop( $args );
+			return $this->center_crop( $args );
 		}
 
 		/**
@@ -160,10 +176,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function top_down_crop( $args ) {
 			$size = $this->get_dimensions( $args );
-			return array(
+			return $this->set_conditional_args( array(
 				'w' => $size['width'],
 				'crop' => '0,0,100,' . $size['height'],
-			);
+			) );
 		}
 
 		/**
@@ -172,13 +188,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function center_crop( $args ) {
 			$size = $this->get_dimensions( $args );
-
-			// We won't crop if crop is explicitly set to false.
-			if ( isset( $args['crop'] ) && false === $args['crop'] ) {
-				$horizontal_offset = 0;
-			} else {
-				$horizontal_offset = $this->get_center_crop_offset( $size );
-			}
+			$horizontal_offset = $this->get_center_crop_offset( $size );
 			return $this->set_conditional_args( array(
 				'w' => $size['width'],
 				'crop' => '0,' . $horizontal_offset . 'px,100,' . $size['height'],

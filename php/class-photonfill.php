@@ -244,16 +244,24 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 						$breakpoint_size_string = '';
 						if ( ! empty( $breakpoint_data['size']['min'] ) ) {
-							$breakpoint_size_string .= '(min-width: ' . esc_attr( $breakpoint_data['size']['min'] . $unit ) . ') ';
+							$breakpoint_size_string .= '(min-width: ' . esc_attr( $breakpoint_data['size']['min'] . $unit ) . ')';
 						}
 						if ( ! empty( $breakpoint_data['size']['max'] ) ) {
 							$breakpoint_size_string .= ( ! empty( $breakpoint_data['size']['min'] ) ) ? ' and ' : '';
-							$breakpoint_size_string .= '(max-width: ' . esc_attr( $breakpoint_data['size']['max'] . $unit ) . ') ';
+							$breakpoint_size_string .= '(max-width: ' . esc_attr( $breakpoint_data['size']['max'] . $unit ) . ')';
 						}
-						$sizes[] = $breakpoint_size_string . esc_attr( $breakpoint_data['src']['width'] ) . 'px';
+						if ( ! empty( $breakpoint_size_string ) ) {
+							$size_attr = $breakpoint_size_string . ' ' . esc_attr( $breakpoint_data['src']['width'] ) . 'px';
+							if ( ! in_array( $size_attr, $sizes ) ) {
+								$sizes[] = $size_attr;
+							}
+						}
 					}
-					// Add in our default length
-					$sizes[] = esc_attr( $maxsize . 'px' );
+
+					if ( ! in_array( trim( $maxsize . 'px' ), $sizes ) ) {
+						// Add in our default length
+						$sizes[] = trim( $maxsize . 'px' );
+					}
 
 					$attr['draggable'] = 'false';
 
@@ -283,6 +291,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			if ( ! empty( $attachment_id ) ) {
 				$sizes = $this->image_sizes;
 				$image_sizes = array();
+				// wp_get_attachment_image may pass this by default. Handle it as size 'full'.
+				if ( 'post-thumbnail' == $current_size ) {
+					$current_size = 'full';
+				}
+
+				// If we are full, we may not have height and width params. Grab original dimensions.
 				if ( 'full' == $current_size ) {
 					$attachment_meta = wp_get_attachment_metadata( $attachment_id );
 					$current_size = array( $attachment_meta['width'], $attachment_meta['height'] );
@@ -363,8 +377,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 				// A hack for the fact that photon doesn't work with wp_ajax calls due to is_admin forcing image downsizing to return the original image
 				if ( is_admin() && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-					$img_src['url'] = jetpack_photon_url( $img_src['url'], array( 'resize' => $img_src['width'] . ',' . $img_src['height'] ) );
-					$img_src['url2x'] = jetpack_photon_url( $img_src['url2x'], array( 'resize' => (string) ( absint( $img_src['width'] ) * 2 ) . ',' . (string) ( absint( $img_src['height'] ) * 2 ) ) );
+					// Support jetpack photon and my_photon
+					$photon_url_function = photonfill_hook_prefix() . '_photon_url';
+					$img_src['url'] = $photon_url_function( $img_src['url'], array( 'attachment_id' => $attachment_id, 'width' => $img_src['width'], 'height' => $img_src['height'] ) );
+					$img_src['url2x'] = $photon_url_function( $img_src['url2x'], array( 'attachment_id' => $attachment_id, 'width' => absint( $img_src['width'] * 2 ), 'height' => absint( $img_src['height'] * 2 ) ) );
 				}
 				return $img_src;
 			}
@@ -505,19 +521,24 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 						$breakpoint_size_string = '';
 						if ( ! empty( $breakpoint_data['size']['min'] ) ) {
-							$breakpoint_size_string .= '(min-width: ' . esc_attr( $breakpoint_data['size']['min'] . $unit ) . ') ';
+							$breakpoint_size_string .= '(min-width: ' . esc_attr( $breakpoint_data['size']['min'] . $unit ) . ')';
 						}
 						if ( ! empty( $breakpoint_data['size']['max'] ) ) {
 							$breakpoint_size_string .= ( ! empty( $breakpoint_data['size']['min'] ) ) ? ' and ' : '';
-							$breakpoint_size_string .= '(max-width: ' . esc_attr( $breakpoint_data['size']['max'] . $unit ) . ') ';
+							$breakpoint_size_string .= '(max-width: ' . esc_attr( $breakpoint_data['size']['max'] . $unit ) . ')';
 						}
-						$attr[] = $breakpoint_size_string . esc_attr( $breakpoint_data['src']['width'] ) . 'px';
+						if ( ! empty( $breakpoint_size_string ) ) {
+							$size_attr = $breakpoint_size_string . ' ' . esc_attr( $breakpoint_data['src']['width'] ) . 'px';
+							if ( ! in_array( $size_attr, $attr ) ) {
+								$attr[] = $size_attr;
+							}
+						}
 					}
 				}
 
-				if ( in_array( $attr_name, array( 'sizes', 'data-sizes' ) ) ) {
+				if ( in_array( $attr_name, array( 'sizes', 'data-sizes' ) ) && ! in_array( trim( $maxsize . 'px' ), $attr ) ) {
 					// Add in our default length
-					$attr[] = esc_attr( $maxsize . 'px' );
+					$attr[] = trim( $maxsize . 'px' );
 				}
 				return implode( ',', $attr );
 			}
