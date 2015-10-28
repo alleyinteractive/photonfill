@@ -9,7 +9,7 @@ Plugin Name: Photonfill
 Plugin URI: http://github.com/willgladstone/photonfill
 Description: Integrate Jetpack Photon and Picturefill into WP images
 Author: Will Gladstone
-Version: 0.1.1
+Version: 0.1.2
 Author URI: http://www.alleyinteractive.com/
 */
 
@@ -45,5 +45,16 @@ function photonfill_get_baseurl() {
  * Enqueue scripts and styles
  */
 function photonfill_enqueue_assets() {
+	if ( photonfill_use_lazyload() ) {
+		wp_enqueue_script( 'lazysizesjs', photonfill_get_baseurl() . '/js/lazysizes.min.js', array( 'jquery' ), '1.2.3rc1' );
+	}
 	wp_enqueue_script( 'picturefilljs', photonfill_get_baseurl() . '/js/picturefill.min.js', array( 'jquery' ), '2.3.1' );
+}
+
+/**
+ * Are we using lazyloads?
+ * Default is false.
+ */
+function photonfill_use_lazyload() {
+	return apply_filters( 'photonfill_use_lazyload', false );
 }
