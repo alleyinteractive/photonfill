@@ -59,14 +59,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			 *		'max' => int, // Max width of element
 			 *		'min' => int, // Min width of element
 			 *		'unit' => string, // [px(default),em] Currently does not support vw unit, multi units or calc function.
-			 *		'pixel-density'	=> boolean, // [false(default)] If set, this will override the image srcset widths with 2x.
-			 *		'transform' => array( 'callback_function1', 'callback_function2' ),  Photon trasformation function.  This function will allow you to check the parent image size before being called.
-			 *		'breakpoint_name' => array(
-			 *		'crop' => boolean, // Default is true
-			 *		'quality' => int, // Image quality percent. Photon uses 90 for jpgs and 80 for pngs.
-			 *		'width' => int, // Size of the photon image that will be served. Will guess if empty.
-			 *		'height' => int, // Size of the photon image that will be served. Will guess if empty.
-			 *		'default' => boolean, // Must set with hook. Set a breakpoint as the default img element. Defaults to full size.
 			 * )
 			 * wp_get_attachment_image does not use pixel density.
 			 */
