@@ -16,11 +16,6 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		public $args = array();
 
 		/**
-		 * Our photon hook prefix as set by photonfill_hook_prefix()
-		 */
-		public $hook_prefix;
-
-		/**
 		 * Constructor
 		 *
 		 * @params string $name
@@ -44,17 +39,17 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 *
 		 */
 		public function set_hooks() {
-			$this->hook_prefix = photonfill_hook_prefix();
+			$hook_prefix = photonfill_hook_prefix();
 
 			// Always make sure we have basic width and height values set by pre-empting the photon hooks
 			add_filter( 'image_downsize', array( $this, 'set_default_transform_values' ), 5, 3 );
 
 			// Override photon args
-			add_filter( $this->hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
-			add_filter( $this->hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( $hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( $hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
 
 			// Transform our photon url
-			add_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
+			add_filter( $hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
 		}
 
 		/**
