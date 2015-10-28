@@ -41,9 +41,6 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		public function set_hooks() {
 			$hook_prefix = photonfill_hook_prefix();
 
-			// Always make sure we have basic width and height values set by pre-empting the photon hooks
-			add_filter( 'image_downsize', array( $this, 'set_default_transform_values' ), 5, 3 );
-
 			// Override photon args
 			add_filter( $hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
 			add_filter( $hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
@@ -57,27 +54,6 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function setup( $args = array() ) {
 			$this->args = $args;
-		}
-
-		/**
-		 * Set default width and height for any sizes that might not be defined.
-		 * This plugin includes a hack that allows photon to be used in ajax calls.
-		 * In the case where we are using ajax, the image downsize hooks are skipped and we move directly to call the photon pre args url hooks.
-		 */
-		public function set_default_transform_values( $boolean, $id, $size ) {
-			$intermediate_sizes = get_intermediate_image_sizes();
-			if ( is_array( $size ) ) {
-				$this->setup( array( 'attachment_id' => $id, 'image_size' => 'full', 'width' => $size[0], 'height' => $size[1] ) );
-			} elseif ( in_array( $size, array( 'full', 'post-thumbnail' ) ) ) {
-				$attachment_meta = wp_get_attachment_metadata( $id );
-				$this->setup( array( 'attachment_id' => $id, 'image_size' => 'full', 'width' => $attachment_meta['width'], 'height' => $attachment_meta['height'] ) );
-			} elseif ( in_array( $size, $intermediate_sizes ) ) {
-				global $_wp_additional_image_sizes;
-				$width = isset( $_wp_additional_image_sizes[ $size ]['width'] ) ? intval( $_wp_additional_image_sizes[ $size ]['width'] ) : get_option( "{$size}_size_w" );
-				$height = isset( $_wp_additional_image_sizes[ $size ]['height'] ) ? intval( $_wp_additional_image_sizes[ $size ]['height'] ) : get_option( "{$size}_size_h" );
-				$this->setup( array( 'attachment_id' => $id, 'image_size' => 'full', 'width' => $width, 'height' => $height ) );
-			}
-			return $boolean;
 		}
 
 		/**
@@ -102,8 +78,16 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * Transform our photon url
 		 */
 		public function transform_photon_url( $args, $image_url, $scheme = null ) {
-			// Make sure we've properly instantiated our args.  If not then we are using our ajax hack and we need to perform the setup.
+			// Make sure we've properly instantiated our args.
+			// If not then photon_url is being called directly and image downsize has been skipped.
+			// We can only set width and height at this point.
+			// This is easily remidied by simply passing the minimum args of attachment_id, width & height to the jetpack_photon_url() function.
 			if ( empty( $args['attachment_id'] ) && ! empty( $this->args['attachment_id'] ) ) {
+				if ( empty( $this->args['width'] ) && empty( $this->args['height'] ) ) {
+					$size = explode( ',', reset( $args ) );
+					$this->args['width'] = empty( $size[0] ) ? 0 : absint( $size[0] );
+					$this->args['height'] = empty( $size[1] ) ? 0 : absint( $size[1] );
+				}
 				$args = $this->args;
 			}
 

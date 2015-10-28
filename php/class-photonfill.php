@@ -379,8 +379,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				if ( is_admin() && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 					// Support jetpack photon and my_photon
 					$photon_url_function = photonfill_hook_prefix() . '_photon_url';
-					$img_src['url'] = $photon_url_function( $img_src['url'], array( 'resize' => $img_src['width'] . ',' . $img_src['height'] ) );
-					$img_src['url2x'] = $photon_url_function( $img_src['url2x'], array( 'resize' => (string) ( absint( $img_src['width'] ) * 2 ) . ',' . (string) ( absint( $img_src['height'] ) * 2 ) ) );
+					$img_src['url'] = $photon_url_function( $img_src['url'], array( 'attachment_id' => $attachment_id, 'width' => $img_src['width'], 'height' => $img_src['height'] ) );
+					$img_src['url2x'] = $photon_url_function( $img_src['url2x'], array( 'attachment_id' => $attachment_id, 'width' => absint( $img_src['width'] * 2 ), 'height' => absint( $img_src['height'] * 2 ) ) );
 				}
 				return $img_src;
 			}
