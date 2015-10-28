@@ -16,6 +16,11 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		public $args = array();
 
 		/**
+		 * Our photon hook prefix as set by photonfill_hook_prefix()
+		 */
+		public $hook_prefix;
+
+		/**
 		 * Constructor
 		 *
 		 * @params string $name
@@ -39,15 +44,17 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 *
 		 */
 		public function set_hooks() {
+			$this->hook_prefix = photonfill_hook_prefix();
+
+			// Always make sure we have basic width and height values set by pre-empting the photon hooks
+			add_filter( 'image_downsize', array( $this, 'set_default_transform_values' ), 5, 3 );
+
 			// Override photon args
-			add_filter( 'my_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
-			add_filter( 'my_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
-			add_filter( 'jetpack_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
-			add_filter( 'jetpack_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( $this->hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( $this->hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
 
 			// Transform our photon url
-			add_filter( 'jetpack_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
-			add_filter( 'my_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
+			add_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
 		}
 
 		/**
@@ -55,6 +62,27 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function setup( $args = array() ) {
 			$this->args = $args;
+		}
+
+		/**
+		 * Set default width and height for any sizes that might not be defined.
+		 * This plugin includes a hack that allows photon to be used in ajax calls.
+		 * In the case where we are using ajax, the image downsize hooks are skipped and we move directly to call the photon pre args url hooks.
+		 */
+		public function set_default_transform_values( $boolean, $id, $size ) {
+			$intermediate_sizes = get_intermediate_image_sizes();
+			if ( is_array( $size ) ) {
+				$this->setup( array( 'attachment_id' => $id, 'image_size' => 'full', 'width' => $size[0], 'height' => $size[1] ) );
+			} elseif ( in_array( $size, array( 'full', 'post-thumbnail' ) ) ) {
+				$attachment_meta = wp_get_attachment_metadata( $id );
+				$this->setup( array( 'attachment_id' => $id, 'image_size' => 'full', 'width' => $attachment_meta['width'], 'height' => $attachment_meta['height'] ) );
+			} elseif ( in_array( $size, $intermediate_sizes ) ) {
+				global $_wp_additional_image_sizes;
+				$width = isset( $_wp_additional_image_sizes[ $size ]['width'] ) ? intval( $_wp_additional_image_sizes[ $size ]['width'] ) : get_option( "{$size}_size_w" );
+				$height = isset( $_wp_additional_image_sizes[ $size ]['height'] ) ? intval( $_wp_additional_image_sizes[ $size ]['height'] ) : get_option( "{$size}_size_h" );
+				$this->setup( array( 'attachment_id' => $id, 'image_size' => 'full', 'width' => $width, 'height' => $height ) );
+			}
+			return $boolean;
 		}
 
 		/**
@@ -79,6 +107,11 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * Transform our photon url
 		 */
 		public function transform_photon_url( $args, $image_url, $scheme = null ) {
+			// Make sure we've properly instantiated our args.  If not then we are using our ajax hack and we need to perform the setup.
+			if ( empty( $args['attachment_id'] ) && ! empty( $this->args['attachment_id'] ) ) {
+				$args = $this->args;
+			}
+
 			// If a callback is defined use it to alter our args
 			if ( ! empty( $args['callback'] ) && function_exists( $args['callback'] ) ) {
 				return $args['callback']( $args );
@@ -134,6 +167,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			if ( ! empty( $this->args['quality'] ) ) {
 				$args['quality'] = $this->args['quality'];
 			}
+			// Remove cropping if crop is false.
+			if ( isset( $this->args['crop'] ) && false === $this->args['crop'] ) {
+				unset( $args['crop'] );
+			}
 			return $args;
 		}
 
@@ -144,14 +181,14 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function default_transform( $args ) {
 			// Override the default transform
-			$default_method = apply_filters( 'photonfill_default_transform', 'top_down_crop' );
+			$default_method = apply_filters( 'photonfill_default_transform', 'center_crop' );
 			// If an external method is defined use it as default
 			if ( function_exists( $default_method ) ) {
 				return $default_method( $args );
 			} elseif ( method_exists( $this, $default_method ) ) {
 				return $this->$default_method( $args );
 			}
-			return $this->top_down_crop( $args );
+			return $this->center_crop( $args );
 		}
 
 		/**
@@ -160,10 +197,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function top_down_crop( $args ) {
 			$size = $this->get_dimensions( $args );
-			return array(
+			return $this->set_conditional_args( array(
 				'w' => $size['width'],
 				'crop' => '0,0,100,' . $size['height'],
-			);
+			) );
 		}
 
 		/**
@@ -172,13 +209,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function center_crop( $args ) {
 			$size = $this->get_dimensions( $args );
-
-			// We won't crop if crop is explicitly set to false.
-			if ( isset( $args['crop'] ) && false === $args['crop'] ) {
-				$horizontal_offset = 0;
-			} else {
-				$horizontal_offset = $this->get_center_crop_offset( $size );
-			}
+			$horizontal_offset = $this->get_center_crop_offset( $size );
 			return $this->set_conditional_args( array(
 				'w' => $size['width'],
 				'crop' => '0,' . $horizontal_offset . 'px,100,' . $size['height'],

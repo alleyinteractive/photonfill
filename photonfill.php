@@ -58,3 +58,17 @@ function photonfill_enqueue_assets() {
 function photonfill_use_lazyload() {
 	return apply_filters( 'photonfill_use_lazyload', false );
 }
+
+/**
+ * Our photon hook prefix as this plugin supports both Jetpack Photon and My-Photon
+ * @return string. (Either 'jetpack' or 'my');
+ */
+function photonfill_hook_prefix() {
+	// If photon module is active, then use it over my photon.
+	if ( class_exists( 'Jetpack' ) && Jetpack::is_module_active( 'photon' ) ) {
+		return 'jetpack';
+	} elseif ( class_exists( 'My_Photon_Settings' ) && My_Photon_Settings::get( 'active' ) ) {
+		return 'my';
+	}
+	return 'jetpack';
+}
