@@ -157,6 +157,21 @@ Photon uses an url parameter based [API](https://developer.wordpress.com/docs/ph
 ## Lazy Loading Responsive Images
 PhotonFill also has the option of lazy loading responsive images and allowing the browser to guess which image is most appropriate to display accoring to the clients browser window size and density. It uses [lazysizes.js](https://github.com/aFarkas/lazysizes) as the polyfill.  You can enable it through the ``photonfill_use_lazyload`` filter hook.
 
+## Lazy Loading With Placeholder
+If you'd like to use a placeholder with laysizes, you can add this using the ``photonfill_placeholder`` filter hook. This filter should return a single array of attributes for the placeholder image size, not an array of breakpoints and image attributes. Example:
+
+```
+/**
+ * Define a placeholder for image lazyloading
+ * @param array
+ * @return array
+ */
+function mytheme_placeholder( $placeholder ) {
+		return array( 'width' => 30, 'height' => 20 );
+}
+add_filter( 'photonfill_placeholder', 'mytheme_placeholder' );
+```
+
 ## Availiable Filter Hooks
 * ``photonfill_use_lazyload`` Enable/Disable lazy loaded responsive images using lazysizes.js.  Default (disabled)
 * ``photonfill_breakpoints`` Set custom breakpoints.

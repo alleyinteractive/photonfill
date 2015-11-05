@@ -263,6 +263,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$attr['data-srcset'] = implode( ',' ,  $srcset );
 						$full_src = wp_get_attachment_image_src( $attachment->ID, 'full' );
 						$attr['data-src'] = esc_url( $full_src[0] );
+
+						$placeholder = photonfill_placeholder();
+						if ( ! empty( $placeholder ) ) {
+							$placeholder_src = $this->get_img_src( $attachment->ID, array( $placeholder['width'], $placeholder['height'] ) );
+							$attr['src'] = $placeholder_src;
+						}
 					} else {
 						$attr['sizes'] = implode( ',' ,  $sizes );
 						$attr['srcset'] = implode( ',' ,  $srcset );

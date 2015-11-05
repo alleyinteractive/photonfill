@@ -60,6 +60,14 @@ function photonfill_use_lazyload() {
 }
 
 /**
+ * Return attributes of placeholder image
+ * Default is an empty array.
+ */
+function photonfill_placeholder() {
+	return apply_filters( 'photonfill_placeholder', array() );
+}
+
+/**
  * Our photon hook prefix as this plugin supports both Jetpack Photon and My-Photon
  * @return string. (Either 'jetpack' or 'my');
  */
