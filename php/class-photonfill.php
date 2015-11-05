@@ -263,12 +263,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$attr['data-srcset'] = implode( ',' ,  $srcset );
 						$full_src = wp_get_attachment_image_src( $attachment->ID, 'full' );
 						$attr['data-src'] = esc_url( $full_src[0] );
-
-						$placeholder = photonfill_placeholder();
-						if ( ! empty( $placeholder ) ) {
-							$placeholder_src = $this->get_img_src( $attachment->ID, array( $placeholder['width'], $placeholder['height'] ) );
-							$attr['src'] = $placeholder_src;
-						}
 					} else {
 						$attr['sizes'] = implode( ',' ,  $sizes );
 						$attr['srcset'] = implode( ',' ,  $srcset );
@@ -435,25 +429,34 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				}
 				$alt = ( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '';
 				$html = '';
+
+				$default_breakpoint = $size;
+				$default_srcset = false;
+				$featured_image = $this->create_image_object( $attachment_id, $size );
+				foreach ( $featured_image['sizes'] as $breakpoint => $breakpoint_data ) {
+					// If specified as default img fallback.
+					if ( ! empty( $breakpoint_data['src']['default'] ) ) {
+						$default_breakpoint = array( $breakpoint_data['src']['width'], $breakpoint_data['src']['height'] );
+						$default_srcset = $breakpoint_data['src']['url'];
+					}
+				}
 				if ( photonfill_use_lazyload() ) {
 					$full_src = wp_get_attachment_image_src( $attachment_id, 'full' );
 					$attr['class'][] = 'lazyload';
 					$classes = $this->get_image_classes( $attr['class'], $attachment_id, $size );
-					$html = '<img data-sizes="auto" data-src="'. esc_url( $full_src[0] ) .'" data-srcset="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' ) ) . '" class="' . esc_attr( $classes ) . '" ' . $alt . '>';
+					$html = '<img data-sizes="auto"';
+
+					if ( photonfill_use_placeholder() ) {
+						$html .= ' src="' . $default_srcset . '"';
+					}
+
+					$html .=' data-src="'. esc_url( $full_src[0] ) .'" data-srcset="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' ) ) . '" class="' . esc_attr( $classes ) . '" ' . $alt . '>';
 				} else {
-					$featured_image = $this->create_image_object( $attachment_id, $size );
-					$default_breakpoint = $size;
 					if ( ! empty( $featured_image['id'] ) ) {
 						$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
 						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id=' . esc_attr( $featured_image['id'] ) . '">';
 						// Here we set our source elements
 						foreach ( $featured_image['sizes'] as $breakpoint => $breakpoint_data ) {
-							// If specified as default img fallback.
-							if ( ! empty( $breakpoint_data['src']['default'] ) ) {
-								$default_breakpoint = array( $breakpoint_data['src']['width'], $breakpoint_data['src']['height'] );
-								$default_srcset = $breakpoint_data['src']['url'];
-							}
-
 							// Set our source element
 							$srcset_url = esc_url( $breakpoint_data['src']['url'] );
 

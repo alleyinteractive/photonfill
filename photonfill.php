@@ -60,11 +60,11 @@ function photonfill_use_lazyload() {
 }
 
 /**
- * Return attributes of placeholder image
- * Default is an empty array.
+ * Are we using a placeholder image (generally used with lazyloading)?
+ * Default is false.
  */
-function photonfill_placeholder() {
-	return apply_filters( 'photonfill_placeholder', array() );
+function photonfill_use_placeholder() {
+	return apply_filters( 'photonfill_use_placeholder', false );
 }
 
 /**
