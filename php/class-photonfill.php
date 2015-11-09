@@ -384,9 +384,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function get_image_classes( $class = array(), $attachment_id = null, $size = 'full' ) {
 			if ( ! is_array( $class ) ) {
-				$class = array( $class );
+				$class = explode( ' ', $class );
 			}
-			$class[] = 'size-'  . esc_attr( $size );
+			$size_string = $size;
+			if ( is_array( $size ) ) {
+				$size_string = implode( 'x', $size );
+			}
+
+			$class[] = 'size-' . esc_attr( $size_string );
 
 			return apply_filters( 'photonfill_picture_class', rtrim( implode( ' ', $class ) ), $attachment_id, $size );
 		}
@@ -437,6 +442,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				} else {
 					$featured_image = $this->create_image_object( $attachment_id, $size );
 					$default_breakpoint = $size;
+					$default_srcset = '';
+
 					if ( ! empty( $featured_image['id'] ) ) {
 						$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
 						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id=' . esc_attr( $featured_image['id'] ) . '">';
@@ -474,11 +481,13 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							// Write source element
 							$html .= "<source srcset=\"{$srcset_url}\" media=\"{$srcset_media}\" />";
 						}
+
 						// No fallback default has been set.
-						if ( is_string( $default_breakpoint ) ) {
+						if ( ( empty( $default_srcset ) && is_array( $default_breakpoint ) ) || is_string( $default_breakpoint ) ) {
 							$default_src = wp_get_attachment_image_src( $attachment_id, $default_breakpoint );
 							$default_srcset = $default_src[0];
 						}
+
 						// Set our default img element
 						$html .= '<img srcset="' . esc_url( $default_srcset ) . '"' . $alt . '>';
 						$html .= '</picture>';
