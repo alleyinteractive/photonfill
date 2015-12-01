@@ -126,7 +126,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			if ( 100 != $height && preg_match( '/^(\d+)px$/i',  $height, $matches ) ) {
 				$height = $matches[1];
 				if ( ! empty( $this->args['attachment_id'] ) ) {
-					$attachment_meta = wp_get_attachment_metadata( $this->args['attachment_id'] );
+					$attachment_meta = wp_get_attachment_metadata( $this->args['attachment_id'], true );
 					if ( ! empty( $attachment_meta['height'] ) && ! empty( $attachment_meta['width'] ) ) {
 						$new_size = wp_constrain_dimensions( $attachment_meta['width'], $attachment_meta['height'], $width, 9999 );
 						if ( $new_size[1] > $height ) {

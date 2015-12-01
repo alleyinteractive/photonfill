@@ -1,14 +1,35 @@
 <?php
 /**
- * Returns the photonfill picture element markup. For use out of loop.
+ * Returns the photonfill img element markup. For use out of loop.
  * @param int. $attachment_id.
  * @param string. $img_size.
  * @param array. $attr. (can set alt and class)
  * @return array.
  */
 function photonfill_get_image( $attachment_id, $img_size, $attr = array() ) {
-	$photonfill = Photonfill();
-	return $photonfill->get_attachment_picture( $attachment_id, $img_size, $attr );
+	return Photonfill()->get_attachment_image( $attachment_id, $img_size, $attr );
+}
+
+/**
+ * Returns the photonfill img element markup. For use out of loop.
+ * @param int. $attachment_id.
+ * @param string. $img_size.
+ * @param array. $attr. (can set alt and class)
+ * @return array.
+ */
+function photonfill_get_lazyload_image( $attachment_id, $img_size, $attr = array() ) {
+	return Photonfill()->get_lazyload_image( $attachment_id, $img_size, $attr );
+}
+
+/**
+ * Returns the photonfill picture element markup. For use out of loop.
+ * @param int. $attachment_id.
+ * @param string. $img_size.
+ * @param array. $attr. (can set alt and class)
+ * @return array.
+ */
+function photonfill_get_picture( $attachment_id, $img_size, $attr = array() ) {
+	return Photonfill()->get_attachment_picture( $attachment_id, $img_size, $attr );
 }
 
 /**
@@ -18,8 +39,7 @@ function photonfill_get_image( $attachment_id, $img_size, $attr = array() ) {
  * @return array.
  */
 function photonfill_get_image_object( $attachment_id, $img_size = 'full' ) {
-	$photonfill = Photonfill();
-	return $photonfill->create_image_object( $attachment_id, $img_size );
+	return Photonfill()->create_image_object( $attachment_id, $img_size );
 }
 
 /**
@@ -30,8 +50,7 @@ function photonfill_get_image_object( $attachment_id, $img_size = 'full' ) {
  * @return array.
  */
 function photonfill_get_breakpoint_urls( $attachment_id, $img_size, $pixel_density = 1 ) {
-	$photonfill = Photonfill();
-	return $photonfill->get_breakpoint_urls( $attachment_id, $img_size, $pixel_density );
+	return Photonfill()->get_breakpoint_urls( $attachment_id, $img_size, $pixel_density );
 }
 
 /**
@@ -43,8 +62,7 @@ function photonfill_get_breakpoint_urls( $attachment_id, $img_size, $pixel_densi
  * @return array.
  */
 function photonfill_get_breakpoint_url( $attachment_id, $img_size, $breakpoint, $pixel_density = 1 ) {
-	$photonfill = Photonfill();
-	return $photonfill->get_breakpoint_url( $attachment_id, $img_size, $breakpoint, $pixel_density );
+	return Photonfill()->get_breakpoint_url( $attachment_id, $img_size, $breakpoint, $pixel_density );
 }
 
 /**
@@ -56,6 +74,20 @@ function photonfill_get_breakpoint_url( $attachment_id, $img_size, $breakpoint, 
  * @return string. Comma delimited attribute.
  */
 function photonfill_get_image_attribute( $attachment_id, $img_size = 'full', $attr_name = 'srcset' ) {
-	$photonfill = Photonfill();
-	return $photonfill->get_responsive_image_attribute( $attachment_id, $img_size, $attr_name );
+	return Photonfill()->get_responsive_image_attribute( $attachment_id, $img_size, $attr_name );
+}
+
+/**
+ * This function exists to attempt to create a label from a slug.
+ * If the label is complex you can use the filter hook to create a label lookup or modify single slugs.
+ * @param string $slug
+ * @param string $callback Callback function to perform on wordified slug
+ * @return string
+ */
+function photonfill_wordify_slug( $slug, $callback = 'ucwords' ) {
+	$label = str_replace( array( '-', '_' ), ' ', $slug );
+	if ( function_exists( $callback ) ) {
+		$label = $callback( $label );
+	}
+	return apply_filters( 'photonfill_slug_label', $label, $slug, $callback );
 }

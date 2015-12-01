@@ -21,6 +21,7 @@ function photonfill_init() {
 	require_once( dirname( __FILE__ ) . '/functions.php' );
 
 	add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
+	add_action( 'admin_enqueue_scripts', 'photonfill_enqueue_assets' );
 }
 add_action( 'plugins_loaded', 'photonfill_init' );
 
