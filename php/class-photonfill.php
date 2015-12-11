@@ -92,7 +92,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			add_filter( 'intermediate_image_sizes_advanced', array( $this, 'disable_image_multi_resize' ) );
 
 			// Allow image sizes to be set when adding content via the modal in the admin area
-			if ( is_admin() && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			if ( is_admin() ) {
 				// Add breakpoint data to image metadata
 				add_filter( 'wp_get_attachment_metadata', array( $this, 'add_image_metadata' ), 20, 2 );
 
@@ -113,6 +113,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$image[0] = $full_src[0];
 				add_filter( 'wp_get_attachment_image_src', array( $this, 'set_original_src' ), 20, 4 );
 			}
+
 			return $image;
 		}
 
@@ -357,7 +358,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public function add_image_metadata( $data, $attachment_id ) {
 			foreach ( $this->image_sizes as $size => $breakpoint ) {
 				$data['sizes'][ $size ] = array(
-					'file' => $data['file'],
+					'file' => wp_basename( $data['file'] ),
 					'width' => $data['width'],
 					'height' => $data['height'],
 					'mime-type' => 'image/jpeg',
@@ -371,7 +372,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function image_size_names_choose( $data ) {
 			foreach ( $this->image_sizes as $size => $breakpoint ) {
-				$data[ $size ] = esc_html( photonfill_wordify_slug( $size ) );
+				$data[ $size ] = photonfill_wordify_slug( $size );
 			}
 			return $data;
 		}
@@ -401,7 +402,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				);
 
 				// A hack for the fact that photon doesn't work with wp_ajax calls due to is_admin forcing image downsizing to return the original image
-				if ( is_admin() && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				if ( is_admin() ) {
 					// Support jetpack photon and my_photon
 					$photon_url_function = photonfill_hook_prefix() . '_photon_url';
 					$attachment_src = wp_get_attachment_url( $attachment_id );
