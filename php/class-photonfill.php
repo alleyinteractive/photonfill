@@ -482,9 +482,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				if ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
+					$width = $this->get_width_for_caption( $size );
 					$alt = ( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '';
 					$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-					$html = '<img sizes="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' ) ) . '" srcset="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' ) ) . '" class="' . esc_attr( $classes ) . '" ' . $alt . '>';
+					$html = '<img width="' . $width . '" sizes="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' ) ) . '" srcset="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' ) ) . '" class="' . esc_attr( $classes ) . '" ' . $alt . '>';
 				}
 				return $html;
 			}
@@ -495,11 +496,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Get a lazy loaded img element
 		 */
 		public function get_lazyload_image( $attachment_id, $size = 'full', $attr = array() ) {
+			$width = $this->get_width_for_caption( $size );
 			$full_src = wp_get_attachment_image_src( $attachment_id, 'full' );
 			$attr['class'][] = 'lazyload';
 			$alt = ( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '';
 			$classes = $this->get_image_classes( $attr['class'], $attachment_id, $size );
-			return '<img data-sizes="auto" data-src="'. esc_url( $full_src[0] ) .'" data-srcset="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' ) ) . '" class="' . esc_attr( $classes ) . '" ' . $alt . '>';
+			return '<img width="' . $width . '" data-sizes="auto" data-src="'. esc_url( $full_src[0] ) .'" data-srcset="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' ) ) . '" class="' . esc_attr( $classes ) . '" ' . $alt . '>';
 		}
 
 		/**
@@ -572,6 +574,22 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				return $html;
 			}
 			return;
+		}
+
+		/**
+		 * Set an arbitrary width based on largest breakpoint for the given size.
+		 * This is necessary to allow wp caption shortcode to be inserted as normal when using the tinyMCE "Add Media" button
+		 */
+		public function get_width_for_caption( $size = 'full' ) {
+			if ( ! empty( $this->image_sizes[ $size ] ) ) {
+				$size_array = $this->image_sizes[ $size ];
+			} else {
+				$size_Array = $this->image_sizes['full'];
+			}
+
+			$first_bp = reset( $size_array );
+
+			return $first_bp['width'];
 		}
 
 		/**
