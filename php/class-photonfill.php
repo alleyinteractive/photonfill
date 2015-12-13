@@ -587,9 +587,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$size_Array = $this->image_sizes['full'];
 			}
 
-			$first_bp = reset( $size_array );
+			$bp_array = array_keys( $size_array );
+			$largest_bp = $size_array[ array_pop( $bp_array ) ];
 
-			return $first_bp['width'];
+			return $largest_bp['width'];
 		}
 
 		/**
