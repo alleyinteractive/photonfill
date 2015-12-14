@@ -100,6 +100,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				add_filter( 'image_size_names_choose', array( $this, 'image_size_names_choose' ), 20 );
 
 				add_filter( 'image_send_to_editor_url', array( $this, 'image_send_to_editor_url' ), 20, 4 );
+
+				// When adding captions, set a width for the image so it can generate shortcode correctly.
+				add_filter( 'image_send_to_editor', array( $this, 'add_width_for_captions' ), 10, 8 );
+
 			}
 		}
 
@@ -376,6 +380,26 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			}
 			return $data;
 		}
+
+		/**
+		 * Add image caption requires element to have a width to display shortcode correctly
+		 */
+		public function add_width_for_captions( $html, $id, $caption, $title, $align, $url, $size, $alt = '' ) {
+			$caption = apply_filters( 'image_add_caption_text', $caption, $id );
+			if ( ! empty( $caption ) ) {
+				if ( is_numeric( $size ) ) {
+					$size_px = $size;
+				} elseif ( is_array( $size ) ) {
+					$size_px = $size[0];
+				} else {
+					$attachment_meta = wp_get_attachment_metadata( $id, true );
+					$size_px = $attachment_meta['width'];
+				}
+				$html = preg_replace( '/<img\s/i', '<img width="' . esc_attr( $size_px ) . '" ', $html );
+			}
+			return $html;
+		}
+
 
 		/**
 		 * Manipulate our img src
