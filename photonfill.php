@@ -47,9 +47,9 @@ function photonfill_get_baseurl() {
  */
 function photonfill_enqueue_assets() {
 	if ( photonfill_use_lazyload() ) {
-		wp_enqueue_script( 'lazysizesjs', photonfill_get_baseurl() . '/js/lazysizes.min.js', array( 'jquery' ), '1.2.3rc1' );
+		wp_enqueue_script( 'lazysizesjs', photonfill_get_baseurl() . 'js/lazysizes.min.js', array( 'jquery' ), '1.2.3rc1' );
 	}
-	wp_enqueue_script( 'picturefilljs', photonfill_get_baseurl() . '/js/picturefill.min.js', array( 'jquery' ), '2.3.1' );
+	wp_enqueue_script( 'picturefilljs', photonfill_get_baseurl() . 'js/picturefill.min.js', array( 'jquery' ), '2.3.1' );
 }
 
 /**
