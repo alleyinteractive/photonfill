@@ -520,6 +520,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function get_lazyload_image( $attachment_id, $size = 'full', $attr = array() ) {
 			$full_src = wp_get_attachment_image_src( $attachment_id, 'full' );
+			if ( ! is_array( $attr['class'] ) ) {
+				$attr['class'] = explode( ' ', $attr['class'] );
+			}
 			$attr['class'][] = 'lazyload';
 			$alt = ( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '';
 			$classes = $this->get_image_classes( $attr['class'], $attachment_id, $size );
