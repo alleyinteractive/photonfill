@@ -407,7 +407,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @param array. This should always be an array of breakpoint width and height
 		 * @param boolean. Should this be the default srcset for the img element.
 		 */
-		private function get_img_src( $attachment_id, $size, $default = false ) {
+		private function get_img_src( $attachment_id, $size = null, $default = false ) {
 			if ( ! empty( $attachment_id ) ) {
 				if ( empty( $size ) ) {
 					$attachment_meta = wp_get_attachment_metadata( $attachment_id, true );
@@ -519,14 +519,18 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Get a lazy loaded img element
 		 */
 		public function get_lazyload_image( $attachment_id, $size = 'full', $attr = array() ) {
-			$full_src = wp_get_attachment_image_src( $attachment_id, 'full' );
-			if ( ! is_array( $attr['class'] ) ) {
-				$attr['class'] = explode( ' ', $attr['class'] );
+			$img_object = $this->get_img_src( $attachment_id );
+			if ( empty( $attr['class'] ) ) {
+				$attr['class'] = array( 'lazyload' );
+			} else {
+				if ( ! is_array( $attr['class'] ) ) {
+					$attr['class'] = explode( ' ', $attr['class'] );
+				}
+				$attr['class'][] = 'lazyload';
 			}
-			$attr['class'][] = 'lazyload';
 			$alt = ( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '';
 			$classes = $this->get_image_classes( $attr['class'], $attachment_id, $size );
-			return '<img data-sizes="auto" data-src="'. esc_url( $full_src[0] ) .'" data-srcset="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' ) ) . '" class="' . esc_attr( $classes ) . '" ' . $alt . '>';
+			return '<img data-sizes="auto" data-src="'. esc_url( $img_object['url'] ) .'" data-srcset="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' ) ) . '" class="' . esc_attr( $classes ) . '" ' . $alt . '>';
 		}
 
 		/**
