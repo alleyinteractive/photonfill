@@ -70,7 +70,7 @@ function photonfill_admin_tinymce_js( $plugins ) {
  * Default is false.
  */
 function photonfill_use_lazyload() {
-	return apply_filters( 'photonfill_use_lazyload', true );
+	return apply_filters( 'photonfill_use_lazyload', false );
 }
 
 /**
