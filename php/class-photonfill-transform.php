@@ -194,6 +194,31 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				'crop' => '0,' . $horizontal_offset . 'px,100,' . $size['height'],
 			) );
 		}
+
+		/**
+		 * Resize and crop an image to exact width,height pixel dimensions.
+		 */
+		public function resize( $args ) {
+			$size = $this->get_dimensions( $args );
+
+			// return only required args
+			return $this->set_conditional_args( array(
+				'resize' => $size['width'] . ',' . $size['height'],
+			) );
+		}
+
+		/**
+		 * Fit an image to a containing box of width,height dimensions. Image aspect ratio is maintained.
+		 * Image is never cropped.
+		 */
+		public function fit( $args ) {
+			$size = $this->get_dimensions( $args );
+
+			// return only required args
+			return $this->set_conditional_args( array(
+				'fit' => $size['width'] . ',' . $size['height'],
+			) );
+		}
 	}
 }
 
