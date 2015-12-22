@@ -194,6 +194,19 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				'crop' => '0,' . $horizontal_offset . 'px,100,' . $size['height'],
 			) );
 		}
+
+		/**
+		 * Force the image to match the requested dimnesions and crop from the center.
+		 * Will crop to exact requested dimensions, unless they are larger than the source image.
+		 */
+		public function force_aspect( $args ) {
+			$size = $this->get_dimensions( $args );
+
+			// return only required args
+			return $this->set_conditional_args( array(
+				'resize' => $size['width'] . ',' . $size['height'],
+			) );
+		}
 	}
 }
 
