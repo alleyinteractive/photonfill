@@ -54,6 +54,16 @@ function photonfill_enqueue_assets() {
 			add_filter( 'mce_external_plugins', 'photonfill_admin_tinymce_js' );
 		}
 	}
+
+	//Fieldmanager Media Metabox Fixes
+	if ( is_admin() ) {
+		wp_enqueue_script( 'photonfill-admin', photonfill_get_baseurl() . 'js/photonfill-admin.js', array( 'jquery' ) );
+		$localized_vars = array(
+			'wp_ajax_url' => admin_url( 'admin-ajax.php' ),
+			'photonfill_get_img_object_nonce' => wp_create_nonce( 'photonfill_get_img_object' ),
+		);
+		wp_localize_script( 'photonfill-admin', 'photonfill_wp_vars', $localized_vars );
+	}
 }
 
 /**

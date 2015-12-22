@@ -1,0 +1,1223 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"print",
+				"print_r"
+			],
+			[
+				"is",
+				"isUndefined"
+			],
+			[
+				"url",
+				"url_array"
+			],
+			[
+				"__retur",
+				"__return_empty_string"
+			],
+			[
+				"wp_pr",
+				"wp_print_scripts"
+			],
+			[
+				"get_current",
+				"get_current_screen"
+			],
+			[
+				"g",
+				"grecaptcha"
+			],
+			[
+				"delete_comm",
+				"delete_comment_meta"
+			],
+			[
+				"comment",
+				"comment_id"
+			],
+			[
+				"sear",
+				"search_form_html"
+			],
+			[
+				"delete_user",
+				"delete_user_meta"
+			],
+			[
+				"delete_u",
+				"delete_usermeta"
+			],
+			[
+				"get_us",
+				"get_user_meta"
+			],
+			[
+				"add_use",
+				"add_user_meta"
+			],
+			[
+				"categ",
+				"category_terms"
+			],
+			[
+				"redirect_",
+				"redirect_url"
+			],
+			[
+				"get_curre",
+				"get_current_user_id"
+			],
+			[
+				"hav",
+				"have_posts"
+			],
+			[
+				"get_curr",
+				"get_current_user_id"
+			],
+			[
+				"comment_date",
+				"comment_date"
+			],
+			[
+				"comment_pos",
+				"comment_post_ids"
+			],
+			[
+				"is_a",
+				"is_associative"
+			],
+			[
+				"pri",
+				"printr	printr"
+			],
+			[
+				"entit",
+				"entity_ids"
+			],
+			[
+				"pre",
+				"preventDefault"
+			],
+			[
+				"sub",
+				"subscriber_key"
+			],
+			[
+				"get_user",
+				"get_user_by"
+			],
+			[
+				"remov",
+				"remove_action"
+			],
+			[
+				"add_re",
+				"add_rewrite_rule"
+			],
+			[
+				"action",
+				"action_var"
+			],
+			[
+				"acti",
+				"action_var"
+			],
+			[
+				"ip",
+				"ipban_id"
+			],
+			[
+				"em",
+				"emailban_id"
+			],
+			[
+				"update_commen",
+				"update_comment_meta"
+			],
+			[
+				"update_us",
+				"update_user_meta"
+			],
+			[
+				"strre",
+				"str_replace"
+			],
+			[
+				"get_hom",
+				"get_home_url"
+			],
+			[
+				"preg",
+				"preg_match"
+			],
+			[
+				"feature",
+				"featured_image"
+			],
+			[
+				"get_excer",
+				"get_the_excerpt"
+			],
+			[
+				"ne",
+				"new_status"
+			],
+			[
+				"st",
+				"strtolower"
+			],
+			[
+				"uc",
+				"ucfirst"
+			],
+			[
+				"strip",
+				"strip_tags"
+			],
+			[
+				"boo",
+				"book_code"
+			],
+			[
+				"categor",
+				"category_slugs"
+			],
+			[
+				"sweeps",
+				"sweepstakes_user"
+			],
+			[
+				"exclu",
+				"exclude_terms"
+			],
+			[
+				"wp_ll",
+				"wp_list_pluck"
+			],
+			[
+				"wpk",
+				"wp_kses_post"
+			],
+			[
+				"mo",
+				"moderators"
+			],
+			[
+				"admini",
+				"administrators"
+			],
+			[
+				"admin",
+				"administrator"
+			],
+			[
+				"ob_",
+				"ob_start"
+			],
+			[
+				"displa",
+				"display_name"
+			],
+			[
+				"error",
+				"error_log"
+			],
+			[
+				"esc",
+				"esc_attr"
+			],
+			[
+				"subs",
+				"subscription_array"
+			],
+			[
+				"strto",
+				"strtotime"
+			],
+			[
+				"erro",
+				"error_log"
+			],
+			[
+				"selected",
+				"selected_age"
+			],
+			[
+				"esc_att",
+				"esc_attr__"
+			],
+			[
+				"posts",
+				"posts_per_page"
+			],
+			[
+				"custom",
+				"custom_avatar"
+			],
+			[
+				"array_m",
+				"array_merge"
+			],
+			[
+				"ser",
+				"series_term"
+			],
+			[
+				"term",
+				"term_id"
+			],
+			[
+				"perm",
+				"get_permalink"
+			],
+			[
+				"get_qu",
+				"get_query_var"
+			],
+			[
+				"hide",
+				"hideProfileHeaders"
+			],
+			[
+				"e",
+				"error_log"
+			],
+			[
+				"photon",
+				"photon_url"
+			],
+			[
+				"dail",
+				"daily_subscriptions"
+			],
+			[
+				"attachment",
+				"attachment_id"
+			],
+			[
+				"json",
+				"json_encode"
+			],
+			[
+				"str_r",
+				"str_replace"
+			],
+			[
+				"get_t",
+				"get_term"
+			],
+			[
+				"for",
+				"foreach	foreach …"
+			],
+			[
+				"selec",
+				"selected_series"
+			],
+			[
+				"get_term",
+				"get_term"
+			],
+			[
+				"update",
+				"update_postmeta"
+			],
+			[
+				"get_te",
+				"get_terms"
+			],
+			[
+				"tor_is_comment_",
+				"tor_is_comment_moderator"
+			],
+			[
+				"custo",
+				"custom_status"
+			],
+			[
+				"esc_",
+				"esc_textarea"
+			],
+			[
+				"force",
+				"force_review"
+			],
+			[
+				"update_comme",
+				"update_comment_meta"
+			],
+			[
+				"function",
+				"function_exists"
+			],
+			[
+				"get_post_sta",
+				"get_post_status"
+			],
+			[
+				"arra",
+				"array_diff"
+			],
+			[
+				"err",
+				"error_log"
+			],
+			[
+				"sanitize_tit",
+				"sanitize_title_with_dashes"
+			],
+			[
+				"post",
+				"post_exists"
+			],
+			[
+				"is_t",
+				"is_tax"
+			],
+			[
+				"wp_list",
+				"wp_list_pluck"
+			],
+			[
+				"quer",
+				"query_posts"
+			],
+			[
+				"remove",
+				"remove_action"
+			],
+			[
+				"remo",
+				"remove_action"
+			],
+			[
+				"array_fi",
+				"array_filter"
+			],
+			[
+				"galle",
+				"gallery_ids"
+			],
+			[
+				"attach",
+				"attachment_id"
+			],
+			[
+				"primary",
+				"primary_author"
+			],
+			[
+				"coa",
+				"coauthors_plus"
+			],
+			[
+				"exp",
+				"explode"
+			],
+			[
+				"select",
+				"selected_genre"
+			],
+			[
+				"in",
+				"in_array"
+			],
+			[
+				"get_que",
+				"get_queried_object"
+			],
+			[
+				"get_the",
+				"get_the_category"
+			],
+			[
+				"que",
+				"query_vars"
+			],
+			[
+				"get_query",
+				"get_query_var"
+			],
+			[
+				"tor",
+				"get_terms_orderby"
+			],
+			[
+				"get_categ",
+				"get_category"
+			],
+			[
+				"get_cat",
+				"get_categories"
+			],
+			[
+				"wp_kses",
+				"wp_kses_post"
+			],
+			[
+				"link",
+				"link_structure"
+			],
+			[
+				"chapter",
+				"chapter_post"
+			],
+			[
+				"chapte",
+				"chapter_posts"
+			],
+			[
+				"is_nu",
+				"is_numeric"
+			],
+			[
+				"get_ca",
+				"get_categories"
+			],
+			[
+				"get_use",
+				"get_user_by"
+			],
+			[
+				"ids",
+				"ids"
+			],
+			[
+				"tor_get_related",
+				"tor_get_related_posts_blacklist"
+			],
+			[
+				"blac",
+				"blacklisted_posts"
+			],
+			[
+				"display",
+				"displayed_series"
+			],
+			[
+				"dis",
+				"displayed_series"
+			],
+			[
+				"functio",
+				"function_exists"
+			],
+			[
+				"featured",
+				"featured_image_sizes"
+			],
+			[
+				"is_ma",
+				"is_main_query"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"Snippet: p",
+				"Snippet: printr"
+			],
+			[
+				"Package",
+				"Package Control: Install Package"
+			],
+			[
+				"Packa",
+				"Package Control: Install Package"
+			],
+			[
+				"Pac",
+				"Package Control: Install Package"
+			],
+			[
+				"Pacl",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 188.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/will/Vagrant/broadway/plugins/photonfill/js/photonfill.js",
+		"/home/will/Vagrant/broadway/plugins/photonfill/README.md",
+		"/home/will/Vagrant/broadway/www/wordpress/wp-admin/includes/media.php",
+		"/home/will/Vagrant/broadway/www/wordpress/wp-includes/media-template.php",
+		"/home/will/Vagrant/broadway/plugins/my-photon/inc/functions.php",
+		"/home/will/Vagrant/broadway/plugins/my-photon/my-photon.php",
+		"/home/will/Vagrant/broadway/www/wordpress/wp-includes/media.php",
+		"/home/will/Vagrant/broadway/plugins/my-photon/inc/class-my-photon.php",
+		"/home/will/Vagrant/broadway/plugins/my-photon/inc/class-my-photon-settings.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/includes/media.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/post.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/includes/post.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/includes/ajax-actions.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/media-template.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/media.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/custom-background.php",
+		"/home/will/Vagrant/broadway/plugins/photonfill/php/class-photonfill-transform.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/includes/image.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/includes/image-edit.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/meta.php",
+		"/home/will/Vagrant/broadway/plugins/fieldmanager-bylines/php/class-fm-bylines-post.php",
+		"/home/will/Vagrant/broadway/plugins/fieldmanager-bylines/functions.php",
+		"/home/will/Vagrant/broadway/plugins/fieldmanager-bylines/php/class-fm-bylines.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/admin-ajax.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/js/media-editor.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/js/media-views.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/_js/controllers/TorCommentController.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/functions.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/comments.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/single-comment.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/comments.php",
+		"/home/will/.config/sublime-text-2/Packages/User/Preferences.sublime-settings",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/includes/class-wp-list-table.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/includes/class-wp-comments-list-table.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-core/bp-core-avatars.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/class-tor-users.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/my-photon/inc/functions.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/media.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/ajax.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/jetpack/modules/infinite-scroll.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/_js/config.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/Gruntfile.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/jetpack/modules/sharedaddy/sharing-service.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/jetpack/modules/sharedaddy/sharing.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-xprofile/bp-xprofile-admin.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/comment.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/includes/list-table.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-members/bp-members-admin.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/class-tor-roles-caps.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/class-tor-comments.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/js/tor-admin.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/comment.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/users.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/migration/src/AMT/Tor/TorCLI.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/cache.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/post-types.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/post-types/class-tor-post-type-post.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/jetpack/class.jetpack.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/admin.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/scss/base/_comments-base.scss",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/wordpress-fieldmanager/php/class-fieldmanager-field.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/wordpress-fieldmanager/php/context/class-fieldmanager-context-submenu.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-core/bp-core-caps.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/buddypress/members/single/content/activity-subscriptions.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/buddypress/members/single/content/activity-comments.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/archive-gallery.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/buddypress/members/single/content/activity-favorites.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/single.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/_js/views/TorGlobalView.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/scss/tablet/_comments-tablet.scss",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/_js/views/TorDesktopView.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/scss/mobile/_comments-mobile.scss",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/api/class-tor-dfp.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/api.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/widgets/class-tor-recent-comments-widget.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/buddypress/members/single/settings/notifications.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-xprofile/bp-xprofile-loader.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-core/bp-core-template.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-messages/bp-messages-template.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/nav.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/pluggable.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-core/bp-core-component.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-messages/bp-messages-loader.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/header-login-bar.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/scss/base/_profile-base.scss",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/buddypress/members/register.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/scss/base/_registration-base.scss",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/scss/_global-values.scss",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/js/tor-register.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/api/exacttarget/class-tor-exacttarget.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/scss/tablet/_registration-tablet.scss",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/api/template/class-series-template-controller.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/user.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-members/bp-members-functions.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/taxonomies/class-tor-taxonomy-series.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/es-wp-query/adapters/searchpress.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/query.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/es-wp-query/class-es-wp-query-wrapper.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/taxonomy.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/category-template.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/taxonomy-series.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/class-tor-notifications.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/searchpress/lib/class-sp-api.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/search.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/api/template/class-content-template-controller.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/searchpress/lib/class-sp-post.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/searchpress/lib/class-sp-sync-manager.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-includes/cache.php",
+		"/home/will/Vagrant/broadway/apm/packages/alley/tor.rb",
+		"/home/will/Vagrant/broadway/apm/packages/alley/foodrepublic.rb",
+		"/home/will/Vagrant/broadway/apm/packages/alley/digiday.rb",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/taxonomies.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/js/tor-ga.js",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/comment-protected.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/api/template/class-member-template-controller.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/comment-form.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/api/class-tor-ga.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/scss/mobile/_header-mobile.scss",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-loader.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/tools/class-tor-site-init.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/includes/upgrade.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/upgrade.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/helpers.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/bp-messages/bp-messages-functions.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/class-tor-term-splitter.php",
+		"/home/will/Vagrant/broadway/www/tor/wp-admin/js/nav-menu.js",
+		"/home/will/Vagrant/broadway/apm/packages/wordpress.rb",
+		"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/inc/taxonomies/class-tor-taxonomy-title.php"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"/home/will/Vagrant/broadway/plugins/photonfill/, -*.css,",
+			"/home/will/Vagrant/broadway/plugins/photonfill/, -*.css, -*.min.js",
+			"/home/will/Vagrant/broadway/plugins/photonfill/, -*.css,",
+			"/home/will/Vagrant/broadway/www/wordpress/, -*.css, -*.min.js",
+			"/home/will/Vagrant/broadway/www/wordpress/, -*.css",
+			"/home/will/Vagrant/broadway/plugins/photonfill/, -*.css,",
+			"/home/will/Vagrant/broadway/www/wordpress/, -*.css",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css",
+			"/home/will/Vagrant/broadway/plugins/photonfill/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css",
+			"/home/will/Vagrant/broadway/plugins/photonfill/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/static, -*.css",
+			"/home/will/Vagrant/broadway/www/tor/static/, -*.css",
+			"/home/will/Vagrant/broadway/www/tor/static/js, -*.css",
+			"/home/will/Vagrant/broadway/www/tor/static/_js, -*.css",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,-*.js",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,-*.js",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,-*.js",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/searchpress, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/searchpress, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/searchpress/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/buddypress/",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js, -*.scss",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js, -*.scss",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css, -*.js",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-admin/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/wordpress-fieldmanager, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/plugins/fieldmanager, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor/static/scss/, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,",
+			"/home/will/Vagrant/broadway/www/tor/, -*.css,",
+			"/home/will/Vagrant/broadway/www/tor/wp-content/themes/tor, -*.html,-*.css,"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"lazySizes",
+			"tinymce",
+			"BeforeExecCommand",
+			"AfterExecCommand",
+			"BeforeExecCommand",
+			"mceInsertContent",
+			"send_to_editor",
+			"media_send_to_editor",
+			"send_attachment_to_editor",
+			"send-attachment-to-editor",
+			"media-button-insert",
+			"$attr['class']",
+			"sizes",
+			"img_src",
+			"photonfill_use_lazyload",
+			"site_url",
+			"home_url",
+			"url2x",
+			"url_2x",
+			"wp_get_attachment_",
+			"wp_get_attachment_img",
+			"wp_get_attachment_image",
+			"photonfill_use_picture_as_default",
+			"width=\"",
+			"image_send_to_editor",
+			"image_add_caption",
+			"[caption",
+			"image_send_to_editor",
+			"caption",
+			"[caption",
+			"wp-caption-dt",
+			"caption",
+			"wp_basename",
+			"image_get_intermediate_size",
+			"meta",
+			"image_get_intermediate_size",
+			"is_interm",
+			"wp_get_attachment_image_src",
+			"image_down",
+			"image_get_intermediate_size",
+			"image_down",
+			"image_downsize",
+			"function wp_get_attachment_image_src",
+			"wp_get_attachment_image_src",
+			"imgedit-response",
+			"_wp_post_thumbnail_html",
+			"admin_post_thumbnail_html",
+			"wp_get_attachment_image",
+			"remove_featured_image",
+			"featured image",
+			"add_image_metadata",
+			"image_size_names_choose",
+			"image_send_to_editor_url",
+			"image_size_names_choose",
+			"use_picture_as_default",
+			"image_size_names_choose",
+			"function get_metadata",
+			"function get_post_meta",
+			"get_post_meta",
+			"_wp_attachment_backup_sizes",
+			"wp_get_attachment_metadata",
+			"image_get_intermediate_size",
+			"function wp_image_editor",
+			"wp_image_editor",
+			"wp_save_image_file",
+			"function wp_save_image",
+			"wp_save_image",
+			"_load_image_to_edit_path",
+			"stream_preview_image",
+			"imgedit_preview",
+			"function wp_get_attachment_url",
+			"wp_get_attachment_url",
+			"wp_get_attachment_image_src",
+			"function wp_get_attachment_image_src",
+			"wp_get_attachment_image_src",
+			"send_attachment_to_editor",
+			"filter_image_downsize",
+			"function image_downsize",
+			"image_downsize",
+			"wp_get_attachment_image_src",
+			"function wp_get_attachment_image_src",
+			"enqu",
+			"photon",
+			"pre_image_url",
+			"image_send_to_editor_url",
+			"imgsize",
+			"props",
+			"send-attachment-to-editor",
+			"data-mce-href",
+			"update_attachment_meta",
+			"wp_get_attachment_metadata",
+			"wp_generate_attachment_metadata",
+			"wp_update_attachment_metadata",
+			"_wp_attachment_metadata",
+			"wp_get_attachment_metadata",
+			"get_img_src",
+			"function wp_get_attachment_metadata",
+			"wp_get_attachment_metadata",
+			"add_image_meta",
+			"wp_get_attachment_metadata",
+			"get_picturefill_html",
+			"get_attachment_picture",
+			"wp_insert_post",
+			"added_term_relationship",
+			"should_be_indexed",
+			"SP_Sync_Manager",
+			"check-more-comments",
+			"tor_add_photon_store_thumb_arg",
+			"Select a reason",
+			"get_flag_reasons",
+			"get_flagged_reasons",
+			"local",
+			"even",
+			"display_rows_or_placeholder",
+			"WP_List_Table",
+			"display_rows_or_placeholder",
+			"wp-lists",
+			"tor.alley.dev",
+			"bp_core_fetch_avatar_url",
+			"gravatar",
+			"bp_core_fetch_avatar",
+			"get_avatar",
+			"get_ava",
+			"bp_core_fetch_avatar",
+			"get_avatar",
+			"get_bp_avatar",
+			"webkitMovementX",
+			";"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"$_GET",
+			"$_REQUEST",
+			"tor",
+			"Tor",
+			",\\n",
+			"',\\n\\t\\t\\t'",
+			"',\\n'",
+			"/$",
+			" [R=301,L]\\n",
+			"/$\\t",
+			"RewriteRule ^",
+			"%20",
+			"RewriteRule ^",
+			"%20",
+			"RewriteRule ^",
+			"tor",
+			"Tor",
+			",\\n",
+			", 'tor' \\),\\n\\t\\t",
+			", 'tor' \\), \\n\\t\\t",
+			", 'tor' ), \\n\\t\\t",
+			"\", 'tor' ), __( \"",
+			"\", 'tor' ), ",
+			"'",
+			" ",
+			"",
+			"$dark-red",
+			"single_",
+			"'",
+			"tor_",
+			" ",
+			"",
+			" ",
+			", 'tor' )",
+			"\", 'tor' )",
+			"', 'tor' )",
+			"', 'tor' );",
+			" esc_html_e(",
+			"tor_",
+			"$version",
+			"tor",
+			"visible",
+			"Visible",
+			"Hidden",
+			"hidden",
+			"Hidden",
+			"tor_",
+			"git-deploy",
+			"Store",
+			"tor"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"auto_name": "",
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"devel": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": "load-save",
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 40.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 72.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 179.0,
+	"status_bar_visible": true
+}
