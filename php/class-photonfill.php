@@ -422,7 +422,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 		/**
 		 * Fix issues with fieldmanager loading images
-		 *
+		 * Adding an image in a FM metabox does not use photonfill and it scales out of the metabox.
+		 * We override the preview with our photonfill image and allow it to scale to the width of it's parent using inline styles.
 		 */
 		function set_fieldmanager_media( $preview, $value, $attachment ) {
 			if ( ! empty( $attachment->ID ) && strpos( $attachment->post_mime_type, 'image/' ) === 0 ) {
