@@ -104,6 +104,11 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				// When adding captions, set a width for the image so it can generate shortcode correctly.
 				add_filter( 'image_send_to_editor', array( $this, 'add_width_for_captions' ), 10, 8 );
 
+				// Ajax handlers used for Fieldmanager specific fixes for media meta boxes but can be used globally for any external ajax calls
+				add_action( 'wp_ajax_get_img_object', array( $this, 'ajax_get_img_object' ) );
+				add_action( 'wp_ajax_nopriv_get_img_object', array( $this, 'ajax_get_img_object' ) );
+
+				add_filter( 'fieldmanager_media_preview', array( $this, 'set_fieldmanager_media' ), 10, 3 );
 			}
 		}
 
@@ -400,6 +405,34 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			return $html;
 		}
 
+		/**
+		 * Ajax responder to get image object.
+		 * This responder takes an attachment id and returns the photonfill image/picture element
+		 * This is used for fieldmanager media metaboxes to override the local image element but it can be used for any ajax call.
+		 * TODO: Get this to account for sizes other than full.
+		 */
+		function ajax_get_img_object() {
+			check_ajax_referer( 'photonfill_get_img_object', 'nonce' );
+			if ( ! empty( $_POST['attachment'] ) ) {
+				$attachment_id = absint( $_POST['attachment'] );
+				echo $this->get_attachment_image( $attachment_id, 'full', array( 'style' => 'width:100%' ) );
+			}
+			exit();
+		}
+
+		/**
+		 * Fix issues with fieldmanager loading images
+		 * Adding an image in a FM metabox does not use photonfill and it scales out of the metabox.
+		 * We override the preview with our photonfill image and allow it to scale to the width of it's parent using inline styles.
+		 */
+		function set_fieldmanager_media( $preview, $value, $attachment ) {
+			if ( ! empty( $attachment->ID ) && strpos( $attachment->post_mime_type, 'image/' ) === 0 ) {
+				$preview = esc_html__( 'Uploaded image:', 'photonfill' ) . '<br />';
+				$preview .= '<a href="#">' . $this->get_attachment_image( $attachment->ID, 'full', array( 'style' => 'width:100%' ) ) . '</a>';
+				$preview .= sprintf( '<br /><a href="#" class="fm-media-remove fm-delete">%s</a>', esc_html__( 'remove', 'photonfill' ) );
+			}
+			return $preview;
+		}
 
 		/**
 		 * Manipulate our img src
@@ -506,9 +539,17 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				if ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
-					$alt = ( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '';
+					$alt = ( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '';
+					$style = ( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : '';
 					$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-					$html = '<img sizes="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' ) ) . '" srcset="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' ) ) . '" class="' . esc_attr( $classes ) . '" ' . $alt . '>';
+					$html = sprintf(
+						'<img sizes="%s" srcset="%s" class="%s" %s %s>',
+						esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' ) ),
+						esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' ) ),
+						esc_attr( $classes ),
+						$alt,
+						$style
+					);
 				}
 				return $html;
 			}
@@ -529,8 +570,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$attr['class'][] = 'lazyload';
 			}
 			$alt = ( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '';
+			$style = ( ! empty( $attr['style'] ) ) ? ' style=' . esc_attr( $attr['style'] ) : '';
 			$classes = $this->get_image_classes( $attr['class'], $attachment_id, $size );
-			return '<img data-sizes="auto" data-src="'. esc_url( $img_object['url'] ) .'" data-srcset="' . esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' ) ) . '" class="' . esc_attr( $classes ) . '" ' . $alt . '>';
+			return sprintf(
+				'<img data-sizes="auto" data-src="%s" data-srcset="%s" class="%s" %s %s>',
+				esc_url( $img_object['url'] ),
+				esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' ) ),
+				esc_attr( $classes ),
+				$alt,
+				$style
+			);
 		}
 
 		/**
@@ -552,7 +601,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 					if ( ! empty( $featured_image['id'] ) ) {
 						$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-						$alt = ( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '';
+						$alt = ( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '';
+						$style = ( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : '';
 						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id=' . esc_attr( $featured_image['id'] ) . '">';
 						// Here we set our source elements
 						foreach ( $featured_image['sizes'] as $breakpoint => $breakpoint_data ) {
@@ -596,7 +646,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						}
 
 						// Set our default img element
-						$html .= '<img srcset="' . esc_url( $default_srcset ) . '"' . $alt . '>';
+						$html .= '<img srcset="' . esc_url( $default_srcset ) . '"' . $alt . ' ' . $style . '>';
 						$html .= '</picture>';
 					}
 				}
