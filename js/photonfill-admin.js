@@ -9,11 +9,10 @@
 				attachment : attachment.id,
 				nonce: photonfill_wp_vars['photonfill_get_img_object_nonce'],
 			},
-			dataType: 'html'
+			dataType: 'html',
 		})
 		.done( function( response ) {
-			photonfill_img = '<a href="#">' + response + '</a><br /><a class="fm-media-remove fm-delete" href="#">remove</a>';
-			wrapper.html( photonfill_img );
+			wrapper.html( '<a href="#">' + response + '</a><br /><a class="fm-media-remove fm-delete" href="#">' + photonfill_wp_vars['photonfill_i18n']['remove'] + '</a>' );
 		});
 	});
 })( jQuery );
