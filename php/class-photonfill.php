@@ -366,13 +366,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function add_image_metadata( $data, $attachment_id ) {
 			foreach ( $this->image_sizes as $size => $breakpoint ) {
-				$ref_breakpoint = $breakpoint;
-				$ref_breakpoint = array_pop( $ref_breakpoint );
-
 				$data['sizes'][ $size ] = array(
 					'file' => wp_basename( $data['file'] ),
-					'width' => $ref_breakpoint['width'],
-					'height' => $ref_breakpoint['height'],
+					'width' => $data['width'],
+					'height' => $data['height'],
 					'mime-type' => 'image/jpeg',
 				);
 			}
