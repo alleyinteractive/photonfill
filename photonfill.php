@@ -2,7 +2,7 @@
 /**
  * @package Photonfill
  * @subpackage Plugin
- * @version 0.1.5
+ * @version 0.1.6
  */
 /*
 Plugin Name: Photonfill
