@@ -9,7 +9,7 @@ Plugin Name: Photonfill
 Plugin URI: http://github.com/willgladstone/photonfill
 Description: Integrate Jetpack Photon and Picturefill into WP images
 Author: Will Gladstone
-Version: 0.1.5
+Version: 0.1.6
 Author URI: http://www.alleyinteractive.com/
 */
 
