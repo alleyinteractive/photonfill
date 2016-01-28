@@ -539,16 +539,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				if ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
-					$alt = ( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '';
-					$style = ( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : '';
 					$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
 					$html = sprintf(
 						'<img sizes="%s" srcset="%s" class="%s" %s %s>',
 						esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' ) ),
 						esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' ) ),
 						esc_attr( $classes ),
-						$alt,
-						$style
+						( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '',
+						( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : ''
 					);
 				}
 				return $html;
@@ -560,7 +558,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Get a lazy loaded img element
 		 */
 		public function get_lazyload_image( $attachment_id, $size = 'full', $attr = array() ) {
-			$img_object = $this->get_img_src( $attachment_id );
 			if ( empty( $attr['class'] ) ) {
 				$attr['class'] = array( 'lazyload' );
 			} else {
@@ -569,16 +566,15 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				}
 				$attr['class'][] = 'lazyload';
 			}
-			$alt = ( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '';
-			$style = ( ! empty( $attr['style'] ) ) ? ' style=' . esc_attr( $attr['style'] ) : '';
-			$classes = $this->get_image_classes( $attr['class'], $attachment_id, $size );
+			$srcset = $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' );
+			$src = explode( ' ', explode( ',', $srcset ) );
 			return sprintf(
 				'<img data-sizes="auto" data-src="%s" data-srcset="%s" class="%s" %s %s>',
-				esc_url( $img_object['url'] ),
-				esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' ) ),
-				esc_attr( $classes ),
-				$alt,
-				$style
+				esc_url( $src[0] ),
+				esc_attr( $srcset ),
+				esc_attr( $this->get_image_classes( $attr['class'], $attachment_id, $size ) ),
+				( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '',
+				( ! empty( $attr['style'] ) ) ? ' style=' . esc_attr( $attr['style'] ) : ''
 			);
 		}
 
