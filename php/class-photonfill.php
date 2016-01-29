@@ -573,8 +573,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				esc_url( $src[0] ),
 				esc_attr( $srcset ),
 				esc_attr( $this->get_image_classes( $attr['class'], $attachment_id, $size ) ),
-				( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '',
-				( ! empty( $attr['style'] ) ) ? ' style=' . esc_attr( $attr['style'] ) : ''
+				( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '',
+				( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : ''
 			);
 		}
 
