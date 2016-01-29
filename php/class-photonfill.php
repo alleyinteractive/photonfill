@@ -567,8 +567,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$attr['class'][] = 'lazyload';
 			}
 			$srcset = $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' );
+			$src = explode( ' ', explode( ',', $srcset ) );
 			return sprintf(
-				'<img data-sizes="auto" data-srcset="%s" class="%s" %s %s>',
+				'<img data-sizes="auto" data-src="%s" data-srcset="%s" class="%s" %s %s>',
+				esc_url( $src[0] ),
 				esc_attr( $srcset ),
 				esc_attr( $this->get_image_classes( $attr['class'], $attachment_id, $size ) ),
 				( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '',
