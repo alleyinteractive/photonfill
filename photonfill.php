@@ -97,5 +97,6 @@ function photonfill_hook_prefix() {
 	} elseif ( class_exists( 'My_Photon_Settings' ) && My_Photon_Settings::get( 'active' ) ) {
 		$prefix = 'my';
 	}
+	// This setting fails under certain circumstances, like with VIP Go mu-plugins, so a filter is necessary.
 	return apply_filters( 'photonfill_hook_prefix', $prefix );
 }
