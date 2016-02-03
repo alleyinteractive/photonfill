@@ -109,6 +109,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				add_action( 'wp_ajax_nopriv_get_img_object', array( $this, 'ajax_get_img_object' ) );
 
 				add_filter( 'fieldmanager_media_preview', array( $this, 'set_fieldmanager_media' ), 10, 3 );
+
+				add_filter( 'wp_prepare_attachment_for_js', array( $this, 'prepare_attachment_for_js' ) );
 			}
 		}
 
@@ -387,6 +389,38 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		}
 
 		/**
+		 * Pass Photon URLs to media browser so it doesn't show full-sized images
+		 */
+		function prepare_attachment_for_js( $attachment ) {
+			if ( 'query-attachments' === $_POST['action'] ) {
+				$photon_url_function = photonfill_hook_prefix() . '_photon_url';
+
+				if ( ! empty( $attachment['sizes']['medium'] ) ) {
+					$medium_size = $attachment['sizes']['medium'];
+					$attachment['sizes']['medium']['url'] = $photon_url_function(
+						$medium_size['url'],
+						array(
+							'attachment_id' => $attachment['id'],
+							'width' => $medium_size['width'],
+							'height' => $medium_size['height']
+						)
+					);
+				} else {
+					$attachment['sizes']['medium']['url'] = $photon_url_function(
+						$attachment['sizes']['full']['url'],
+						array(
+							'attachment_id' => $attachment['id'],
+							'width' => 300,
+							'height' => 225
+						)
+					);
+				}
+			}
+
+			return $attachment;
+		}
+
+		/**
 		 * Add image caption requires element to have a width to display shortcode correctly
 		 */
 		public function add_width_for_captions( $html, $id, $caption, $title, $align, $url, $size, $alt = '' ) {
@@ -567,12 +601,15 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$attr['class'][] = 'lazyload';
 			}
 			$srcset = $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' );
+			$sources = explode( ',', $srcset );
+			$src = explode( ' ', $sources[0] );
 			return sprintf(
-				'<img data-sizes="auto" data-srcset="%s" class="%s" %s %s>',
+				'<img data-sizes="auto" data-src="%s" data-srcset="%s" class="%s" %s %s>',
+				esc_url( $src[0] ),
 				esc_attr( $srcset ),
 				esc_attr( $this->get_image_classes( $attr['class'], $attachment_id, $size ) ),
-				( ! empty( $attr['alt'] ) ) ? ' alt=' . esc_attr( $attr['alt'] ) : '',
-				( ! empty( $attr['style'] ) ) ? ' style=' . esc_attr( $attr['style'] ) : ''
+				( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '',
+				( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : ''
 			);
 		}
 
@@ -694,7 +731,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				}
 				return implode( ',', $attr );
 			}
-			return;
+			return '';
 		}
 
 		/**
