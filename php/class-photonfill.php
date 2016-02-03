@@ -391,7 +391,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Pass Photon URLs to media browser so it doesn't show full-sized images
 		 */
-		function prepare_attachment_for_js( $attachment ) {
+		public function prepare_attachment_for_js( $attachment ) {
 			if ( 'query-attachments' === $_POST['action'] ) {
 				$photon_url_function = photonfill_hook_prefix() . '_photon_url';
 
