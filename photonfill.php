@@ -2,14 +2,14 @@
 /**
  * @package Photonfill
  * @subpackage Plugin
- * @version 0.1.8
+ * @version 0.1.10
  */
 /*
 Plugin Name: Photonfill
 Plugin URI: http://github.com/willgladstone/photonfill
 Description: Integrate Jetpack Photon and Picturefill into WP images
 Author: Will Gladstone
-Version: 0.1.8
+Version: 0.1.10
 Author URI: http://www.alleyinteractive.com/
 */
 
@@ -46,10 +46,10 @@ function photonfill_get_baseurl() {
  * Enqueue scripts and styles
  */
 function photonfill_enqueue_assets() {
-	wp_enqueue_script( 'picturefilljs', photonfill_get_baseurl() . 'js/picturefill.min.js', array( 'jquery' ), '2.3.1' );
+	wp_enqueue_script( 'picturefilljs', photonfill_get_baseurl() . 'js/picturefill.min.js', array( 'jquery' ), '2.3.1', true );
 
 	if ( photonfill_use_lazyload() ) {
-		wp_enqueue_script( 'lazysizesjs', photonfill_get_baseurl() . 'js/lazysizes.min.js', array( 'jquery' ), '1.2.3rc1' );
+		wp_enqueue_script( 'lazysizesjs', photonfill_get_baseurl() . 'js/lazysizes.min.js', array( 'jquery' ), '1.2.3rc1', true );
 		if ( is_admin() ) {
 			add_filter( 'mce_external_plugins', 'photonfill_admin_tinymce_js' );
 		}
