@@ -91,10 +91,12 @@ function photonfill_use_lazyload() {
  */
 function photonfill_hook_prefix() {
 	// If photon module is active, then use it over my photon.
+	$prefix = 'jetpack';
 	if ( class_exists( 'Jetpack' ) && Jetpack::is_module_active( 'photon' ) ) {
-		return 'jetpack';
+		$prefix = 'jetpack';
 	} elseif ( class_exists( 'My_Photon_Settings' ) && My_Photon_Settings::get( 'active' ) ) {
-		return 'my';
+		$prefix = 'my';
 	}
-	return 'jetpack';
+	// This setting fails under certain circumstances, like with VIP Go mu-plugins, so a filter is necessary.
+	return apply_filters( 'photonfill_hook_prefix', $prefix );
 }
