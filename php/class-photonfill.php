@@ -109,6 +109,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				add_action( 'wp_ajax_nopriv_get_img_object', array( $this, 'ajax_get_img_object' ) );
 
 				add_filter( 'fieldmanager_media_preview', array( $this, 'set_fieldmanager_media' ), 10, 3 );
+
+				add_filter( 'wp_prepare_attachment_for_js', array( $this, 'prepare_attachment_for_js' ) );
 			}
 		}
 
@@ -384,6 +386,38 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$data[ $size ] = photonfill_wordify_slug( $size );
 			}
 			return $data;
+		}
+
+		/**
+		 * Pass Photon URLs to media browser so it doesn't show full-sized images
+		 */
+		public function prepare_attachment_for_js( $attachment ) {
+			if ( 'query-attachments' === $_POST['action'] ) {
+				$photon_url_function = photonfill_hook_prefix() . '_photon_url';
+
+				if ( ! empty( $attachment['sizes']['medium'] ) ) {
+					$medium_size = $attachment['sizes']['medium'];
+					$attachment['sizes']['medium']['url'] = $photon_url_function(
+						$medium_size['url'],
+						array(
+							'attachment_id' => $attachment['id'],
+							'width' => $medium_size['width'],
+							'height' => $medium_size['height']
+						)
+					);
+				} else {
+					$attachment['sizes']['medium']['url'] = $photon_url_function(
+						$attachment['sizes']['full']['url'],
+						array(
+							'attachment_id' => $attachment['id'],
+							'width' => 300,
+							'height' => 225
+						)
+					);
+				}
+			}
+
+			return $attachment;
 		}
 
 		/**
