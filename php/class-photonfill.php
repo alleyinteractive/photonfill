@@ -369,9 +369,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public function add_image_metadata( $data, $attachment_id ) {
 			foreach ( $this->image_sizes as $size => $breakpoint ) {
 				$data['sizes'][ $size ] = array(
-					'file' => wp_basename( $data['file'] ),
-					'width' => $data['width'],
-					'height' => $data['height'],
+					'file' => ( ! empty( $data['file'] ) ) ? wp_basename( $data['file'] ) : '',
+					'width' => ( ! empty( $data['width'] ) ) ? $data['width'] : '',
+					'height' => ( ! empty( $data['height'] ) ) ? $data['height'] : '',
 					'mime-type' => 'image/jpeg',
 				);
 			}
