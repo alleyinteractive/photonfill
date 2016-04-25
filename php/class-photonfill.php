@@ -111,6 +111,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				add_filter( 'fieldmanager_media_preview', array( $this, 'set_fieldmanager_media' ), 10, 3 );
 
 				add_filter( 'wp_prepare_attachment_for_js', array( $this, 'prepare_attachment_for_js' ) );
+
+				add_action( 'save_post', array( $this, 'swap_lazyload_classes' ) );
 			}
 		}
 
