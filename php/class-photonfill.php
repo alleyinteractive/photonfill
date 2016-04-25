@@ -111,6 +111,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				add_filter( 'fieldmanager_media_preview', array( $this, 'set_fieldmanager_media' ), 10, 3 );
 
 				add_filter( 'wp_prepare_attachment_for_js', array( $this, 'prepare_attachment_for_js' ) );
+
+				add_action( 'save_post', array( $this, 'swap_lazyload_classes' ) );
 			}
 		}
 
@@ -770,6 +772,21 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public function get_breakpoint_url( $attachment_id, $img_size, $breakpoint, $pixel_density = 1 ) {
 			$breakpoint_urls = $this->get_breakpoint_urls( $attachment_id, $img_size, $breakpoint, $pixel_density );
 			return ( ! empty( $breakpoint_urls[ $breakpoint ] ) ) ? $breakpoint_urls[ $breakpoint ] : false;
+		}
+
+		/**
+		 * Swap `lazyloaded` class for `lazyload`. Why is this necessary?
+		 * We need to unveil lazyload images in TinyMCE, which removes the `lazyload` class and adds the `lazyloaded` class. This means on the front end
+		 * lazysizes won't pick up on the image b/c it assumes the image has already been lazyloaded.
+		 * @param int $post_id
+		 */
+		public function swap_lazyload_classes( $post_id ) {
+			$current_post = get_post( $post_id );
+			$current_post->post_content = preg_replace( '/(class="[^"]*)(lazyloaded)([^"]*")/i', '$1' . 'lazyload' . '$3', $current_post->post_content );
+
+			remove_action( 'save_post', array( $this, 'swap_lazyload_classes' ) );
+			wp_update_post( $current_post );
+			add_action( 'save_post', array( $this, 'swap_lazyload_classes' ) );
 		}
 	}
 }
