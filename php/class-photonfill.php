@@ -113,6 +113,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				add_filter( 'wp_prepare_attachment_for_js', array( $this, 'prepare_attachment_for_js' ) );
 
 				add_action( 'save_post', array( $this, 'swap_lazyload_classes' ) );
+
+				// ensure the required attributes are allowed in the editor
+				add_filter( 'wp_kses_allowed_html', array( $this, 'photonfill_kses_allowed_html' ), 10, 2 );
 			}
 		}
 
@@ -787,6 +790,37 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			remove_action( 'save_post', array( $this, 'swap_lazyload_classes' ) );
 			wp_update_post( $current_post );
 			add_action( 'save_post', array( $this, 'swap_lazyload_classes' ) );
+		}
+
+		/**
+		 * Allow specific tags and attributes to be saved
+		 * which are required for photonfill to properly work
+		 *
+		 * @param array $allowed
+		 * @param mixed $context
+		 * @access public
+		 * @return array
+		 */
+		public function photonfill_kses_allowed_html( $allowed, $context ) {
+			if ( is_array( $context ) ) {
+				return $allowed;
+			}
+
+			if ( 'post' === $context ) {
+				$allowed['img']['data-src'] = true;
+				$allowed['img']['data-srcset'] = true;
+				$allowed['img']['srcset'] = true;
+				$allowed['img']['sizes'] = true;
+				$allowed['img']['media'] = true;
+
+				$allowed['source']['data-src'] = true;
+				$allowed['source']['data-srcset'] = true;
+				$allowed['source']['srcset'] = true;
+				$allowed['source']['sizes'] = true;
+				$allowed['source']['media'] = true;
+			}
+
+			return $allowed;
 		}
 	}
 }
