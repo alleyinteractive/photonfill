@@ -91,8 +91,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			// Disable creating multiple images for newly uploaded images
 			add_filter( 'intermediate_image_sizes_advanced', array( $this, 'disable_image_multi_resize' ) );
 
-			// Allow image sizes to be set when adding content via the modal in the admin area
-			if ( is_admin() ) {
+			// A hack for the fact that photon doesn't work with wp_ajax calls due to is_admin forcing image downsizing to return the original image
+			// We can also use this hack to bypass the image downsize hooks which can be problematic on some environments
+			if ( is_admin() || apply_filters( 'photonfill_bypass_image_downsize', false ) ) {
 				// Add breakpoint data to image metadata
 				add_filter( 'wp_get_attachment_metadata', array( $this, 'add_image_metadata' ), 20, 2 );
 
