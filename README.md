@@ -163,7 +163,7 @@ PhotonFill also has the option of lazy loading responsive images and allowing th
 * ``photonfill_base_unit_pixel`` If unit specified in breakpoints is `em` what base pixel is the theme. Default (16)
 * ``photonfill_image_sizes`` An image stack of image sizes for corresponding breakpoints.
 * ``photonfill_enable_resize_upload`` Enable/Disable generation of intermediate image sizes. Default (disabled)
-* ``photonfill_picture_class`` Modify the class with a picture element
+* ``photonfill_picture_class`` Modify the class with a picture element.
 * ``photonfill_default_transform`` Set the default transformation for Photon. Default (`Photonfill_Transform::center_crop()`)
 * ``photonfill_use_picture_as_default`` Use a picture element as the default when calling `the_post_thumbnail` or `wp_get_attachment_image`
-
+* ``photonfill_bypass_image_downsize`` Bypass the image downsize hooks which can be problematic on some environments. Set `true` if all of your image URLs are returning the original URL.
