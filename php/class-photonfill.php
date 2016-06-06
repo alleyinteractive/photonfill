@@ -580,19 +580,19 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				if ( 'post-thumbnail' == $size ) {
 					$size = 'full';
 				}
-				$html = '';
 				if ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
-					$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-					$html = sprintf(
-						'<img sizes="%s" srcset="%s" class="%s" %s %s>',
-						esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' ) ),
-						esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' ) ),
-						esc_attr( $classes ),
-						( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '',
-						( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : ''
+					$default_attributes = array(
+						'sizes' => $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' ),
+						'srcset' => $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' ),
 					);
+
+					$attr = wp_parse_args( $attr, $default_attributes );
+
+					$attr['class'] = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size ) );
+
+					$html = wp_get_attachment_image( $attachment_id, $size, false, $attr );
 				}
 				return $html;
 			}
@@ -603,6 +603,18 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Get a lazy loaded img element
 		 */
 		public function get_lazyload_image( $attachment_id, $size = 'full', $attr = array() ) {
+			$srcset = $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' );
+			$sources = explode( ',', $srcset );
+			$src = explode( ' ', $sources[0] );
+
+			$default_attributes = array(
+				'data-sizes' => 'auto',
+				'data-src' => esc_url( $src[0] ),
+				'data-srcset' => $srcset,
+			);
+
+			$attr = wp_parse_args( $attr, $default_attributes );
+
 			if ( empty( $attr['class'] ) ) {
 				$attr['class'] = array( 'lazyload' );
 			} else {
@@ -611,17 +623,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				}
 				$attr['class'][] = 'lazyload';
 			}
-			$srcset = $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' );
-			$sources = explode( ',', $srcset );
-			$src = explode( ' ', $sources[0] );
-			return sprintf(
-				'<img data-sizes="auto" data-src="%s" data-srcset="%s" class="%s" %s %s>',
-				esc_url( $src[0] ),
-				esc_attr( $srcset ),
-				esc_attr( $this->get_image_classes( $attr['class'], $attachment_id, $size ) ),
-				( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '',
-				( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : ''
-			);
+
+			$attr['class'] =  $this->get_image_classes( $attr['class'], $attachment_id, $size );
+
+			return wp_get_attachment_image( $attachment_id, $size, false, $attr );
 		}
 
 		/**
@@ -643,8 +648,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 					if ( ! empty( $featured_image['id'] ) ) {
 						$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-						$alt = ( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '';
-						$style = ( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : '';
 						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id=' . esc_attr( $featured_image['id'] ) . '">';
 						// Here we set our source elements
 						foreach ( $featured_image['sizes'] as $breakpoint => $breakpoint_data ) {
@@ -688,7 +691,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						}
 
 						// Set our default img element
-						$html .= '<img srcset="' . esc_url( $default_srcset ) . '"' . $alt . ' ' . $style . '>';
+						$default_attributes = array( 'srcset' => $default_srcset );
+						$attr = wp_parse_args( $attr, $default_attributes );
+						$html .= wp_get_attachment_image( $attachment_id, $size, false, $attr );
 						$html .= '</picture>';
 					}
 				}
