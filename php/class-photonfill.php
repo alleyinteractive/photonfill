@@ -590,7 +590,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 					$attr = wp_parse_args( $attr, $default_attributes );
 
-					$attr['class'] = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size ) );
+					$attr['class'] = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
 
 					$html = wp_get_attachment_image( $attachment_id, $size, false, $attr );
 				}
