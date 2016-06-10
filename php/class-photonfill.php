@@ -714,7 +714,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$html = '<img ';
 			foreach ( $attr as $key => $value ) {
 				if ( is_bool( $value ) && $value ) {
-					$html .= esc_attr( $value ) . ' ';
+					$html .= esc_attr( $key ) . ' ';
 				} else {
 					$html .= sprintf( '%s="%s" ', esc_attr( $key ), esc_attr( $value ) );
 				}
