@@ -584,15 +584,11 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				if ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
-					$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-					$html = sprintf(
-						'<img sizes="%s" srcset="%s" class="%s" %s %s>',
-						esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' ) ),
-						esc_attr( $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' ) ),
-						esc_attr( $classes ),
-						( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '',
-						( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : ''
-					);
+					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
+					$attr['sizes']  = $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' );
+					$attr['srcset'] = $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' );
+					
+					$html = $this->build_attachment_image( $attachment_id, $attr );
 				}
 				return $html;
 			}
@@ -614,14 +610,13 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$srcset = $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' );
 			$sources = explode( ',', $srcset );
 			$src = explode( ' ', $sources[0] );
-			return sprintf(
-				'<img data-sizes="auto" data-src="%s" data-srcset="%s" class="%s" %s %s>',
-				esc_url( $src[0] ),
-				esc_attr( $srcset ),
-				esc_attr( $this->get_image_classes( $attr['class'], $attachment_id, $size ) ),
-				( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '',
-				( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : ''
-			);
+			
+			$attr['data-sizes'] = 'auto';
+			$attr['data-src'] = $src[0];
+			$attr['data-srcset'] = $srcset;
+			$attr['class'] = $this->get_image_classes( $attr['class'], $attachment_id, $size );
+			
+			return $this->build_attachment_image( $attachment_id, $attr );
 		}
 
 		/**
@@ -643,8 +638,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 					if ( ! empty( $featured_image['id'] ) ) {
 						$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-						$alt = ( ! empty( $attr['alt'] ) ) ? ' alt="' . esc_attr( $attr['alt'] ) . '"' : '';
-						$style = ( ! empty( $attr['style'] ) ) ? ' style="' . esc_attr( $attr['style'] ) . '"' : '';
 						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id=' . esc_attr( $featured_image['id'] ) . '">';
 						// Here we set our source elements
 						foreach ( $featured_image['sizes'] as $breakpoint => $breakpoint_data ) {
@@ -688,13 +681,46 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						}
 
 						// Set our default img element
-						$html .= '<img srcset="' . esc_url( $default_srcset ) . '"' . $alt . ' ' . $style . '>';
+						$attr['srcset'] = $default_srcset;
+						$html .= $this->build_attachment_image( $attachment_id, $attr );
 						$html .= '</picture>';
 					}
 				}
 				return $html;
 			}
 			return;
+		}
+		
+		/**
+		 * Get the HTML for the IMG Tag
+		 *
+		 * @param $attachment_id int Attachment ID
+		 * @param $attr array Image Attributes
+		 *
+		 * @return string
+		 */
+		private function build_attachment_image( $attachment_id, $attr ) {
+			$attachment = get_post( $attachment_id );
+			
+			if ( empty( $attr['alt'] ) ) {
+				$attr['alt'] = trim( strip_tags( get_post_meta($attachment_id, '_wp_attachment_image_alt', true ) ) );
+			}
+			if ( empty($attr['alt'] ) ) {
+				$attr['alt'] = trim( strip_tags( $attachment->post_excerpt ) ); // If not, Use the Caption
+			}
+			if ( empty($attr['alt'] ) ) {
+				$attr['alt'] = trim( strip_tags( $attachment->post_title ) ); // Finally, use the title
+			}
+			$html = '<img ';
+			foreach ( $attr as $key => $value ) {
+				if ( is_bool( $value ) && $value ) {
+					$html .= esc_attr( $key ) . ' ';
+				} else {
+					$html .= sprintf( '%s="%s" ', esc_attr( $key ), esc_attr( $value ) );
+				}
+			}
+			$html .= '>';
+			return $html;
 		}
 
 		/**
