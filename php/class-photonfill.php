@@ -584,8 +584,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				if ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
-					$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-					$attr['class']  = $classes;
+					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
 					$attr['sizes']  = $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' );
 					$attr['srcset'] = $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' );
 					
@@ -683,8 +682,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 						// Set our default img element
 						$attr['srcset'] = $default_srcset;
-						$image_tag = $this->build_attachment_image( $attachment_id, $attr );
-						$html .= $image_tag;
+						$html .= $this->build_attachment_image( $attachment_id, $attr );
 						$html .= '</picture>';
 					}
 				}
@@ -705,15 +703,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$attachment = get_post( $attachment_id );
 			
 			if ( empty( $attr['alt'] ) ) {
-				$attr['alt'] = trim(strip_tags( get_post_meta($attachment_id, '_wp_attachment_image_alt', true) ) );
+				$attr['alt'] = trim( strip_tags( get_post_meta($attachment_id, '_wp_attachment_image_alt', true ) ) );
 			}
-			if ( empty($attr['alt']) )
-				$attr['alt'] = trim(strip_tags( $attachment->post_excerpt )); // If not, Use the Caption
-			if ( empty($attr['alt']) )
-				$attr['alt'] = trim(strip_tags( $attachment->post_title )); // Finally, use the title
-			
+			if ( empty($attr['alt'] ) ) {
+				$attr['alt'] = trim( strip_tags( $attachment->post_excerpt ) ); // If not, Use the Caption
+			}
+			if ( empty($attr['alt'] ) ) {
+				$attr['alt'] = trim( strip_tags( $attachment->post_title ) ); // Finally, use the title
+			}
 			$html = '<img ';
-			foreach ($attr as $key => $value ) {
+			foreach ( $attr as $key => $value ) {
 				if ( is_bool( $value ) && $value ) {
 					$html .= esc_attr( $value ) . ' ';
 				} else {
