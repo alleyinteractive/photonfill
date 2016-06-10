@@ -580,19 +580,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				if ( 'post-thumbnail' == $size ) {
 					$size = 'full';
 				}
+				$html = '';
 				if ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
-					$default_attributes = array(
-						'sizes' => $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' ),
-						'srcset' => $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' ),
-					);
-
-					$attr = wp_parse_args( $attr, $default_attributes );
-
-					$attr['class'] = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-
-					$html = wp_get_attachment_image( $attachment_id, $size, false, $attr );
+					$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
+					$attr['class']  = $classes;
+					$attr['sizes']  = $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' );
+					$attr['srcset'] = $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' );
+					
+					$html = $this->get_image_tag( $attachment_id, $attr );
 				}
 				return $html;
 			}
@@ -603,18 +600,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Get a lazy loaded img element
 		 */
 		public function get_lazyload_image( $attachment_id, $size = 'full', $attr = array() ) {
-			$srcset = $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' );
-			$sources = explode( ',', $srcset );
-			$src = explode( ' ', $sources[0] );
-
-			$default_attributes = array(
-				'data-sizes' => 'auto',
-				'data-src' => esc_url( $src[0] ),
-				'data-srcset' => $srcset,
-			);
-
-			$attr = wp_parse_args( $attr, $default_attributes );
-
 			if ( empty( $attr['class'] ) ) {
 				$attr['class'] = array( 'lazyload' );
 			} else {
@@ -623,10 +608,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				}
 				$attr['class'][] = 'lazyload';
 			}
-
-			$attr['class'] =  $this->get_image_classes( $attr['class'], $attachment_id, $size );
-
-			return wp_get_attachment_image( $attachment_id, $size, false, $attr );
+			$srcset = $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' );
+			$sources = explode( ',', $srcset );
+			$src = explode( ' ', $sources[0] );
+			
+			$attr['data-sizes'] = 'auto';
+			$attr['data-src'] = $src[0];
+			$attr['data-srcset'] = $srcset;
+			$attr['class'] = $this->get_image_classes( $attr['class'], $attachment_id, $size );
+			
+			return $this->get_image_tag( $attachment_id, $attr );
 		}
 
 		/**
@@ -691,15 +682,46 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						}
 
 						// Set our default img element
-						$default_attributes = array( 'srcset' => $default_srcset );
-						$attr = wp_parse_args( $attr, $default_attributes );
-						$html .= wp_get_attachment_image( $attachment_id, $size, false, $attr );
+						$attr['srcset'] = $default_srcset;
+						$image_tag = $this->get_image_tag( $attachment_id, $attr );
+						$html .= $image_tag;
 						$html .= '</picture>';
 					}
 				}
 				return $html;
 			}
 			return;
+		}
+		
+		/**
+		 * Get the HTML for the IMG Tag
+		 *
+		 * @param $attachment_id int Attachment ID
+		 * @param $attr array Image Attributes
+		 *
+		 * @return string
+		 */
+		private function get_image_tag( $attachment_id, $attr ) {
+			$attachment = get_post( $attachment_id );
+			
+			if ( empty( $attr['alt'] ) ) {
+				$attr['alt'] = trim(strip_tags( get_post_meta($attachment_id, '_wp_attachment_image_alt', true) ) );
+			}
+			if ( empty($attr['alt']) )
+				$attr['alt'] = trim(strip_tags( $attachment->post_excerpt )); // If not, Use the Caption
+			if ( empty($attr['alt']) )
+				$attr['alt'] = trim(strip_tags( $attachment->post_title )); // Finally, use the title
+			
+			$html = '<img ';
+			foreach ($attr as $key => $value ) {
+				if ( is_bool( $value ) && $value ) {
+					$html .= esc_attr( $value ) . ' ';
+				} else {
+					$html .= sprintf( '%s="%s" ', esc_attr( $key ), esc_attr( $value ) );
+				}
+			}
+			$html .= '>';
+			return $html;
 		}
 
 		/**
