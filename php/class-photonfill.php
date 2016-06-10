@@ -589,7 +589,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$attr['sizes']  = $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' );
 					$attr['srcset'] = $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' );
 					
-					$html = $this->get_image_tag( $attachment_id, $attr );
+					$html = $this->build_attachment_image( $attachment_id, $attr );
 				}
 				return $html;
 			}
@@ -617,7 +617,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$attr['data-srcset'] = $srcset;
 			$attr['class'] = $this->get_image_classes( $attr['class'], $attachment_id, $size );
 			
-			return $this->get_image_tag( $attachment_id, $attr );
+			return $this->build_attachment_image( $attachment_id, $attr );
 		}
 
 		/**
@@ -683,7 +683,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 						// Set our default img element
 						$attr['srcset'] = $default_srcset;
-						$image_tag = $this->get_image_tag( $attachment_id, $attr );
+						$image_tag = $this->build_attachment_image( $attachment_id, $attr );
 						$html .= $image_tag;
 						$html .= '</picture>';
 					}
@@ -701,7 +701,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 *
 		 * @return string
 		 */
-		private function get_image_tag( $attachment_id, $attr ) {
+		private function build_attachment_image( $attachment_id, $attr ) {
 			$attachment = get_post( $attachment_id );
 			
 			if ( empty( $attr['alt'] ) ) {
