@@ -13,7 +13,7 @@
 		} )
 		.done( function( response ) {
 			wrapper.append( '<a />' )
-			.find( 'div:last' )
+			.find( 'a:last' )
 				.attr( 'href', '#' )
 				.append( response )
 				.end()
