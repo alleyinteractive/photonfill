@@ -12,7 +12,17 @@
 			dataType: 'html',
 		} )
 		.done( function( response ) {
-			wrapper.html( '<a href="#">' + response + '</a><br /><a class="fm-media-remove fm-delete" href="#">' + photonfill_wp_vars['photonfill_i18n']['remove'] + '</a>' );
+			wrapper.append( '<a />' )
+			.find( 'div:last' )
+				.attr( 'href', '#' )
+				.append( response )
+				.end()
+			.append( '<br />' )
+			.append( '<a />' )
+			.find( 'a:last' )
+				.addClass( 'fm-media-remove fm-delete' )
+				.attr( 'href', '#' )
+				.append( photonfill_wp_vars['photonfill_i18n']['remove'] );
 		} );
 	} );
 
