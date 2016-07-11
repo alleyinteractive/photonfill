@@ -111,8 +111,11 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			} else {
 				$h = $args['height'] . 'px';
 			}
-
-			return array( 'width' => $args['width'], 'height' => $h );
+			if ( ! empty( $args['width'] ) && ! empty( $height ) ) {
+				return array( 'width' => $args['width'], 'height' => $h );
+			} else {
+				return array( 'width' => '', 'height' => '' );
+			}
 		}
 
 		/**
