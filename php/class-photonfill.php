@@ -587,7 +587,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
 					$attr['sizes']  = $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' );
 					$attr['srcset'] = $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' );
-					
+
 					$html = $this->build_attachment_image( $attachment_id, $attr );
 				}
 				return $html;
@@ -610,12 +610,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$srcset = $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' );
 			$sources = explode( ',', $srcset );
 			$src = explode( ' ', $sources[0] );
-			
+
 			$attr['data-sizes'] = 'auto';
 			$attr['data-src'] = $src[0];
 			$attr['data-srcset'] = $srcset;
 			$attr['class'] = $this->get_image_classes( $attr['class'], $attachment_id, $size );
-			
+
 			return $this->build_attachment_image( $attachment_id, $attr );
 		}
 
@@ -690,7 +690,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			}
 			return;
 		}
-		
+
 		/**
 		 * Get the HTML for the IMG Tag
 		 *
@@ -700,15 +700,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return string
 		 */
 		private function build_attachment_image( $attachment_id, $attr ) {
+			$attr = apply_filters( 'photonfill_img_attributes', $attr, $attachment_id );
 			$attachment = get_post( $attachment_id );
-			
+
 			if ( empty( $attr['alt'] ) ) {
-				$attr['alt'] = trim( strip_tags( get_post_meta($attachment_id, '_wp_attachment_image_alt', true ) ) );
+				$attr['alt'] = trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) );
 			}
-			if ( empty($attr['alt'] ) ) {
+			if ( empty( $attr['alt'] ) ) {
 				$attr['alt'] = trim( strip_tags( $attachment->post_excerpt ) ); // If not, Use the Caption
 			}
-			if ( empty($attr['alt'] ) ) {
+			if ( empty( $attr['alt'] ) ) {
 				$attr['alt'] = trim( strip_tags( $attachment->post_title ) ); // Finally, use the title
 			}
 			$html = '<img ';
