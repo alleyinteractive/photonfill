@@ -45,6 +45,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			add_filter( $hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
 			add_filter( $hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
 
+			// If we're using the photonfill_bypass_image_downsize, we skip downsize, and now need to
+			// ensure the photon args are being set (but with a lower priority)
+			if ( apply_filters( 'photonfill_bypass_image_downsize', false ) ) {
+				add_filter( $hook_prefix . '_photon_pre_args', array( $this, 'set_photon_args' ), 4, 3 );
+			}
+
 			// Transform our photon url
 			add_filter( $hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
 		}
