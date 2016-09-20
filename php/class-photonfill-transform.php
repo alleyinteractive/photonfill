@@ -101,7 +101,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			if ( ! empty( $args['callback'] ) && function_exists( $args['callback'] ) ) {
 				return $args['callback']( $args );
 			} elseif ( ! empty( $args['callback'] ) && method_exists( $this, $args['callback'] ) ) {
-				return $this->$args['callback']( $args );
+				return $this->{$args['callback']}( $args );
 			}
 
 			return $this->default_transform( $args );
