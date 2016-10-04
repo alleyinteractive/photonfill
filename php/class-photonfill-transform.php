@@ -111,14 +111,26 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * Get the width and height of the default transform. Can be used for other transforms.
 		 */
 		public function get_dimensions( $args ) {
+			$width = ( ! empty( $args['width'] ) ) ? $args['width'] : 1000;
+			$height = ( ! empty( $args['height'] ) ) ? $args['height'] : 1000;
+
+			// An extra way to get that data.
+			if ( empty( $args['width'] ) && empty( $args['height'] ) && ! empty( $args['resize'] ) ) {
+				$dims = explode( ',', $args['resize'] );
+				if ( ! empty( $dims[0] ) && ! empty( $dims[1] ) ) {
+					$width = $dims[0];
+					$height = $dims[1];
+				}
+			}
+
 			// We are only going to use the size if none are defined in the transform, which shouldn't happen.
 			if ( isset( $args['crop'] ) && false === $args['crop'] ) {
 				$h = 100;
 			} else {
-				$h = $args['height'] . 'px';
+				$h = $height . 'px';
 			}
 
-			return array( 'width' => $args['width'], 'height' => $h );
+			return array( 'width' => $width, 'height' => $h );
 		}
 
 		/**
