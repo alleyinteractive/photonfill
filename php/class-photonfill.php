@@ -459,7 +459,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			check_ajax_referer( 'photonfill_get_img_object', 'nonce' );
 			if ( ! empty( $_POST['attachment'] ) ) {
 				$attachment_id = absint( $_POST['attachment'] );
-				echo $this->get_attachment_image( $attachment_id, 'full', array( 'style' => 'width:100%' ) );
+				echo $this->get_attachment_image( $attachment_id, 'full', array( 'style' => 'max-width:100%' ) );
 			}
 			exit();
 		}
@@ -472,7 +472,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		function set_fieldmanager_media( $preview, $value, $attachment ) {
 			if ( ! empty( $attachment->ID ) && strpos( $attachment->post_mime_type, 'image/' ) === 0 ) {
 				$preview = esc_html__( 'Uploaded image:', 'photonfill' ) . '<br />';
-				$preview .= '<a href="#">' . $this->get_attachment_image( $attachment->ID, 'full', array( 'style' => 'width:100%' ) ) . '</a>';
+				$preview .= '<a href="#">' . $this->get_attachment_image( $attachment->ID, 'full', array( 'style' => 'max-width:100%' ) ) . '</a>';
 				$preview .= sprintf( '<br /><a href="#" class="fm-media-remove fm-delete">%s</a>', esc_html__( 'remove', 'photonfill' ) );
 			}
 			return $preview;
