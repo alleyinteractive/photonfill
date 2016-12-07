@@ -27,7 +27,7 @@ add_action( 'plugins_loaded', 'photonfill_init' );
 
 function photonfill_dependency() {
 	$photonfill_dependency = new Plugin_Dependency( 'Jetpack', 'Jetpack by WordPress.com', 'http://jetpack.me/' );
-	if ( ! $photonfill_dependency->verify() ) {
+	if ( ! class_exists( 'Jetpack' ) ) {
 		// Cease activation
 	 	die( $photonfill_dependency->message() );
 	}
