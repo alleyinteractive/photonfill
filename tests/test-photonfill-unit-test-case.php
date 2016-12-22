@@ -22,11 +22,11 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 		$this->image_src = $upload_dir['url'] . '/alley_placeholder.png';
 		$this->image_path = $upload_dir['path'] . '/alley_placeholder.png';
 		add_filter( 'photonfill_image_sizes', array( $this, 'photonfill_readme_image_stack' ) );
+		$this->activate_my_photon();
 	}
 
 	/**
 	 * Test that plugin is loaded
-	 * Note this is different from being "active"
 	 */
 	public function test_photonfill_loaded() {
 		$this->assertTrue( class_exists( 'Photonfill' ) );
@@ -34,10 +34,16 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 
 	/**
 	 * Test that dependency is loaded
-	 * Note this is different from being "active"
 	 */
 	public function test_my_photon_loaded() {
 		$this->assertTrue( class_exists( 'My_Photon_Settings' ) );
+	}
+
+	/**
+	 * Test that dependency is active
+	 */
+	public function test_my_photon_on() {
+		$this->assertTrue( My_Photon_Settings::get( 'active' ) );
 	}
 
 	/**
@@ -128,6 +134,18 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 				'xs' => array( 'width' => 480, 'height' => 270 ),
 			),
 		);
+	}
+
+	/**
+	 * Activate My Photon for testing
+	 */
+	private function activate_my_photon() {
+		$my_photon_settings = array( 
+			'base-url'  => 'http://cdn.alley.dev/',
+			'active'    => true,
+		);
+		update_option( 'my-photon', $my_photon_settings );
+		require_once getenv( 'WP_TESTS_DIR' ) .  'vendor/my-photon/my-photon.php';
 	}
 
 }
