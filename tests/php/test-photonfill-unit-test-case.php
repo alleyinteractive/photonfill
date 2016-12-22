@@ -24,15 +24,15 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 		add_filter( 'photonfill_image_sizes', array( $this, 'photonfill_readme_image_stack' ) );
 	}
 
-	/*
+	/**
 	 * Test that plugin is loaded
 	 * Note this is different from being "active"
-	*/
-	public function test_plugin_loaded) {
+	 */
+	public function test_plugin_loaded() {
 		$this->assertTrue( class_exists( 'Photonfill' ) );
 	}
 
-	/*
+	/**
 	 * Simplest case
 	 */
 	public function test_with_default_image_sizes() {
@@ -46,13 +46,14 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 	/**
 	 * Helper function: insert an attachment to test properties of.
 	 * From Image Shortcake http://www.github.com/wp-shortcake/image-shortcake
+	 *
 	 * @param int $parent_post_id
 	 * @param str path to image to use
 	 * @param array $post_fields Fields, in the format to be sent to `wp_insert_post()`
 	 * @return int Post ID of inserted attachment
 	 */
 	private function insert_attachment( $parent_post_id = 0, $image = null, $post_fields = array() ) {
-		$filename = rand_str().'.jpg';
+		$filename = rand_str() . '.jpg';
 		$contents = rand_str();
 		if ( $image ) {
 			// @codingStandardsIgnoreStart
