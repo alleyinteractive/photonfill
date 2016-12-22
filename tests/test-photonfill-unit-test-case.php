@@ -28,8 +28,16 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 	 * Test that plugin is loaded
 	 * Note this is different from being "active"
 	 */
-	public function test_plugin_loaded() {
+	public function test_photonfill_loaded() {
 		$this->assertTrue( class_exists( 'Photonfill' ) );
+	}
+
+	/**
+	 * Test that dependency is loaded
+	 * Note this is different from being "active"
+	 */
+	public function test_my_photon_loaded() {
+		$this->assertTrue( class_exists( 'My_Photon_Settings' ) );
 	}
 
 	/**
