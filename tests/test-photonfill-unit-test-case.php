@@ -5,11 +5,13 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 	private $attachment_id;
 	private $image_src;
 	private $image_path;
+	private $photon_url;
 
 	public function setUp() {
 		parent::setUp();
+		$this->activate_my_photon();
 		$this->attachment_id = $this->insert_attachment( null,
-			dirname( __FILE__ ) . '/data/alley_placeholder.png',
+			dirname( __FILE__ ) . '/data/alley_placeholder.jpg',
 			array(
 				'post_title'     => 'Post',
 				'post_content'   => 'Post Content',
@@ -19,10 +21,9 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 			)
 		);
 		$upload_dir = wp_upload_dir();
-		$this->image_src = $upload_dir['url'] . '/alley_placeholder.png';
-		$this->image_path = $upload_dir['path'] . '/alley_placeholder.png';
-		add_filter( 'photonfill_image_sizes', array( $this, 'photonfill_readme_image_stack' ) );
-		$this->activate_my_photon();
+		$this->image_src = $upload_dir['url'] . '/alley_placeholder.jpg';
+		$this->image_path = $upload_dir['path'] . '/alley_placeholder.jpg';
+		$this->photon_url = 'http://cdn.alley.dev/';
 	}
 
 	/**
@@ -44,17 +45,22 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 	 */
 	public function test_my_photon_on() {
 		$this->assertTrue( My_Photon_Settings::get( 'active' ) );
+		$this->assertTrue( class_exists( 'My_Photon' ) );
+	}
+
+	/**
+	 * Test that dependency has right url
+	 */
+	public function test_my_photon_url() {
+		$this->assertContains( $this->photon_url, My_Photon_Settings::get( 'base-url' ) );
 	}
 
 	/**
 	 * Simplest case
 	 */
-	public function test_with_default_image_sizes() {
-		$attachment_id = $this->attachment_id;
-		$upload_dir = wp_upload_dir();
-		$content = wp_get_attachment_image( $attachment_id, 'full' );
-		$expected_src_attr = $upload_dir['url'] . '/alley_placeholder.png';
-		$this->assertContains( '<img class="size-medium alignleft" src="http://example.com/example.jpg" />', $content );
+	public function test_that_my_photon_working() {
+		$content = wp_get_attachment_image( $this->attachment_id, 'full' );
+		$this->assertContains( $this->photon_url, $content );
 	}
 
 	/**
@@ -99,41 +105,6 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 		$id = wp_insert_attachment( $attachment, $upload['file'], $parent_post_id );
 		wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $upload['file'] ) );
 		return $id;
-	}
-
-	/**
-	 * Add the image sizes and breakpoints as defined in readme
-	 */
-	public function photonfill_readme_image_stack( $image_stack ) {
-		return array(
-			'featured-full' => array(
-				'xl'  => array( 'width' => 1920, 'height' => 560, 'default' => true, 'callback' => 'top_down_crop' ),
-				'l'   => array( 'width' => 1040, 'height' => 500, 'callback' => 'top_down_crop' ),
-				's-m' => array( 'width' => 800, 'height' => 450, 'callback' => 'top_down_crop' ),
-				'xs'  => array( 'width' => 480, 'height' => 270, 'callback' => 'top_down_crop' ),
-			),
-			'featured-large' => array(
-				'xl' => array( 'width' => 1260, 'height' => 550, 'default' => true, 'callback' => 'top_down_crop' ),
-				'l'  => array( 'width' => 1260, 'height' => 550, 'callback' => 'top_down_crop' ),
-				'm'  => array( 'width' => 1260, 'height' => 550, 'callback' => 'top_down_crop' ),
-				's'  => array( 'width' => 800, 'height' => 450, 'callback' => 'top_down_crop' ),
-				'xs' => array( 'width' => 480, 'height' => 270, 'callback' => 'top_down_crop' ),
-			),
-			'featured-medium' => array(
-				'xl' => array( 'width' => 620, 'height' => 349, 'default' => true ),
-				'l'  => array( 'width' => 620, 'height' => 349 ),
-				'm'  => array( 'width' => 620, 'height' => 349 ),
-				's'  => array( 'width' => 800, 'height' => 450 ),
-				'xs' => array( 'width' => 480, 'height' => 270 ),
-			),
-			'featured-thumb' => array(
-				'xl' => array( 'width' => 400, 'height' => 225, 'default' => true ),
-				'l'  => array( 'width' => 400, 'height' => 225 ),
-				'm'  => array( 'width' => 400, 'height' => 225 ),
-				's'  => array( 'width' => 800, 'height' => 450 ),
-				'xs' => array( 'width' => 480, 'height' => 270 ),
-			),
-		);
 	}
 
 	/**
