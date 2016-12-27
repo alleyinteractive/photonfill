@@ -435,7 +435,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function add_width_for_captions( $html, $id, $caption, $title, $align, $url, $size, $alt = '' ) {
 			$caption = apply_filters( 'image_add_caption_text', $caption, $id );
-			if ( ! empty( $caption ) ) {
+			$count = 0;
+			$html = preg_replace ( '/sizes\=\"(\d+)px\"/i', 'width="$1px"', $html, 1, $count );
+			if ( ! empty( $caption ) && 0 == $count ) {
 				if ( is_numeric( $size ) ) {
 					$size_px = $size;
 				} elseif ( is_array( $size ) ) {
