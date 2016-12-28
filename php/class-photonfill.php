@@ -536,6 +536,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$size_string = implode( 'x', $size );
 			}
 
+			if ( is_int( $attachment_id ) ) {
+				$class[] = 'wp-image-' . $attachment_id;
+			}
+
 			$class[] = 'size-' . esc_attr( $size_string );
 
 			return apply_filters( 'photonfill_picture_class', rtrim( implode( ' ', $class ) ), $attachment_id, $size );
