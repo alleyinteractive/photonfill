@@ -97,6 +97,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				$args = $this->args;
 			}
 
+			if ( ! empty( $args['resize'] ) ) {
+				$size = explode( ',', $args['resize'] );
+				$args['width'] = empty( $size[0] ) ? 0 : absint( $size[0] );
+				$args['height'] = empty( $size[1] ) ? 0 : absint( $size[1] );
+			}
+
 			// If a callback is defined use it to alter our args
 			if ( ! empty( $args['callback'] ) && function_exists( $args['callback'] ) ) {
 				return $args['callback']( $args );
