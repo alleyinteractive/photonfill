@@ -342,6 +342,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
 					}
 				} elseif ( is_array( $current_size ) ) {
+					// If our size in an array of ints parse it differently.
 					foreach ( $this->breakpoints as $breakpoint => $breakpoint_widths ) {
 						$breakpoint_width = $this->get_breakpoint_width( $breakpoint );
 						$breakpoint_height = ( ! empty( $breakpoint_widths['height'] ) ) ? $breakpoint_widths['height'] : 9999;
@@ -398,6 +399,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
 					}
 				} elseif ( is_array( $current_size ) ) {
+					// If our size in an array of ints parse it differently.
 					foreach ( $this->breakpoints as $breakpoint => $breakpoint_widths ) {
 						$breakpoint_width = $this->get_breakpoint_width( $breakpoint );
 						$breakpoint_height = ( ! empty( $breakpoint_widths['height'] ) ) ? $breakpoint_widths['height'] : 9999;
@@ -567,7 +569,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$photon_url_function = photonfill_hook_prefix() . '_photon_url';
 					$attachment_src = wp_get_attachment_url( $attachment_id );
 					$img_src['url'] = $photon_url_function( $attachment_src, array( 'attachment_id' => $attachment_id, 'width' => $img_src['width'], 'height' => $img_src['height'] ) );
-					$img_src['url2x'] = $photon_url_function( $attachment_src, array( 'attachment_id' => $attachment_id, 'width' => absint( $img_src['width'] * 2 ), 'height' => absint( $img_src['height'] * 2 ) ) );
+					$img_src['url2x'] = $photon_url_function( $attachment_src, array( 'attachment_id' => $attachment_id, 'width' => ( absint( $img_src['width'] ) * 2 ), 'height' => ( absint( $img_src['height'] ) * 2 ) ) );
 				} else {
 					$attachment_src = wp_get_attachment_image_src( $attachment_id, $size );
 					$attachment_src_2x = wp_get_attachment_image_src( $attachment_id, array( absint( $width ) * 2, absint( $height ) * 2 ) );
@@ -583,8 +585,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Manipulate a external url img src
 		 * @param string $img_url
-		 * @param array. This should always be an array of breakpoint width and height
+		 * @param array. $size. Size. This should always be an array of breakpoint width and height
 		 * @param boolean. Should this be the default srcset for the img element.
+		 * @return array. An array of img src attributes
 		 */
 		private function get_url_img_src( $img_url, $size = null, $default = false ) {
 			if ( ! empty( $img_url ) ) {
@@ -600,7 +603,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				// Support jetpack photon and my_photon
 				$photon_url_function = photonfill_hook_prefix() . '_photon_url';
 				$img_src['url'] = $photon_url_function( $img_url, array( 'width' => $img_src['width'], 'height' => $img_src['height'] ) );
-				$img_src['url2x'] = $photon_url_function( $img_url, array( 'width' => absint( $img_src['width'] * 2 ), 'height' => absint( $img_src['height'] * 2 ) ) );
+				$img_src['url2x'] = $photon_url_function( $img_url, array( 'width' => ( absint( $img_src['width'] ) * 2 ), 'height' => ( absint( $img_src['height'] ) * 2 ) ) );
 
 				return $img_src;
 			}
@@ -908,10 +911,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 		/**
 		 * Use and external url to generate a photonfill image element.
-		 * @param string. $img_url.
-		 * @param string. $img_size;
+		 * @param string. $img_url. An external url.
+		 * @param string. $img_size; A supported WP image size.
 		 * @param array. $attr. (can set alt and class)
-		 * @return string. html element.
+		 * @return string. HTML image element.
 		 */
 		public function get_url_image( $img_url, $size, $attr = array() ) {
 			if ( ! empty( $img_url ) ) {
@@ -919,7 +922,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$attr['class'] = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), null, $size );
 
 				// This means post thumbnail was called w/o a size arg.
-				if ( 'post-thumbnail' == $size ) {
+				if ( 'post-thumbnail' === $size ) {
 					$size = 'full';
 				}
 				$image = $this->create_url_image_object( $img_url, $size );
