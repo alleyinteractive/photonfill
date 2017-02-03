@@ -312,7 +312,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$sizes = $this->image_sizes;
 				$image_sizes = array();
 				// wp_get_attachment_image may pass this by default. Handle it as size 'full'.
-				if ( 'post-thumbnail' == $current_size ) {
+				if ( 'thumbnail' == $current_size ) {
 					$current_size = 'full';
 				}
 
