@@ -16,14 +16,13 @@ Author URI: http://www.alleyinteractive.com/
 require_once( dirname( __FILE__ ) . '/php/class-plugin-dependency.php' );
 
 function photonfill_init() {
-		if( is_admin() && photonfill_use_in_admin() ) {
-			require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
-			require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
-			require_once( dirname( __FILE__ ) . '/functions.php' );
+	if( is_admin() && photonfill_use_in_admin() ) {
+		require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
+		require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
+		require_once( dirname( __FILE__ ) . '/functions.php' );
 
-			add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
-			add_action( 'admin_enqueue_scripts', 'photonfill_enqueue_assets' );
-		}
+		add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
+		add_action( 'admin_enqueue_scripts', 'photonfill_enqueue_assets' );
 	}
 }
 add_action( 'plugins_loaded', 'photonfill_init' );
