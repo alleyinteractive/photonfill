@@ -16,12 +16,15 @@ Author URI: http://www.alleyinteractive.com/
 require_once( dirname( __FILE__ ) . '/php/class-plugin-dependency.php' );
 
 function photonfill_init() {
-	require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
-	require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
-	require_once( dirname( __FILE__ ) . '/functions.php' );
+		if( is_admin() && photonfill_use_in_admin() ) {
+			require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
+			require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
+			require_once( dirname( __FILE__ ) . '/functions.php' );
 
-	add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
-	add_action( 'admin_enqueue_scripts', 'photonfill_enqueue_assets' );
+			add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
+			add_action( 'admin_enqueue_scripts', 'photonfill_enqueue_assets' );
+		}
+	}
 }
 add_action( 'plugins_loaded', 'photonfill_init' );
 
@@ -83,6 +86,14 @@ function photonfill_admin_tinymce_js( $plugins ) {
  */
 function photonfill_use_lazyload() {
 	return apply_filters( 'photonfill_use_lazyload', false );
+}
+
+/**
+ * Should photofill be used in admin area?
+ * Default is true.
+ */
+function photonfill_use_in_admin() {
+	return apply_filters( 'photonfill_use_in_admin', true );
 }
 
 /**

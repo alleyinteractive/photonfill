@@ -157,8 +157,12 @@ Photon uses an url parameter based [API](https://developer.wordpress.com/docs/ph
 ## Lazy Loading Responsive Images
 PhotonFill also has the option of lazy loading responsive images and allowing the browser to guess which image is most appropriate to display accoring to the clients browser window size and density. It uses [lazysizes.js](https://github.com/aFarkas/lazysizes) as the polyfill.  You can enable it through the ``photonfill_use_lazyload`` filter hook.
 
+## Disable Photonfill in the admin area
+Sometimes photonfill doesn't play well with another plugin that shows images in the admin area, in this case, it might be useful to disable Photonfill for the admin area. Use the filter hook ``photonfill_use_in_admin`` and return ``false`` to disable it. By default, photonfill will be turned on in the admin area.
+
 ## Availiable Filter Hooks
 * ``photonfill_use_lazyload`` Enable/Disable lazy loaded responsive images using lazysizes.js.  Default (disabled)
+* ``photonfill_use_in_admin`` Enable/Disable photonfill in the admin area (dashboard).  Default (enabled)
 * ``photonfill_breakpoints`` Set custom breakpoints.
 * ``photonfill_base_unit_pixel`` If unit specified in breakpoints is `em` what base pixel is the theme. Default (16)
 * ``photonfill_image_sizes`` An image stack of image sizes for corresponding breakpoints.
