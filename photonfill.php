@@ -16,14 +16,12 @@ Author URI: http://www.alleyinteractive.com/
 require_once( dirname( __FILE__ ) . '/php/class-plugin-dependency.php' );
 
 function photonfill_init() {
-	if( ! is_admin() || photonfill_use_in_admin() ) {
-		require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
-		require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
-		require_once( dirname( __FILE__ ) . '/functions.php' );
+	require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
+	require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
+	require_once( dirname( __FILE__ ) . '/functions.php' );
 
-		add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
-		add_action( 'admin_enqueue_scripts', 'photonfill_enqueue_assets' );
-	}
+	add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
+	add_action( 'admin_enqueue_scripts', 'photonfill_enqueue_assets' );
 }
 add_action( 'plugins_loaded', 'photonfill_init' );
 
@@ -52,13 +50,13 @@ function photonfill_enqueue_assets() {
 
 	if ( photonfill_use_lazyload() ) {
 		wp_enqueue_script( 'lazysizesjs', photonfill_get_baseurl() . 'js/lazysizes.min.js', array( 'jquery' ), '1.2.3rc1', true );
-		if ( is_admin() ) {
+		if ( is_admin() && photonfill_use_in_admin() ) {
 			add_filter( 'mce_external_plugins', 'photonfill_admin_tinymce_js' );
 		}
 	}
 
 	//Fieldmanager Media Metabox Fixes
-	if ( is_admin() ) {
+	if ( is_admin() && photonfill_use_in_admin() ) {
 		wp_enqueue_script( 'photonfill-admin', photonfill_get_baseurl() . 'js/photonfill-admin.js', array( 'jquery' ) );
 		wp_localize_script( 'photonfill-admin', 'photonfill_wp_vars', array(
 			'wp_ajax_url' => admin_url( 'admin-ajax.php' ),
