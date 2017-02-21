@@ -50,13 +50,13 @@ function photonfill_enqueue_assets() {
 
 	if ( photonfill_use_lazyload() ) {
 		wp_enqueue_script( 'lazysizesjs', photonfill_get_baseurl() . 'js/lazysizes.min.js', array( 'jquery' ), '1.2.3rc1', true );
-		if ( is_admin() ) {
+		if ( is_admin() && photonfill_use_in_admin() ) {
 			add_filter( 'mce_external_plugins', 'photonfill_admin_tinymce_js' );
 		}
 	}
 
 	//Fieldmanager Media Metabox Fixes
-	if ( is_admin() ) {
+	if ( is_admin() && photonfill_use_in_admin() ) {
 		wp_enqueue_script( 'photonfill-admin', photonfill_get_baseurl() . 'js/photonfill-admin.js', array( 'jquery' ) );
 		wp_localize_script( 'photonfill-admin', 'photonfill_wp_vars', array(
 			'wp_ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -83,6 +83,14 @@ function photonfill_admin_tinymce_js( $plugins ) {
  */
 function photonfill_use_lazyload() {
 	return apply_filters( 'photonfill_use_lazyload', false );
+}
+
+/**
+ * Should photofill be used in admin area?
+ * Default is true.
+ */
+function photonfill_use_in_admin() {
+	return apply_filters( 'photonfill_use_in_admin', true );
 }
 
 /**

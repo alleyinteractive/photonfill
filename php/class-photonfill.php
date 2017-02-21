@@ -1002,6 +1002,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 }
 
 function Photonfill() {
-	return Photonfill::instance();
+	if( ! is_admin() || photonfill_use_in_admin() ) {
+		return Photonfill::instance();
+	}
 }
 add_action( 'after_setup_theme', 'Photonfill' );
