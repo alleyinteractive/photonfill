@@ -1,5 +1,5 @@
 <?php
-if ( ! class_exists( "Plugin_Dependency" ) ) {
+if ( ! class_exists( 'Plugin_Dependency' ) ) {
 
 	class Plugin_Dependency {
 
@@ -25,7 +25,7 @@ if ( ! class_exists( "Plugin_Dependency" ) ) {
 		 * @params url $name optional
 		 * @return void
 		 */
-		public function __construct( $plugin_name, $dependency_name, $dependency_uri="" ) {
+		public function __construct( $plugin_name, $dependency_name, $dependency_uri = '' ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 			// Set the plugin defaults
@@ -34,7 +34,7 @@ if ( ! class_exists( "Plugin_Dependency" ) ) {
 			$this->dependency_uri = $dependency_uri;
 
 			// Get the currently installed plugins
-			$this->installed_plugins = get_plugins();
+			$this->installed_plugins = $this->get_plugins();
 		}
 
 		/**
@@ -47,19 +47,20 @@ if ( ! class_exists( "Plugin_Dependency" ) ) {
 		 */
 		public function verify() {
 			$plugin_uri = $this->info();
-			if( $plugin_uri === false ) {
+
+			if ( false === $plugin_uri ) {
 				// The plugin is not installed. Display the appropriate message and return false.
 				$this->verify_message = $this->install_message();
 				return false;
 			} else {
 				// Determine if the plugin is active
-				if( !is_plugin_active( $plugin_uri ) ) {
+				if ( ! is_plugin_active( $plugin_uri ) && ! $this->is_mu_plugin( $plugin_uri ) ) {
 					// The plugin is not active. Display the appropriate message and return false.
 					$this->verify_message = $this->activate_message();
 					return false;
 				} else {
 					// The plugin is installed and active.
-					$this->verify_message = "";
+					$this->verify_message = '';
 					return true;
 				}
 			}
@@ -81,14 +82,83 @@ if ( ! class_exists( "Plugin_Dependency" ) ) {
 		 */
 		private function activate_message() {
 			$plugin_file = $this->info();
-			if ( $plugin_file !== false ) {
+			if ( false !== $plugin_file ) {
 				return sprintf(
-					__( '<p style="font-family: sans-serif; font-size: 12px">%s<br>Please <a href="%s" target="_top">activate %s</a> and try again.</p>' ),
+					__( '<p style="font-family: sans-serif; font-size: 12px">%1$s<br>Please <a href="%2$s" target="_top">activate %3$s</a> and try again.</p>' ),
 					esc_html( $this->dependency_message() ),
-					wp_nonce_url( self_admin_url( 'plugins.php?action=activate&plugin='.$plugin_file ), 'activate-plugin_'.$plugin_file ),
+					wp_nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin_file ), 'activate-plugin_' . $plugin_file ),
 					esc_html( $this->dependency_name )
 				);
 			}
+		}
+
+		/**
+		 * Check to see if the plugin exists in mu-plugins.
+		 * @param string. $plugin_uri. The plugin URI.
+		 * @return boolean.
+		 */
+		private function is_mu_plugin( $plugin_uri ) {
+			$mu_plugins = array_keys( $this->get_mu_plugins() );
+			return ( in_array( $plugin_uri, $mu_plugins, true ) ) ? true : false;
+		}
+
+		/**
+		 * A better check of mu-plugins to include subdirectories.
+		 * This is a copy of core function with the ability to check subdirectories.
+		 * For plugins that do not follow the standard naming convention of `WPMU_PLUGIN_DIR/PLUGIN/PLUGIN.php` the filter hook photonfill_mu_plugin_filter is available.
+		 * @return array.
+		 */
+		private function get_mu_plugins() {
+			$wp_plugins = array();
+			// Files in wp-content/mu-plugins directory
+			$plugin_files = array();
+
+			if ( ! is_dir( WPMU_PLUGIN_DIR ) ) {
+				return $wp_plugins;
+			}
+
+			// If your top level directory is named differently than the plugin file, you can add a keyed array to the right value.
+			// Ex. array( 'wordpress-fieldmanager' => 'fieldmanager' ).
+			$plugin_lookup = apply_filters( 'photonfill_mu_plugin_filter', array() );
+			if ( $plugins_dir = @ opendir( WPMU_PLUGIN_DIR ) ) {
+				while ( ( $file = readdir( $plugins_dir ) ) !== false ) {
+					if ( substr( $file, -4 ) === '.php' ) {
+						$plugin_files[] = $file;
+					} elseif ( file_exists( WPMU_PLUGIN_DIR . "/${file}/${file}.php" ) ) {
+						$plugin_files[] = "${file}/${file}.php";
+					} elseif ( array_key_exists( $file, $plugin_lookup ) && file_exists( WPMU_PLUGIN_DIR . '/' . $file . '/' . $plugin_lookup[ $file ] . '.php' ) ) {
+						$plugin_files[] = "${file}/" . $plugin_lookup[ $file ] . '.php';
+					}
+				}
+			} else {
+				return $wp_plugins;
+			}
+
+			@closedir( $plugins_dir );
+
+			if ( empty( $plugin_files ) ) {
+				return $wp_plugins;
+			}
+
+			foreach ( $plugin_files as $plugin_file ) {
+				if ( ! is_readable( WPMU_PLUGIN_DIR . "/$plugin_file" ) ) {
+					continue;
+				}
+				$plugin_data = get_plugin_data( WPMU_PLUGIN_DIR . "/$plugin_file", false, false ); //Do not apply markup/translate as it'll be cached.
+
+				if ( empty( $plugin_data['Name'] ) ) {
+					$plugin_data['Name'] = $plugin_file;
+				}
+				$wp_plugins[ $plugin_file ] = $plugin_data;
+			}
+
+			if ( isset( $wp_plugins['index.php'] ) && filesize( WPMU_PLUGIN_DIR . '/index.php' ) <= 30 ) { // silence is golden
+				unset( $wp_plugins['index.php'] );
+			}
+
+			uasort( $wp_plugins, '_sort_uname_callback' );
+
+			return $wp_plugins;
 		}
 
 		/**
@@ -101,27 +171,27 @@ if ( ! class_exists( "Plugin_Dependency" ) ) {
 			include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 
 			// See if the plugin is available on WordPress.org
-			$info = plugins_api( 'plugin_information', array('slug' => $this->dependency_uri ) );
+			$info = plugins_api( 'plugin_information', array( 'slug' => $this->dependency_uri ) );
 
-			$install_instructions = "";
-			if ( is_wp_error( $info ) && filter_var($this->dependency_uri, FILTER_VALIDATE_URL) ) {
+			$install_instructions = '';
+			if ( is_wp_error( $info ) && filter_var( $this->dependency_uri, FILTER_VALIDATE_URL ) ) {
 				// The plugin is not available from WordPress.org
 				$install_instructions = sprintf(
-					__( '<br>Please <a href="%s" target="_blank">download and install %s</a> and try again.' ),
+					__( '<br>Please <a href="%1$s" target="_blank">download and install %2$s</a> and try again.' ),
 					esc_url( $this->dependency_uri ),
 					esc_html( $this->dependency_name )
 				);
-			} else if ( !is_wp_error( $info ) ) {
+			} else if ( ! is_wp_error( $info ) ) {
 				// The plugin is available from WordPress.org
 				$install_instructions = sprintf(
-					__( '<br>Please <a href="%s" target="_top">install %s</a> and try again.' ),
+					__( '<br>Please <a href="%1$s" target="_top">install %2$s</a> and try again.' ),
 					wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $this->slug ), 'install-plugin_' . $this->slug ),
 					esc_html( $this->dependency_name )
 				);
 			}
 
 			return sprintf(
-				__( '<p style="font-family: sans-serif; font-size: 12px">%s%s</p>' ),
+				__( '<p style="font-family: sans-serif; font-size: 12px">%1$s%2$s</p>' ),
 				esc_html( $this->dependency_message() ),
 				$install_instructions
 			); // $install instructions escaped above.
@@ -134,10 +204,20 @@ if ( ! class_exists( "Plugin_Dependency" ) ) {
 		 */
 		private function dependency_message() {
 			return sprintf(
-				__( '%s requires that %s is installed and active.' ),
+				__( '%1$s requires that %2$s is installed and active.' ),
 				esc_html( $this->plugin_name ),
 				esc_html( $this->dependency_name )
 			);
+		}
+
+		/**
+		 * Get all plugins and mu-plugins.
+		 * @return array. Array of plugins.
+		 */
+		private function get_plugins() {
+			$plugins = get_plugins();
+			$mu_plugins = $this->get_mu_plugins();
+			return array_merge( $plugins, $mu_plugins );
 		}
 
 		/**
@@ -146,8 +226,8 @@ if ( ! class_exists( "Plugin_Dependency" ) ) {
 		 * @return mixed
 		 */
 		private function info() {
-			foreach( $this->installed_plugins as $plugin_url => $plugin_data ) {
-				if( $this->dependency_name == $plugin_data['Name'] ) {
+			foreach ( $this->installed_plugins as $plugin_url => $plugin_data ) {
+				if ( $plugin_data['Name'] === $this->dependency_name ) {
 					return $plugin_url;
 				}
 			}
