@@ -167,3 +167,4 @@ PhotonFill also has the option of lazy loading responsive images and allowing th
 * ``photonfill_default_transform`` Set the default transformation for Photon. Default (`Photonfill_Transform::center_crop()`)
 * ``photonfill_use_picture_as_default`` Use a picture element as the default when calling `the_post_thumbnail` or `wp_get_attachment_image`
 * ``photonfill_bypass_image_downsize`` Bypass the image downsize hooks which can be problematic on some environments. Set `true` if all of your image URLs are returning the original URL.
+* ``photonfill_mu_plugin_filter`` Allows you to set alternative names for mu plugins if your mu plugin has a different directory name from the plugin file. Example return value could be `array( 'wordpress-fieldmanager' => 'fieldmanager' )`.
