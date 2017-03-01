@@ -23,11 +23,15 @@ function photonfill_init() {
 }
 add_action( 'plugins_loaded', 'photonfill_init' );
 
+/**
+ * Make sure we have the necessary plugins installed and activated.
+ * @return void.
+ */
 function photonfill_dependency() {
-	if ( class_exists( 'Jetpack' ) && ! Jetpack::is_module_active( 'photon' ) ) {
-		die( __( 'Photonfill requires that Jetpack Photon is active.' ) );
-	} elseif ( ! class_exists( 'My_Photon_Settings' ) && ! class_exists( 'Jetpack' ) ) {
+	if ( ! class_exists( 'My_Photon_Settings' ) && ! class_exists( 'Jetpack' ) ) {
 		die( __( 'Photonfill requires that either Jetpack Photon or My_Photon is installed and active.' ) );
+	} elseif ( class_exists( 'Jetpack' ) && ! Jetpack::is_module_active( 'photon' ) ) {
+		die( __( 'Photonfill requires that Jetpack Photon is active.' ) );
 	}
 }
 register_activation_hook( __FILE__, 'photonfill_dependency' );
