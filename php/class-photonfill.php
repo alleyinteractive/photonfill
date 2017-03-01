@@ -970,7 +970,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function get_valid_size( $size ) {
 			if ( is_string( $size ) && ( ! array_key_exists( $size, $this->image_sizes ) || 'post-thumbnail' === $size ) ) {
-				$size = 'full';
+				$size = apply_filters( 'photonfill_fallback_image_size', 'full' );
 			}
 			return $size;
 		}
