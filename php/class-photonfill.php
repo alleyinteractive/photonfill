@@ -311,10 +311,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			if ( ! empty( $attachment_id ) ) {
 				$sizes = $this->image_sizes;
 				$image_sizes = array();
-				// wp_get_attachment_image may pass this by default. Handle it as size 'full'.
-				if ( 'post-thumbnail' == $current_size ) {
-					$current_size = 'full';
-				}
+				// Ensure size value is valid. Use 'full' if not.
+				$current_size = $this->get_valid_size( $current_size );
 
 				// If we are full, we may not have height and width params. Grab original dimensions.
 				if ( 'full' == $current_size ) {
@@ -668,10 +666,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function get_attachment_image( $attachment_id, $size = 'full', $attr ) {
 			if ( ! empty( $attachment_id ) && wp_attachment_is_image( $attachment_id ) ) {
-				// This means post thumbnail was called w/o a size arg.
-				if ( 'post-thumbnail' == $size ) {
-					$size = 'full';
-				}
+				// Ensure size value is valid. Use 'full' if not.
+				$size = $this->get_valid_size( $size );
 				$html = '';
 				if ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
@@ -716,10 +712,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function get_attachment_picture( $attachment_id, $size = 'full', $attr ) {
 			if ( ! empty( $attachment_id ) && wp_attachment_is_image( $attachment_id ) ) {
-				// This means post thumbnail was called w/o a size arg.
-				if ( 'post-thumbnail' == $size ) {
-					$size = 'full';
-				}
+				// Ensure size value is valid. Use 'full' if not.
+				$size = $this->get_valid_size( $size );
 				$html = '';
 				if ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
@@ -921,10 +915,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$attr = array_merge( $attr, array( 'sizes' => array(), 'srcset' => array() ) );
 				$attr['class'] = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), null, $size );
 
-				// This means post thumbnail was called w/o a size arg.
-				if ( 'post-thumbnail' === $size ) {
-					$size = 'full';
-				}
+				// Ensure size value is valid. Use 'full' if not.
+				$size = $this->get_valid_size( $size );
+
 				$image = $this->create_url_image_object( $img_url, $size );
 				$html = '';
 				$maxsize = 0;
@@ -966,6 +959,20 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				return $html;
 			}
 			return;
+		}
+
+		/**
+		 * Set the size to a valid size if it has not been defined.
+		 *
+		 * @param mixed $size. String or array(W,H);
+		 * @access public
+		 * @return mixed. String or array(W,H)
+		 */
+		public function get_valid_size( $size ) {
+			if ( is_string( $size ) && ( ! array_key_exists( $size, $this->image_sizes ) || 'post-thumbnail' === $size ) ) {
+				$size = apply_filters( 'photonfill_fallback_image_size', 'full' );
+			}
+			return $size;
 		}
 
 		/**
