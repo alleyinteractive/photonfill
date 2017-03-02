@@ -13,8 +13,6 @@ Version: 0.1.14
 Author URI: http://www.alleyinteractive.com/
 */
 
-require_once( dirname( __FILE__ ) . '/php/class-plugin-dependency.php' );
-
 function photonfill_init() {
 	require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
 	require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
@@ -25,11 +23,15 @@ function photonfill_init() {
 }
 add_action( 'plugins_loaded', 'photonfill_init' );
 
+/**
+ * Make sure we have the necessary plugins installed and activated.
+ * @return void.
+ */
 function photonfill_dependency() {
-	$photonfill_dependency = new Plugin_Dependency( 'Jetpack', 'Jetpack by WordPress.com', 'http://jetpack.me/' );
-	if ( ! $photonfill_dependency->verify() ) {
-		// Cease activation
-	 	die( $photonfill_dependency->message() );
+	if ( ! class_exists( 'My_Photon_Settings' ) && ! class_exists( 'Jetpack' ) ) {
+		die( __( 'Photonfill requires that either Jetpack Photon or My_Photon is installed and active.' ) );
+	} elseif ( class_exists( 'Jetpack' ) && ! Jetpack::is_module_active( 'photon' ) ) {
+		die( __( 'Photonfill requires that Jetpack Photon is active.' ) );
 	}
 }
 register_activation_hook( __FILE__, 'photonfill_dependency' );
