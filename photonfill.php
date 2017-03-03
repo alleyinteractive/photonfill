@@ -29,9 +29,11 @@ add_action( 'plugins_loaded', 'photonfill_init' );
  */
 function photonfill_dependency() {
 	if ( ! class_exists( 'My_Photon_Settings' ) && ! class_exists( 'Jetpack' ) ) {
-		die( __( 'Photonfill requires that either Jetpack Photon or My_Photon is installed and active.' ) );
+		die( __( 'Photonfill requires that either Jetpack Photon or My Photon is installed and active.' ) );
 	} elseif ( ! class_exists( 'My_Photon_Settings' ) && class_exists( 'Jetpack' ) && ! Jetpack::is_module_active( 'photon' ) ) {
 		die( __( 'Photonfill requires that Jetpack Photon is active.' ) );
+	} elseif ( class_exists( 'My_Photon_Settings' ) && empty( My_Photon_Settings()->get( 'active' ) ) ) {
+		die( __( 'Photonfill requires that My Photon is active.' ) );
 	}
 }
 register_activation_hook( __FILE__, 'photonfill_dependency' );
@@ -96,7 +98,7 @@ function photonfill_hook_prefix() {
 	$prefix = 'jetpack';
 	if ( class_exists( 'Jetpack' ) && Jetpack::is_module_active( 'photon' ) ) {
 		$prefix = 'jetpack';
-	} elseif ( class_exists( 'My_Photon_Settings' ) && My_Photon_Settings::get( 'active' ) ) {
+	} elseif ( class_exists( 'My_Photon_Settings' ) && My_Photon_Settings()->get( 'active' ) ) {
 		$prefix = 'my';
 	}
 	// This setting fails under certain circumstances, like with VIP Go mu-plugins, so a filter is necessary.
