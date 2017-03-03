@@ -30,7 +30,7 @@ add_action( 'plugins_loaded', 'photonfill_init' );
 function photonfill_dependency() {
 	if ( ! class_exists( 'My_Photon_Settings' ) && ! class_exists( 'Jetpack' ) ) {
 		die( __( 'Photonfill requires that either Jetpack Photon or My_Photon is installed and active.' ) );
-	} elseif ( class_exists( 'Jetpack' ) && ! Jetpack::is_module_active( 'photon' ) ) {
+	} elseif ( ! class_exists( 'My_Photon_Settings' ) && class_exists( 'Jetpack' ) && ! Jetpack::is_module_active( 'photon' ) ) {
 		die( __( 'Photonfill requires that Jetpack Photon is active.' ) );
 	}
 }
