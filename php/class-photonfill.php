@@ -435,7 +435,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function add_width_for_captions( $html, $id, $caption, $title, $align, $url, $size, $alt = '' ) {
 			$caption = apply_filters( 'image_add_caption_text', $caption, $id );
-			if ( ! empty( $caption ) ) {
+			$count = 0;
+			// If we have an image with only one size, lets set that to the width, this allows the use images in the wp editor for changing sizes
+			$html = preg_replace ( '/sizes\=\"(\d+)px\"/i', 'sizes="$1px" width="$1"', $html, 1, $count );
+			if ( ! empty( $caption ) && 0 == $count ) {
 				if ( is_numeric( $size ) ) {
 					$size_px = $size;
 				} elseif ( is_array( $size ) ) {
@@ -532,6 +535,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$size_string = $size;
 			if ( is_array( $size ) ) {
 				$size_string = implode( 'x', $size );
+			}
+
+			if ( is_int( $attachment_id ) ) {
+				$class[] = 'wp-image-' . $attachment_id;
 			}
 
 			$class[] = 'size-' . esc_attr( $size_string );
