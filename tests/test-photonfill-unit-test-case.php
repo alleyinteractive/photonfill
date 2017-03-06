@@ -111,12 +111,12 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 	 * Activate My Photon for testing
 	 */
 	private function activate_my_photon() {
-		$my_photon_settings = array( 
+		$my_photon_settings = array(
 			'base-url'  => 'http://cdn.alley.dev/',
 			'active'    => true,
 		);
 		update_option( 'my-photon', $my_photon_settings );
-		require_once getenv( 'WP_TESTS_DIR' ) .  'vendor/my-photon/my-photon.php';
+		require_once getenv( 'WP_TESTS_DIR' ) . 'vendor/my-photon/my-photon.php';
 	}
 
 }
