@@ -7,9 +7,12 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 	private $image_path;
 	private $photon_url;
 
+	public static function setUpBeforeClass() {
+		self::activate_my_photon();
+	}
+
 	public function setUp() {
 		parent::setUp();
-		$this->activate_my_photon();
 		$this->attachment_id = $this->insert_attachment( null,
 			dirname( __FILE__ ) . '/data/alley_placeholder.jpg',
 			array(
@@ -110,7 +113,7 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 	/**
 	 * Activate My Photon for testing
 	 */
-	private function activate_my_photon() {
+	private static function activate_my_photon() {
 		$my_photon_settings = array(
 			'base-url'  => 'http://cdn.alley.dev/',
 			'active'    => true,
