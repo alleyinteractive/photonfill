@@ -203,7 +203,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$images_sizes = array();
 			$intermediate_sizes = get_intermediate_image_sizes();
 			if ( ! empty( $intermediate_sizes ) ) {
-				foreach ( $intermediate_sizes() as $size ) {
+				foreach ( $intermediate_sizes as $size ) {
 					$width = isset( $_wp_additional_image_sizes[ $size ]['width'] ) ? intval( $_wp_additional_image_sizes[ $size ]['width'] ) : get_option( "{$size}_size_w" );
 					$height = isset( $_wp_additional_image_sizes[ $size ]['height'] ) ? intval( $_wp_additional_image_sizes[ $size ]['height'] ) : get_option( "{$size}_size_h" );
 
