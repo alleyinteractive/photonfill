@@ -100,12 +100,12 @@ function photonfill_use_lazyload() {
 }
 
 /**
- * Our photon hook prefix as this plugin supports both Jetpack Photon and My-Photon
+ * Our photon hook prefix as this plugin supports both Jetpack Photon and My Photon
  *
  * @return string. (Either 'jetpack' or 'my');
  */
 function photonfill_hook_prefix() {
-	// If photon module is active, then use it over my photon.
+	// If photon module is active, then use it over My Photon.
 	$prefix = 'jetpack';
 	if ( class_exists( 'Jetpack' ) && Jetpack::is_module_active( 'photon' ) ) {
 		$prefix = 'jetpack';
