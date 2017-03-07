@@ -16,8 +16,6 @@ Version: 0.1.14
 Author URI: http://www.alleyinteractive.com/
 */
 
-require_once( dirname( __FILE__ ) . '/php/class-plugin-dependency.php' );
-
 /**
  * Setup Photonfill.
  **/
@@ -32,16 +30,16 @@ add_action( 'plugins_loaded', 'photonfill_init' );
 
 
 /**
- * Check for Jetpack.
+ * Check for Jetpack or My Photon
  **/
-function photonfill_dependency() {
-	$photonfill_dependency = new Plugin_Dependency( 'Jetpack', 'Jetpack by WordPress.com', 'http://jetpack.me/' );
-	if ( ! $photonfill_dependency->verify() ) {
-		// Cease activation.
-	 	die( esc_html( $photonfill_dependency->message() ) );
+function jetpack_or_myphoton() {
+	if ( ! class_exists( 'Jetpack' ) && ! class_exists( 'My_Photon' ) ) {
+		die( esc_html(
+			__( 'Photonfill requires Jetpack or My Photon', 'photonfill' )
+		) );
 	}
 }
-register_activation_hook( __FILE__, 'photonfill_dependency' );
+register_activation_hook( __FILE__, 'jetpack_or_myphoton' );
 
 /**
  * Get the base URL for this plugin.
