@@ -1,9 +1,12 @@
 <?php
 /**
+ * Photonfill.
+ *
  * @package Photonfill
  * @subpackage Plugin
  * @version 0.1.14
  */
+
 /*
 Plugin Name: Photonfill
 Plugin URI: http://github.com/alleyinteractive/photonfill
@@ -15,27 +18,34 @@ Author URI: http://www.alleyinteractive.com/
 
 require_once( dirname( __FILE__ ) . '/php/class-plugin-dependency.php' );
 
+/**
+ * Setup Photonfill.
+ **/
 function photonfill_init() {
 	require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
 	require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
 	require_once( dirname( __FILE__ ) . '/functions.php' );
-
 	add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
 	add_action( 'admin_enqueue_scripts', 'photonfill_enqueue_assets' );
 }
 add_action( 'plugins_loaded', 'photonfill_init' );
 
+
+/**
+ * Check for Jetpack.
+ **/
 function photonfill_dependency() {
 	$photonfill_dependency = new Plugin_Dependency( 'Jetpack', 'Jetpack by WordPress.com', 'http://jetpack.me/' );
 	if ( ! $photonfill_dependency->verify() ) {
-		// Cease activation
-	 	die( $photonfill_dependency->message() );
+		// Cease activation.
+	 	die( esc_html( $photonfill_dependency->message() ) );
 	}
 }
 register_activation_hook( __FILE__, 'photonfill_dependency' );
 
 /**
  * Get the base URL for this plugin.
+ *
  * @return string URL pointing to Fieldmanager Plugin top directory.
  */
 function photonfill_get_baseurl() {
@@ -55,7 +65,7 @@ function photonfill_enqueue_assets() {
 		}
 	}
 
-	//Fieldmanager Media Metabox Fixes
+	// Fieldmanager Media Metabox Fixes.
 	if ( is_admin() ) {
 		wp_enqueue_script( 'photonfill-admin', photonfill_get_baseurl() . 'js/photonfill-admin.js', array( 'jquery' ) );
 		wp_localize_script( 'photonfill-admin', 'photonfill_wp_vars', array(
@@ -69,7 +79,10 @@ function photonfill_enqueue_assets() {
 }
 
 /**
- * Load tinyMCE photonfill plugin
+ * Load photonfill plugin into TinyMCE.
+ *
+ * @param array $plugins Array of TinyMCE plugins.
+ * @return filtered array
  */
 function photonfill_admin_tinymce_js( $plugins ) {
 	$plugins['photonfill'] = photonfill_get_baseurl() . 'js/photonfill-tinymce-plugin.js';
@@ -79,7 +92,8 @@ function photonfill_admin_tinymce_js( $plugins ) {
 
 /**
  * Are we using lazyloads?
- * Default is false.
+ *
+ * @return boolean Using lazyload, defaults to false.
  */
 function photonfill_use_lazyload() {
 	return apply_filters( 'photonfill_use_lazyload', false );
@@ -87,6 +101,7 @@ function photonfill_use_lazyload() {
 
 /**
  * Our photon hook prefix as this plugin supports both Jetpack Photon and My-Photon
+ *
  * @return string. (Either 'jetpack' or 'my');
  */
 function photonfill_hook_prefix() {
