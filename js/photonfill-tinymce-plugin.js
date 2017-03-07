@@ -1,3 +1,9 @@
+/**
+ * Load lazy loaded images.
+ *
+ * @package Photonfill
+ **/
+
 (function() {
 	tinymce.create('tinymce.plugins.PhotonfillAdmin', {
 		init : function( editor ) {
@@ -19,7 +25,5 @@
 			});
 		},
 	});
-
 	tinymce.PluginManager.add( 'photonfill', tinymce.plugins.PhotonfillAdmin );
-
 })();

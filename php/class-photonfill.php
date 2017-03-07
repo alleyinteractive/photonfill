@@ -425,10 +425,11 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 		/**
 		 * Create the necessary data structure for an external url image.
-		 * @param string $img_url
-		 * @param array $sizes
-		 * @param string $arg Optional args. defined args are currently
-		 * @return array
+		 *
+		 * @param string $img_url Image url pre-filter.
+		 * @param string $current_size Image size.
+		 * @param array  $args Args for image.
+		 * @return array of args
 		 */
 		public function create_url_image_object( $img_url, $current_size, $args = array() ) {
 			if ( ! empty( $img_url ) ) {
@@ -482,6 +483,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Add our photonfill sizes to image metadata
 		 *
+		 * @param array $data Existing image metadata.
+		 * @param int   $attachment_id Image being examined.
+		 * @return array image data with Photonfill
 		 */
 		public function add_image_metadata( $data, $attachment_id ) {
 			if ( ! empty( $data['file'] ) ) {
@@ -564,9 +568,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public function add_width_for_captions( $html, $id, $caption, $title, $align, $url, $size, $alt = '' ) {
 			$caption = apply_filters( 'image_add_caption_text', $caption, $id );
 			$count = 0;
-			// If we have an image with only one size, lets set that to the width, this allows the use images in the wp editor for changing sizes
+			// If we have an image with only one size, lets set that to the width, this allows the use images in the wp editor for changing sizes.
 			$html = preg_replace( '/sizes\=\"(\d+)px\"/i', 'sizes="$1px" width="$1"', $html, 1, $count );
-			if ( ! empty( $caption ) && 0 == $count ) {
+			if ( ! empty( $caption ) && 0 === $count ) {
 				if ( is_numeric( $size ) ) {
 					$size_px = $size;
 				} elseif ( is_array( $size ) ) {
@@ -598,7 +602,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		}
 
 		/**
-		 * Fix issues with fieldmanager loading images.
+		 * Fix issues with fieldmanager loading images .
 		 * Adding an image in a FM metabox does not use photonfill and it scales out of the metabox.
 		 * We override the preview with our photonfill image and allow it to scale to the width of it's parent using inline styles.
 		 *
@@ -662,11 +666,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		}
 
 		/**
-		 * Manipulate a external url img src
-		 * @param string $img_url
-		 * @param array. $size. Size. This should always be an array of breakpoint width and height
-		 * @param boolean. Should this be the default srcset for the img element.
-		 * @return array. An array of img src attributes
+		 * Manipulate a external url img src.
+		 *
+		 * @param string  $img_url Attachment ID.
+		 * @param string  $size Image size.
+		 * @param boolean $default Default or not.
+		 * @return URL image source.
 		 */
 		private function get_url_img_src( $img_url, $size = null, $default = false ) {
 			if ( ! empty( $img_url ) ) {
@@ -679,7 +684,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					'default' => $default,
 				);
 
-				// Support jetpack photon and my_photon
+				// Support Jetpack photon and My Photon.
 				$photon_url_function = photonfill_hook_prefix() . '_photon_url';
 				$img_src['url'] = $photon_url_function( $img_url, array( 'width' => $img_src['width'], 'height' => $img_src['height'] ) );
 				$img_src['url2x'] = $photon_url_function( $img_url, array( 'width' => ( absint( $img_src['width'] ) * 2 ), 'height' => ( absint( $img_src['height'] ) * 2 ) ) );
@@ -912,10 +917,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$attr['alt'] = trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) );
 				}
 				if ( empty( $attr['alt'] ) ) {
-					$attr['alt'] = trim( strip_tags( $attachment->post_excerpt ) ); // If not, Use the Caption
+					$attr['alt'] = trim( strip_tags( $attachment->post_excerpt ) ); // If not, use the caption.
 				}
 				if ( empty( $attr['alt'] ) ) {
-					$attr['alt'] = trim( strip_tags( $attachment->post_title ) ); // Finally, use the title
+					$attr['alt'] = trim( strip_tags( $attachment->post_title ) ); // Finally, use the title.
 				}
 			}
 			$html = '<img ';
@@ -1030,9 +1035,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 		/**
 		 * Use and external url to generate a photonfill image element.
-		 * @param string. $img_url. An external url.
-		 * @param string. $img_size; A supported WP image size.
-		 * @param array. $attr. (can set alt and class)
+		 *
+		 * @param string $img_url An external url.
+		 * @param string $size A supported WP image size.
+		 * @param array  $attr (can set alt and class).
 		 * @return string. HTML image element.
 		 */
 		public function get_url_image( $img_url, $size, $attr = array() ) {
@@ -1074,7 +1080,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				}
 
 				if ( ! in_array( trim( $maxsize . 'px' ), $attr['sizes'], true ) ) {
-					// Add in our default length
+					// Add in our default length.
 					$sizes[] = trim( $maxsize . 'px' );
 				}
 				$attr['srcset'] = implode( ',', $srcsets );
@@ -1089,9 +1095,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Set the size to a valid size if it has not been defined.
 		 *
-		 * @param mixed $size. String or array(W,H);
-		 * @access public
-		 * @return mixed. String or array(W,H)
+		 * @param mixed $size String or array(W,H).
+		 * @return mixed String or array(W,H).
 		 */
 		public function get_valid_size( $size ) {
 			if ( is_string( $size ) && ( ! array_key_exists( $size, $this->image_sizes ) || 'post-thumbnail' === $size ) ) {
@@ -1132,6 +1137,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 	}
 }
 
+/**
+ * Return Photonfill instance.
+ **/
 function Photonfill() {
 	return Photonfill::instance();
 }
