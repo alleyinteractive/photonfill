@@ -263,7 +263,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				}
 				if ( ! empty( $mins ) ) {
 					sort( $mins );
-					$index = array_search( $size, $mins );
+					$index = array_search( $size, $mins, true );
 					if ( $index && ! empty( $mins[ $index + 1 ] ) ) {
 						return $mins[ $index + 1 ];
 					}
@@ -309,11 +309,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$maxsize = $breakpoint_data['src']['width'] > $maxsize ? $breakpoint_data['src']['width'] : $maxsize;
 						// We don't allow pixel density here. Only in the picture element.
 						$src = esc_url( $breakpoint_data['src']['url'] ) . ' ' . esc_attr( $breakpoint_data['src']['width'] . 'w' );
-						if ( ! in_array( $src, $srcset ) ) {
+						if ( ! in_array( $src, $srcset, true ) ) {
 							$srcset[] = $src;
 						}
 
-						$unit = ( ! empty( $breakpoint_data['size']['unit'] ) && in_array( $breakpoint_data['size']['unit'], $this->valid_units ) ) ? $breakpoint_data['size']['unit'] : 'px';
+						$unit = ( ! empty( $breakpoint_data['size']['unit'] ) &&
+							in_array( $breakpoint_data['size']['unit'], $this->valid_units, true ) ) ?
+								$breakpoint_data['size']['unit'] :
+								'px';
 
 						$breakpoint_size_string = '';
 						if ( ! empty( $breakpoint_data['size']['min'] ) ) {
@@ -325,13 +328,13 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						}
 						if ( ! empty( $breakpoint_size_string ) ) {
 							$size_attr = $breakpoint_size_string . ' ' . esc_attr( $breakpoint_data['src']['width'] ) . 'px';
-							if ( ! in_array( $size_attr, $sizes ) ) {
+							if ( ! in_array( $size_attr, $sizes, true ) ) {
 								$sizes[] = $size_attr;
 							}
 						}
 					}
 
-					if ( ! in_array( trim( $maxsize . 'px' ), $sizes ) ) {
+					if ( ! in_array( trim( $maxsize . 'px' ), $sizes, true ) ) {
 						// Add in our default length.
 						$sizes[] = trim( $maxsize . 'px' );
 					}
@@ -341,12 +344,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					if ( photonfill_use_lazyload() ) {
 						$attr['class'] .= ' lazyload';
 						$attr['data-sizes'] = 'auto';
-						$attr['data-srcset'] = implode( ',' ,  $srcset );
+						$attr['data-srcset'] = implode( ',' , $srcset );
 						$full_src = wp_get_attachment_image_src( $attachment->ID, 'full' );
 						$attr['data-src'] = esc_url( $full_src[0] );
 					} else {
-						$attr['sizes'] = implode( ',' ,  $sizes );
-						$attr['srcset'] = implode( ',' ,  $srcset );
+						$attr['sizes'] = implode( ',' , $sizes );
+						$attr['srcset'] = implode( ',' , $srcset );
 					}
 				}
 			}
@@ -778,7 +781,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 							// Set source media attribute.
 							$srcset_media = '';
-							$unit = ( ! empty( $breakpoint_data['size']['unit'] ) && in_array( $breakpoint_data['size']['unit'], $this->valid_units ) ) ? $breakpoint_data['size']['unit'] : 'px';
+							$unit = ( ! empty( $breakpoint_data['size']['unit'] ) &&
+								in_array( $breakpoint_data['size']['unit'], $this->valid_units, true ) ) ?
+									$breakpoint_data['size']['unit'] :
+									'px';
 							if ( ! empty( $breakpoint_data['size']['min'] ) ) {
 								$srcset_media .= '(min-width: ' . esc_attr( $breakpoint_data['size']['min'] . $unit ) . ')';
 							}
@@ -857,14 +863,17 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$attr = array();
 				$maxsize = 0;
 				foreach ( $image['sizes'] as $breakpoint => $breakpoint_data ) {
-					if ( in_array( $attr_name, array( 'srcset', 'data-srcset' ) ) ) {
+					if ( in_array( $attr_name, array( 'srcset', 'data-srcset' ), true ) ) {
 						$src = esc_url( $breakpoint_data['src']['url'] ) . ' ' . esc_attr( $breakpoint_data['src']['width'] . 'w' );
-						if ( ! in_array( $src, $attr ) ) {
+						if ( ! in_array( $src, $attr, true ) ) {
 							$attr[] = $src;
 						}
-					} elseif ( in_array( $attr_name, array( 'sizes', 'data-sizes' ) ) ) {
+					} elseif ( in_array( $attr_name, array( 'sizes', 'data-sizes' ), true ) ) {
 						$maxsize = $breakpoint_data['src']['width'] > $maxsize ? $breakpoint_data['src']['width'] : $maxsize;
-						$unit = ( ! empty( $breakpoint_data['size']['unit'] ) && in_array( $breakpoint_data['size']['unit'], $this->valid_units ) ) ? $breakpoint_data['size']['unit'] : 'px';
+						$unit = ( ! empty( $breakpoint_data['size']['unit'] ) &&
+							in_array( $breakpoint_data['size']['unit'], $this->valid_units, true ) ) ?
+								$breakpoint_data['size']['unit'] :
+								'px';
 
 						$breakpoint_size_string = '';
 						if ( ! empty( $breakpoint_data['size']['min'] ) ) {
@@ -876,14 +885,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						}
 						if ( ! empty( $breakpoint_size_string ) ) {
 							$size_attr = $breakpoint_size_string . ' ' . esc_attr( $breakpoint_data['src']['width'] ) . 'px';
-							if ( ! in_array( $size_attr, $attr ) ) {
+							if ( ! in_array( $size_attr, $attr, true ) ) {
 								$attr[] = $size_attr;
 							}
 						}
 					}
 				}
 
-				if ( in_array( $attr_name, array( 'sizes', 'data-sizes' ) ) && ! in_array( trim( $maxsize . 'px' ), $attr ) ) {
+				if ( in_array( $attr_name, array( 'sizes', 'data-sizes' ), true ) && ! in_array( trim( $maxsize . 'px' ), $attr, true ) ) {
 					// Add in our default length.
 					$attr[] = trim( $maxsize . 'px' );
 				}
@@ -935,7 +944,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @param string $content Image content.
 		 */
 		public function swap_lazyload_classes( $content ) {
-			return preg_replace( '/(class=\\\\"[^"]*)(lazyloaded)([^"]*")/i', '$1' . 'lazyload' . '$3', $content );
+			return preg_replace( '/(class=\\\\"[^"]*)(lazyloaded)([^"]*")/i', '$1lazyload$3', $content );
 		}
 
 		/**
