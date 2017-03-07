@@ -41,7 +41,7 @@ function photonfill_dependency() {
 		die( __( 'Photonfill requires that My Photon is active.' ) );
 	}
 }
-register_activation_hook( __FILE__, 'jetpaphotonfill_dependencyck_or_myphoton' );
+register_activation_hook( __FILE__, 'photonfill_dependency' );
 
 /**
  * Get the base URL for this plugin.
