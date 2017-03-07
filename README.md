@@ -167,3 +167,4 @@ PhotonFill also has the option of lazy loading responsive images and allowing th
 * ``photonfill_default_transform`` Set the default transformation for Photon. Default (`Photonfill_Transform::center_crop()`)
 * ``photonfill_use_picture_as_default`` Use a picture element as the default when calling `the_post_thumbnail` or `wp_get_attachment_image`
 * ``photonfill_bypass_image_downsize`` Bypass the image downsize hooks which can be problematic on some environments. Set `true` if all of your image URLs are returning the original URL.
+* ``photonfill_fallback_image_size`` Plugins may define image sizes not in your image stack. If that is the case, photonfill will fallback on size `full`. Use this filter hook to change that fallback.

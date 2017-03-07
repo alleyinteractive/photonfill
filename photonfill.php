@@ -4,7 +4,7 @@
  *
  * @package Photonfill
  * @subpackage Plugin
- * @version 0.1.14
+ * @version 0.2.0
  */
 
 /*
@@ -12,7 +12,7 @@ Plugin Name: Photonfill
 Plugin URI: http://github.com/alleyinteractive/photonfill
 Description: Integrate Jetpack Photon and Picturefill into WP images
 Author: Will Gladstone
-Version: 0.1.14
+Version: 0.2.0
 Author URI: http://www.alleyinteractive.com/
 */
 
@@ -28,18 +28,20 @@ function photonfill_init() {
 }
 add_action( 'plugins_loaded', 'photonfill_init' );
 
-
 /**
- * Check for Jetpack or My Photon
- **/
-function jetpack_or_myphoton() {
-	if ( ! class_exists( 'Jetpack' ) && ! class_exists( 'My_Photon' ) ) {
-		die( esc_html(
-			__( 'Photonfill requires Jetpack or My Photon', 'photonfill' )
-		) );
+ * Make sure we have the necessary plugins installed and activated.
+ * @return void.
+ */
+function photonfill_dependency() {
+	if ( ! class_exists( 'My_Photon_Settings' ) && ! class_exists( 'Jetpack' ) ) {
+		die( __( 'Photonfill requires that either Jetpack Photon or My Photon is installed and active.' ) );
+	} elseif ( ! class_exists( 'My_Photon_Settings' ) && class_exists( 'Jetpack' ) && ! Jetpack::is_module_active( 'photon' ) ) {
+		die( __( 'Photonfill requires that Jetpack Photon is active.' ) );
+	} elseif ( class_exists( 'My_Photon_Settings' ) && empty( My_Photon_Settings()->get( 'active' ) ) ) {
+		die( __( 'Photonfill requires that My Photon is active.' ) );
 	}
 }
-register_activation_hook( __FILE__, 'jetpack_or_myphoton' );
+register_activation_hook( __FILE__, 'jetpaphotonfill_dependencyck_or_myphoton' );
 
 /**
  * Get the base URL for this plugin.
@@ -107,7 +109,7 @@ function photonfill_hook_prefix() {
 	$prefix = 'jetpack';
 	if ( class_exists( 'Jetpack' ) && Jetpack::is_module_active( 'photon' ) ) {
 		$prefix = 'jetpack';
-	} elseif ( class_exists( 'My_Photon_Settings' ) && My_Photon_Settings::get( 'active' ) ) {
+	} elseif ( class_exists( 'My_Photon_Settings' ) && My_Photon_Settings()->get( 'active' ) ) {
 		$prefix = 'my';
 	}
 	// This setting fails under certain circumstances, like with VIP Go mu-plugins, so a filter is necessary.

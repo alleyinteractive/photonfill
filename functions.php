@@ -43,6 +43,17 @@ function photonfill_get_image_object( $attachment_id, $img_size = 'full' ) {
 }
 
 /**
+ * Use an external url to generate a photonfill image element. Does not support lazy loading.
+ * @param string. $img_url.
+ * @param string. $img_size;
+ * @param array. $attr. (can set alt and class)
+ * @return string. html element.
+ */
+function photonfill_get_url_image( $img_url, $img_size, $attr = array() ) {
+	return Photonfill()->get_url_image( $img_url, $img_size, $attr );
+}
+
+/**
  * Returns an array of breakpoint urls for a specific image size.
  * @param int. $attachment_id.
  * @param string. $img_size.
