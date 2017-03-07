@@ -472,7 +472,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						array(
 							'attachment_id' => $attachment['id'],
 							'width' => $medium_size['width'],
-							'height' => $medium_size['height']
+							'height' => $medium_size['height'],
 						)
 					);
 				} else {
@@ -508,7 +508,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$count = 0;
 			// If we have an image with only one size, lets set that to the width, this allows the use images in the wp editor for changing sizes.
 			$html = preg_replace( '/sizes\=\"(\d+)px\"/i', 'sizes="$1px" width="$1"', $html, 1, $count );
-			if ( ! empty( $caption ) && 0 == $count ) {
+			if ( ! empty( $caption ) && 0 === $count ) {
 				if ( is_numeric( $size ) ) {
 					$size_px = $size;
 				} elseif ( is_array( $size ) ) {
@@ -687,7 +687,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public function get_attachment_image( $attachment_id, $size = 'full', $attr ) {
 			if ( ! empty( $attachment_id ) && wp_attachment_is_image( $attachment_id ) ) {
 				// This means post thumbnail was called w/o a size arg.
-				if ( 'post-thumbnail' == $size ) {
+				if ( 'post-thumbnail' === $size ) {
 					$size = 'full';
 				}
 				$html = '';
@@ -745,7 +745,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public function get_attachment_picture( $attachment_id, $size = 'full', $attr ) {
 			if ( ! empty( $attachment_id ) && wp_attachment_is_image( $attachment_id ) ) {
 				// This means post thumbnail was called w/o a size arg.
-				if ( 'post-thumbnail' == $size ) {
+				if ( 'post-thumbnail' === $size ) {
 					$size = 'full';
 				}
 				$html = '';

@@ -1,6 +1,6 @@
 ( function( $ ) {
 	//Play nice with fieldmananger media metaboxes
-	$(document).on( 'fieldmanager_media_preview', function( event, wrapper, attachment, wp ) {
+	$( document ).on( 'fieldmanager_media_preview', function( event, wrapper, attachment, wp ) {
 		$.ajax( {
 			type: 'POST',
 			url: photonfill_wp_vars['wp_ajax_url'],
@@ -27,10 +27,9 @@
 	} );
 
 	//Set labels without dimensions for add media button modal
-	$(document).ready( function() {
+	$( document ).ready( function() {
 		$( '#tmpl-attachment-display-settings' ).text( function( index, text ) {
 			return text.replace( / &ndash; {{ size.width }} &times; {{ size.height }}/g, '' );
 		} );
 	} );
 })( jQuery );
-

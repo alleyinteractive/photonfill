@@ -172,7 +172,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			$offset = 0;
 			$width = $size['width'];
 			$height = $size['height'];
-			if ( 100 != $height && preg_match( '/^(\d+)px$/i', $height, $matches ) ) {
+			if ( 100 !== $height && preg_match( '/^(\d+)px$/i', $height, $matches ) ) {
 				$height = $matches[1];
 				if ( ! empty( $this->args['attachment_id'] ) ) {
 					$attachment_meta = wp_get_attachment_metadata( $this->args['attachment_id'], true );

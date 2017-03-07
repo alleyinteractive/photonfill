@@ -8,7 +8,7 @@
 				if ( cmd === 'mceInsertContent' ) {
 					var img,
 						images;
-					images = dom.select('img.lazyload');
+					images = dom.select( 'img.lazyload' );
 					for ( var i = 0, len = images.length; i < len; i++ ) {
 						img = editor.selection.select( images[i] );
 						lazySizes.loader.unveil( img );
@@ -23,4 +23,3 @@
 	tinymce.PluginManager.add( 'photonfill', tinymce.plugins.PhotonfillAdmin );
 
 })();
-
