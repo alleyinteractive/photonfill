@@ -596,7 +596,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			check_ajax_referer( 'photonfill_get_img_object', 'nonce' );
 			if ( ! empty( $_POST['attachment'] ) ) {
 				$attachment_id = absint( $_POST['attachment'] );
-				echo $this->get_attachment_image( $attachment_id, 'full', array( 'style' => 'width:100%' ) );
+				echo wp_kses( $this->get_attachment_image( $attachment_id, 'full', array( 'style' => 'width:100%' ) ) );
 			}
 			exit();
 		}
@@ -1139,8 +1139,11 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 /**
  * Return Photonfill instance.
+ * Ignore coding standards for camelcase.
  **/
+ // @codingStandardsIgnoreStart
 function Photonfill() {
 	return Photonfill::instance();
 }
+// @codingStandardsIgnoreEnd
 add_action( 'after_setup_theme', 'Photonfill' );

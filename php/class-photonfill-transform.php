@@ -289,6 +289,11 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 	}
 }
 
+/**
+ * Ignore coding standards for camelcase.
+ **/
+ // @codingStandardsIgnoreStart
 function Photonfill_Transform() {
 	return Photonfill_Transform::instance();
 }
+// @codingStandardsIgnoreEnd
