@@ -64,6 +64,8 @@ install_wp() {
 		tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C $WP_CORE_DIR
 	fi
 
+	git clone https://github.com/alleyinteractive/my-photon.git $WP_CORE_DIR/wp-content/plugins/my-photon/
+
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php $WP_CORE_DIR/wp-content/db.php
 }
 
@@ -81,11 +83,6 @@ install_test_suite() {
 		mkdir -p $WP_TESTS_DIR
 		svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
 		svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/data/ $WP_TESTS_DIR/data
-	fi
-
-	if [ ! -d $WP_TEST_DIR/vendor/my-photon/ ]; then
-		mkdir -p $WP_TESTS_DIR/vendor
-		git clone https://github.com/alleyinteractive/my-photon.git $WP_TESTS_DIR/vendor
 	fi
 
 	if [ ! -f wp-tests-config.php ]; then

@@ -119,7 +119,7 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 			'active'    => true,
 		);
 		update_option( 'my-photon', $my_photon_settings );
-		require_once getenv( 'WP_TESTS_DIR' ) . 'vendor/my-photon/my-photon.php';
+		activate_plugin( 'my-photon/my-photon.php' );
 	}
 
 }
