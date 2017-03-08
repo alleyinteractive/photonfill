@@ -91,7 +91,7 @@ class Photonfill_Test_Case extends WP_UnitTestCase {
 			$type = $upload['type'];
 		} else {
 			$mime = wp_check_filetype( $upload['file'] );
-			if ( $mime ) {
+			if ( ! empty( $mime ) ) {
 				$type = $mime['type'];
 			}
 		}
