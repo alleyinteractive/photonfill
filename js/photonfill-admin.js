@@ -12,6 +12,7 @@
 			dataType: 'html',
 		} )
 		.done( function( response ) {
+			wrapper.empty();
 			wrapper.append( '<a />' )
 			.find( 'a:last' )
 				.attr( 'href', '#' )
