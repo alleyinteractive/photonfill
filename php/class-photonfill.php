@@ -595,10 +595,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		function ajax_get_img_object() {
 			check_ajax_referer( 'photonfill_get_img_object', 'nonce' );
+			// Disable PHPCS warning on inspecting super global.
+			// @codingStandardsIgnoreStart
 			if ( ! empty( $_POST['attachment'] ) ) {
 				$attachment_id = absint( $_POST['attachment'] );
+
 				echo wp_kses( $this->get_attachment_image( $attachment_id, 'full', array( 'style' => 'width:100%' ) ) );
 			}
+			// @codingStandardsIgnoreEnd
 			exit();
 		}
 
