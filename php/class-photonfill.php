@@ -524,31 +524,28 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return Attachment object.
 		 */
 		public function prepare_attachment_for_js( $attachment ) {
-			if ( ! empty( $_POST['action'] ) && 'query-attachments' === $_POST['action'] ) {
-				$photon_url_function = photonfill_hook_prefix() . '_photon_url';
+			$photon_url_function = photonfill_hook_prefix() . '_photon_url';
 
-				if ( ! empty( $attachment['sizes']['medium'] ) ) {
-					$medium_size = $attachment['sizes']['medium'];
-					$attachment['sizes']['medium']['url'] = $photon_url_function(
-						$medium_size['url'],
-						array(
-							'attachment_id' => $attachment['id'],
-							'width' => $medium_size['width'],
-							'height' => $medium_size['height'],
-						)
-					);
-				} else {
-					$attachment['sizes']['medium']['url'] = $photon_url_function(
-						$attachment['sizes']['full']['url'],
-						array(
-							'attachment_id' => $attachment['id'],
-							'width' => 300,
-							'height' => 225,
-						)
-					);
-				}
+			if ( ! empty( $attachment['sizes']['medium'] ) ) {
+				$medium_size = $attachment['sizes']['medium'];
+				$attachment['sizes']['medium']['url'] = $photon_url_function(
+					$medium_size['url'],
+					array(
+						'attachment_id' => $attachment['id'],
+						'width' => $medium_size['width'],
+						'height' => $medium_size['height'],
+					)
+				);
+			} else {
+				$attachment['sizes']['medium']['url'] = $photon_url_function(
+					$attachment['sizes']['full']['url'],
+					array(
+						'attachment_id' => $attachment['id'],
+						'width' => 300,
+						'height' => 225,
+					)
+				);
 			}
-
 			return $attachment;
 		}
 
