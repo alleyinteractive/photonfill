@@ -1,31 +1,54 @@
 <?php
+/**
+ * Photonfill Transform
+ *
+ * @package Photonfill
+ * @subpackage Plugin
+ * @version 0.1.14
+ */
+
 if ( ! class_exists( 'Photonfill_Transform' ) ) {
 
+	/**
+	 * Photonfill Transform class.
+	 */
 	class Photonfill_Transform {
 
+		/**
+		 * Instance.
+		 *
+		 * @var $instance
+		 */
 		private static $instance;
 
+
 		/**
-		 * The current breakpoint.
+		 * Breakpoint.
+		 *
+		 * @var $breakpoint
 		 */
 		public $breakpoint = '';
 
+
 		/**
-		 * Class photon args.
+		 * Photon arguments.
+		 *
+		 * @var $args
 		 */
 		public $args = array();
 
 		/**
-		 * Constructor
-		 *
-		 * @params string $name
-		 * @params url $name optional
-		 * @return void
+		 * Empty constructor.
 		 */
 		public function __construct() {
 			/* Don't do anything, needs to be initialized via instance() method */
 		}
 
+		/**
+		 * Generate instance.
+		 *
+		 * @return $instance of Photonfill Transform.
+		 */
 		public static function instance() {
 			if ( ! isset( self::$instance ) ) {
 				self::$instance = new Photonfill_Transform();
@@ -35,28 +58,29 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		}
 
 		/**
-		 * Set our transform hooks
-		 *
+		 * Set our transform hooks.
 		 */
 		public function set_hooks() {
 			$hook_prefix = photonfill_hook_prefix();
 
-			// Override photon args
+			// Override Photon arg.
 			add_filter( $hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
 			add_filter( $hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
 
 			// If we're using the photonfill_bypass_image_downsize, we skip downsize, and now need to
-			// ensure the photon args are being set (but with a lower priority)
+			// ensure the Photon args are being set (but with a lower priority).
 			if ( apply_filters( 'photonfill_bypass_image_downsize', false ) ) {
 				add_filter( $hook_prefix . '_photon_pre_args', array( $this, 'set_photon_args' ), 4, 3 );
 			}
 
-			// Transform our photon url
+			// Transform our Photon url.
 			add_filter( $hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
 		}
 
 		/**
-		 * Set our transform attributes
+		 * Set our transform attributes.
+		 *
+		 * @param array $args defaults to empty.
 		 */
 		public function setup( $args = array() ) {
 			$this->args = $args;
@@ -64,10 +88,14 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 
 		/**
 		 * Add in necessary args expected with photonfill
+		 *
+		 * @param array $args Default args for Photon.
+		 * @param array $data New args for Photon.
+		 * @return array of merged args for Photon.
 		 */
 		public function set_photon_args( $args, $data ) {
 			$args = $this->args;
-			// Fall back on data if empty
+			// Fall back on data if empty.
 			if ( ! empty( $data['size'] ) && ! empty( $data['transform'] ) ) {
 				$args['width'] = empty( $args['width'] ) ? $data['image_args']['width'] : $args['width'];
 				$args['height'] = empty( $args['height'] ) ? $data['image_args']['height'] : $args['height'];
@@ -81,9 +109,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		}
 
 		/**
-		 * Transform our photon url
+		 * Transform our Photon url.
+		 *
+		 * @param array  $args Array of Photon args.
+		 * @param string $image_url URL of image.
 		 */
-		public function transform_photon_url( $args, $image_url, $scheme = null ) {
+		public function transform_photon_url( $args, $image_url ) {
 			// Make sure we've properly instantiated our args.
 			// If not then photon_url is being called directly and image downsize has been skipped.
 			// We can only set width and height at this point.
@@ -96,14 +127,14 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				}
 				$args = $this->args;
 			}
-			// If we have a resize parameter grab those dimensions as height & width
+			// If we have a resize parameter grab those dimensions as height & width.
 			if ( ! empty( $args['resize'] ) ) {
 				$size = explode( ',', $args['resize'] );
 				$args['width'] = empty( $size[0] ) ? 0 : absint( $size[0] );
 				$args['height'] = empty( $size[1] ) ? 0 : absint( $size[1] );
 			}
 
-			// If a callback is defined use it to alter our args
+			// If a callback is defined use it to alter our args.
 			if ( ! empty( $args['callback'] ) && function_exists( $args['callback'] ) ) {
 				return $args['callback']( $args );
 			} elseif ( ! empty( $args['callback'] ) && method_exists( $this, $args['callback'] ) ) {
@@ -115,6 +146,9 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 
 		/**
 		 * Get the width and height of the default transform. Can be used for other transforms.
+		 *
+		 * @param array $args Photon args for extracting height and width.
+		 * @return array Dimensions.
 		 */
 		public function get_dimensions( $args ) {
 			// We are only going to use the size if none are defined in the transform, which shouldn't happen.
@@ -128,14 +162,17 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		}
 
 		/**
-		 * Calculate the proper scaled height offset using original attachment aspect ratio
+		 * Calculate the proper scaled height offset using original attachment aspect ratio.
+		 *
+		 * @param array $size Dimensions array.
+		 * @return float/int offset
 		 */
 		public function get_center_crop_offset( $size ) {
-			// Return the whole image
+			// Return the whole image.
 			$offset = 0;
 			$width = $size['width'];
 			$height = $size['height'];
-			if ( 100 != $height && preg_match( '/^(\d+)px$/i',  $height, $matches ) ) {
+			if ( 100 !== $height && preg_match( '/^(\d+)px$/i', $height, $matches ) ) {
 				$height = $matches[1];
 				if ( ! empty( $this->args['attachment_id'] ) ) {
 					$attachment_meta = wp_get_attachment_metadata( $this->args['attachment_id'], true );
@@ -153,6 +190,9 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 
 		/**
 		 * Only set photon args if they have been set. This allows default photon functionality to work.
+		 *
+		 * @param array $args Args to be conditionally set.
+		 * @return array Merged args with defaults.
 		 */
 		public function set_conditional_args( $args ) {
 			if ( ! empty( $this->args['quality'] ) ) {
@@ -165,15 +205,18 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			return $args;
 		}
 
-		### All transform functions can be found below. ###
+		/** All transform functions can be found below. **/
 
 		/**
 		 * Our default photon transform sets it to fit to width and crop the height from the top left if crop value is not false.
+		 *
+		 * @param array $args Default transform args.
+		 * @return array Processed args.
 		 */
 		public function default_transform( $args ) {
-			// Override the default transform
+			// Override the default transform.
 			$default_method = apply_filters( 'photonfill_default_transform', 'center_crop' );
-			// If an external method is defined use it as default
+			// If an external method is defined use it as default.
 			if ( function_exists( $default_method ) ) {
 				return $default_method( $args );
 			} elseif ( method_exists( $this, $default_method ) ) {
@@ -183,8 +226,11 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		}
 
 		/**
-		 * Crop image from the top down
-		 * Will fit width of image first
+		 * Crop image from the top down.
+		 * Will fit width of image first.
+		 *
+		 * @param array $args Transform args.
+		 * @return array Processed args.
 		 */
 		public function top_down_crop( $args ) {
 			$size = $this->get_dimensions( $args );
@@ -196,7 +242,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 
 		/**
 		 * Crop image from the center out.
-		 * Will always fit width of image.  Will only crop height from center if scaled height is greater than defined height.
+		 * Will always fit width of image. Will only crop height from center if scaled height is greater than defined height.
+		 *
+		 * @param array $args Transform args.
+		 * @return array Processed args.
 		 */
 		public function center_crop( $args ) {
 			$size = $this->get_dimensions( $args );
@@ -209,11 +258,14 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 
 		/**
 		 * Resize and crop an image to exact width,height pixel dimensions.
+		 *
+		 * @param array $args Transform args.
+		 * @return array Processed args.
 		 */
 		public function resize( $args ) {
 			$size = $this->get_dimensions( $args );
 
-			// return only required args
+			// return only required args.
 			return $this->set_conditional_args( array(
 				'resize' => $size['width'] . ',' . $size['height'],
 			) );
@@ -222,11 +274,14 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		/**
 		 * Fit an image to a containing box of width,height dimensions. Image aspect ratio is maintained.
 		 * Image is never cropped.
+		 *
+		 * @param array $args Transform args.
+		 * @return array Processed args.
 		 */
 		public function fit( $args ) {
 			$size = $this->get_dimensions( $args );
 
-			// return only required args
+			// return only required args.
 			return $this->set_conditional_args( array(
 				'fit' => $size['width'] . ',' . $size['height'],
 			) );
@@ -234,6 +289,11 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 	}
 }
 
+/**
+ * Ignore coding standards for camelcase.
+ **/
+ // @codingStandardsIgnoreStart
 function Photonfill_Transform() {
 	return Photonfill_Transform::instance();
 }
+// @codingStandardsIgnoreEnd
