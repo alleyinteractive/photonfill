@@ -524,7 +524,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return Attachment object.
 		 */
 		public function prepare_attachment_for_js( $attachment ) {
-			if ( 'query-attachments' === $_POST['action'] ) {
+			if ( ! empty( $_POST['action'] ) && 'query-attachments' === $_POST['action'] ) {
 				$photon_url_function = photonfill_hook_prefix() . '_photon_url';
 
 				if ( ! empty( $attachment['sizes']['medium'] ) ) {
