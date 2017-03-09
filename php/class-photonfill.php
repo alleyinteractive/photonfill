@@ -142,7 +142,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 				add_filter( 'fieldmanager_media_preview', array( $this, 'set_fieldmanager_media' ), 10, 3 );
 
-				// Makesure we only prepare js attachment data for query-attachments
+				// Make sure we only prepare js attachment data for the query-attachments action.
 				add_action( 'ajax_query_attachments_args', array( $this, 'set_prepare_js_hook' ) );
 
 				add_filter( 'content_save_pre', array( $this, 'swap_lazyload_classes' ), 10, 1 );
