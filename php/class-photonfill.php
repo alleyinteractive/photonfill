@@ -142,7 +142,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 				add_filter( 'fieldmanager_media_preview', array( $this, 'set_fieldmanager_media' ), 10, 3 );
 
-				add_filter( 'wp_prepare_attachment_for_js', array( $this, 'prepare_attachment_for_js' ) );
+				// Makesure we only prepare js attachment data for query-attachments
+				add_action( 'ajax_query_attachments_args', array( $this, 'set_prepare_js_hook' ) );
 
 				add_filter( 'content_save_pre', array( $this, 'swap_lazyload_classes' ), 10, 1 );
 
@@ -519,6 +520,17 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$data[ $size ] = photonfill_wordify_slug( $size );
 			}
 			return $data;
+		}
+
+		/**
+		 * Set a hook to properly prepare media browser js.
+		 *
+		 * @param array $query args.
+		 * @return array $query args
+		 */
+		public function set_prepare_js_hook( $query ) {
+			add_filter( 'wp_prepare_attachment_for_js', array( $this, 'prepare_attachment_for_js' ) );
+			return $query;
 		}
 
 		/**
