@@ -352,6 +352,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$attr['data-srcset'] = implode( ',' , $srcset );
 						$full_src = wp_get_attachment_image_src( $attachment->ID, 'full' );
 						$attr['data-src'] = esc_url( $full_src[0] );
+
+						// Make sure core attributes arent't set here to ensure lazysizes will calculate it's own data attributes.
+						if ( isset( $attr['sizes'] ) ) {
+							unset( $attr['sizes'] );
+						}
+						if ( isset( $attr['srcset'] ) ) {
+							unset( $attr['srcset'] );
+						}
 					} else {
 						$attr['sizes'] = implode( ',' , $sizes );
 						$attr['srcset'] = implode( ',' , $srcset );
