@@ -119,6 +119,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			// If not then photon_url is being called directly and image downsize has been skipped.
 			// We can only set width and height at this point.
 			// This is easily remidied by simply passing the minimum args of attachment_id, width & height to the jetpack_photon_url() function.
+			if ( ! empty( $this->args ) ) {
+				$args = wp_parse_args( $args, $this->args );
+			}
+
 			if ( empty( $args['attachment_id'] ) && ! empty( $this->args['attachment_id'] ) ) {
 				if ( empty( $this->args['width'] ) && empty( $this->args['height'] ) ) {
 					$size = explode( ',', reset( $args ) );
@@ -253,6 +257,21 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			return $this->set_conditional_args( array(
 				'w' => $size['width'],
 				'crop' => '0,' . $horizontal_offset . 'px,100,' . $size['height'],
+			) );
+		}
+
+		/**
+		 * Crop original image from specified crop dimensions, then scale to width.
+		 * Will always fit width of image. Will only crop height if scaled height is greater than defined height.
+		 *
+		 * @param array $args Transform args.
+		 * @return array Processed args.
+		 */
+		public function custom_crop( $args ) {
+			$size = $this->get_dimensions( $args );
+			return $this->set_conditional_args( array(
+				'crop' => $args['crop'],
+				'w' => $size['width'],
 			) );
 		}
 

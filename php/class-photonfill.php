@@ -395,7 +395,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$default = ( ! empty( $img_size['default'] ) ) ? true : false;
 						$current_w = empty( $img_size['width'] ) ? 0 : $img_size['width'];
 						$current_h = empty( $img_size['height'] ) ? 0 : $img_size['height'];
-						$transform_args = array(
+						$transform_args = apply_filters( 'photonfill_pre_transform_args', array(
 							'attachment_id' => $attachment_id,
 							'callback' => ( isset( $img_size['callback'] ) ) ? $img_size['callback'] : null,
 							'crop' => ( isset( $img_size['crop'] ) ) ? $img_size['crop'] : true,
@@ -404,7 +404,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'width' => $current_w,
 							'height' => $current_h,
 							'quality' => ( isset( $img_size['quality'] ) ) ? $img_size['quality'] : null,
-						);
+						), $attachment_id, $current_size, $args );
 						$this->transform->setup( $transform_args );
 						$img_src = $this->get_img_src( $attachment_id, array( $current_w, $current_h ), $default );
 						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
@@ -415,7 +415,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$breakpoint_width = $this->get_breakpoint_width( $breakpoint );
 						$breakpoint_height = ( ! empty( $breakpoint_widths['height'] ) ) ? $breakpoint_widths['height'] : 9999;
 						$new_size = wp_constrain_dimensions( $current_size[0], $current_size[1], $breakpoint_width, $breakpoint_height );
-						$transform_args = array(
+						$transform_args = apply_filters( 'photonfill_pre_transform_args', array(
 							'attachment_id' => $attachment_id,
 							'callback' => ( isset( $img_size['callback'] ) ) ? $img_size['callback'] : null,
 							'crop' => ( isset( $breakpoint_widths['crop'] ) ) ? $breakpoint_widths['crop'] : true,
@@ -424,7 +424,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'width' => $new_size[0],
 							'height' => $new_size[1],
 							'quality' => ( isset( $breakpoint_widths['quality'] ) ) ? $breakpoint_widths['quality'] : null,
-						);
+						), $attachment_id, $current_size, $args );
 						$this->transform->setup( $transform_args );
 						$img_src = $this->get_img_src( $attachment_id, $new_size );
 						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
@@ -454,7 +454,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$default = ( ! empty( $img_size['default'] ) ) ? true : false;
 						$current_w = empty( $img_size['width'] ) ? 0 : $img_size['width'];
 						$current_h = empty( $img_size['height'] ) ? 0 : $img_size['height'];
-						$transform_args = array(
+						$transform_args = apply_filters( 'photonfill_pre_transform_args', array(
 							'callback' => ( isset( $img_size['callback'] ) ) ? $img_size['callback'] : null,
 							'crop' => ( isset( $img_size['crop'] ) ) ? $img_size['crop'] : true,
 							'breakpoint' => $breakpoint,
@@ -462,7 +462,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'width' => $current_w,
 							'height' => $current_h,
 							'quality' => ( isset( $img_size['quality'] ) ) ? $img_size['quality'] : null,
-						);
+						), 'external_url', $current_size, $args );
 						$this->transform->setup( $transform_args );
 						$img_src = $this->get_url_img_src( $img_url, array( $current_w, $current_h ), $default );
 						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
@@ -473,7 +473,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$breakpoint_width = $this->get_breakpoint_width( $breakpoint );
 						$breakpoint_height = ( ! empty( $breakpoint_widths['height'] ) ) ? $breakpoint_widths['height'] : 9999;
 						$new_size = wp_constrain_dimensions( $current_size[0], $current_size[1], $breakpoint_width, $breakpoint_height );
-						$transform_args = array(
+						$transform_args = apply_filters( 'photonfill_pre_transform_args', array(
 							'callback' => ( isset( $img_size['callback'] ) ) ? $img_size['callback'] : null,
 							'crop' => ( isset( $breakpoint_widths['crop'] ) ) ? $breakpoint_widths['crop'] : true,
 							'breakpoint' => $breakpoint,
@@ -481,7 +481,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'width' => $new_size[0],
 							'height' => $new_size[1],
 							'quality' => ( isset( $breakpoint_widths['quality'] ) ) ? $breakpoint_widths['quality'] : null,
-						);
+						), 'external_url', $current_size, $args );
 						$this->transform->setup( $transform_args );
 						$img_src = $this->get_url_img_src( $img_url, $new_size );
 						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
