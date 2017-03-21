@@ -379,8 +379,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$attr['sizes'] = implode( ',' , $sizes );
 						$attr['srcset'] = implode( ',' , $srcset );
 					}
-				}
-			}
+				} // End if().
+			} // End if().
 			return $attr;
 		}
 
@@ -450,14 +450,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'src' => $img_src,
 						);
 					}
-				}
+				} // End if().
 
 				return array(
 					'id' => $attachment_id,
 					'sizes' => $image_sizes,
 					'args' => $args,
 				);
-			}
+			} // End if().
 			return false;
 		}
 
@@ -517,14 +517,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'src' => $img_src,
 						);
 					}
-				}
+				} // End if().
 
 				return array(
 					'id' => 'external_url',
 					'sizes' => $image_sizes,
 					'args' => $args,
 				);
-			}
+			} // End if().
 			return false;
 		}
 
@@ -732,7 +732,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				}
 
 				return $img_src;
-			}
+			} // End if().
 			return false;
 		}
 
@@ -959,7 +959,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 							// Write source element.
 							$html .= "<source srcset=\"{$srcset_url}\" media=\"{$srcset_media}\" />";
-						}
+						} // End foreach().
 
 						// No fallback default has been set.
 						if ( ( empty( $default_srcset ) && is_array( $default_breakpoint ) ) || is_string( $default_breakpoint ) ) {
@@ -971,10 +971,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$attr['srcset'] = $default_srcset;
 						$html .= $this->build_attachment_image( $attachment_id, $attr );
 						$html .= '</picture>';
-					}
-				}
+					} // End if().
+				} // End if().
 				return $html;
-			}
+			} // End if().
 			return;
 		}
 
@@ -1060,7 +1060,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$attr[] = trim( $maxsize . 'px' );
 				}
 				return implode( ',', $attr );
-			}
+			} // End if().
 			return '';
 		}
 
@@ -1120,7 +1120,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function get_url_image( $img_url, $size, $attr = array() ) {
 			if ( ! empty( $img_url ) ) {
-				$attr = array_merge( $attr, array( 'sizes' => array(), 'srcset' => array() ) );
+				$attr = array_merge( $attr, array(
+					'sizes' => array(),
+					'srcset' => array(),
+				) );
 				$attr['class'] = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), null, $size );
 
 				// Ensure size value is valid. Use 'full' if not.
@@ -1165,7 +1168,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 				$html = $this->build_attachment_image( null, $attr );
 				return $html;
-			}
+			} // End if().
 			return;
 		}
 
@@ -1212,7 +1215,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			return $allowed;
 		}
 	}
-}
+} // End if().
 
 /**
  * Return Photonfill instance.
