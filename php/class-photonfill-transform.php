@@ -162,7 +162,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				$h = $args['height'] . 'px';
 			}
 
-			return array( 'width' => $args['width'], 'height' => $h );
+			return array(
+				'width' => $args['width'],
+				'height' => $h,
+			);
 		}
 
 		/**
@@ -306,7 +309,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			) );
 		}
 	}
-}
+} // End if().
 
 /**
  * Ignore coding standards for camelcase.
