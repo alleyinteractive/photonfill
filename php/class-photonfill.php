@@ -51,6 +51,13 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public $base_unit_pixel = 16;
 
 		/**
+		 * External URL ID slug.
+		 * Instead of using an attachment ID, external images uses a generic slug.
+		 * @var $external_url_slug. string.
+		 */
+		public $external_url_slug = 'external_url';
+
+		/**
 		 * Transform object.
 		 * Used for hooking photon
 		 *
@@ -487,7 +494,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'width' => $current_w,
 							'height' => $current_h,
 							'quality' => ( isset( $img_size['quality'] ) ) ? $img_size['quality'] : null,
-						), 'external_url', $current_size, $args );
+						), $this->external_url_slug, $current_size, $args );
 						$this->transform->setup( $transform_args );
 						$img_src = $this->get_url_img_src( $img_url, array( $current_w, $current_h ), $default );
 						$image_sizes[ $breakpoint ] = array(
@@ -509,7 +516,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'width' => $new_size[0],
 							'height' => $new_size[1],
 							'quality' => ( isset( $breakpoint_widths['quality'] ) ) ? $breakpoint_widths['quality'] : null,
-						), 'external_url', $current_size, $args );
+						), $this->external_url_slug, $current_size, $args );
 						$this->transform->setup( $transform_args );
 						$img_src = $this->get_url_img_src( $img_url, $new_size );
 						$image_sizes[ $breakpoint ] = array(
@@ -520,7 +527,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				} // End if().
 
 				return array(
-					'id' => 'external_url',
+					'id' => $this->external_url_slug,
 					'sizes' => $image_sizes,
 					'args' => $args,
 				);
