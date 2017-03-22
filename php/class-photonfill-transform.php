@@ -132,7 +132,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				$args = $this->args;
 			}
 			// If we have a resize parameter grab those dimensions as height & width.
-			if ( ! empty( $args['resize'] ) ) {
+			if ( ! empty( $args['resize'] ) && is_string( $args['resize'] ) ) {
 				$size = explode( ',', $args['resize'] );
 				$args['width'] = empty( $size[0] ) ? 0 : absint( $size[0] );
 				$args['height'] = empty( $size[1] ) ? 0 : absint( $size[1] );
