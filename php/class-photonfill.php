@@ -53,6 +53,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * External URL ID slug.
 		 * Instead of using an attachment ID, external images uses a generic slug.
+		 *
 		 * @var $external_url_slug. string.
 		 */
 		public $external_url_slug = 'external_url';
