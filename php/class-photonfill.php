@@ -51,6 +51,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public $base_unit_pixel = 16;
 
 		/**
+		 * External URL ID slug.
+		 * Instead of using an attachment ID, external images uses a generic slug.
+		 *
+		 * @var $external_url_slug. string.
+		 */
+		public $external_url_slug = 'external_url';
+
+		/**
 		 * Transform object.
 		 * Used for hooking photon
 		 *
@@ -96,12 +104,24 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$this->base_unit_pixel = apply_filters( 'photonfill_base_unit_pixel', $this->base_unit_pixel );
 
 			$this->breakpoints = apply_filters( 'photonfill_breakpoints', array(
-				'mobile' => array( 'max' => 640 ),
-				'mini-tablet' => array( 'min' => 640 ),
-				'tablet' => array( 'min' => 800 ),
-				'desktop' => array( 'min' => 1040 ),
-				'hd-desktop' => array( 'min' => 1280 ),
-				'all' => array( 'min' => 0 ),
+				'mobile' => array(
+					'max' => 640,
+				 ),
+				'mini-tablet' => array(
+					'min' => 640,
+				),
+				'tablet' => array(
+					'min' => 800,
+				),
+				'desktop' => array(
+					'min' => 1040,
+				),
+				'hd-desktop' => array(
+					'min' => 1280,
+				),
+				'all' => array(
+					'min' => 0,
+				),
 			) );
 
 			// Set our url transform class.
@@ -217,7 +237,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						if ( ! empty( $breakpoint_width ) ) {
 							// Don't constrain the height.
 							$new_size = wp_constrain_dimensions( $width, $height, $breakpoint_width, $height );
-							$image_sizes[ $size ][ $breakpoint ] = array( 'width' => $new_size[0], 'height' => $new_size[1] );
+							$image_sizes[ $size ][ $breakpoint ] = array(
+								'width' => $new_size[0],
+								'height' => $new_size[1],
+							);
 						}
 					}
 				}
@@ -364,8 +387,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$attr['sizes'] = implode( ',' , $sizes );
 						$attr['srcset'] = implode( ',' , $srcset );
 					}
-				}
-			}
+				} // End if().
+			} // End if().
 			return $attr;
 		}
 
@@ -395,7 +418,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$default = ( ! empty( $img_size['default'] ) ) ? true : false;
 						$current_w = empty( $img_size['width'] ) ? 0 : $img_size['width'];
 						$current_h = empty( $img_size['height'] ) ? 0 : $img_size['height'];
-						$transform_args = array(
+						$transform_args = apply_filters( 'photonfill_pre_transform_args', array(
 							'attachment_id' => $attachment_id,
 							'callback' => ( isset( $img_size['callback'] ) ) ? $img_size['callback'] : null,
 							'crop' => ( isset( $img_size['crop'] ) ) ? $img_size['crop'] : true,
@@ -404,10 +427,13 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'width' => $current_w,
 							'height' => $current_h,
 							'quality' => ( isset( $img_size['quality'] ) ) ? $img_size['quality'] : null,
-						);
+						), $attachment_id, $current_size, $args );
 						$this->transform->setup( $transform_args );
 						$img_src = $this->get_img_src( $attachment_id, array( $current_w, $current_h ), $default );
-						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
+						$image_sizes[ $breakpoint ] = array(
+							'size' => $this->breakpoints[ $breakpoint ],
+							'src' => $img_src,
+						);
 					}
 				} elseif ( is_array( $current_size ) ) {
 					// If our size in an array of ints parse it differently.
@@ -415,7 +441,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$breakpoint_width = $this->get_breakpoint_width( $breakpoint );
 						$breakpoint_height = ( ! empty( $breakpoint_widths['height'] ) ) ? $breakpoint_widths['height'] : 9999;
 						$new_size = wp_constrain_dimensions( $current_size[0], $current_size[1], $breakpoint_width, $breakpoint_height );
-						$transform_args = array(
+						$transform_args = apply_filters( 'photonfill_pre_transform_args', array(
 							'attachment_id' => $attachment_id,
 							'callback' => ( isset( $img_size['callback'] ) ) ? $img_size['callback'] : null,
 							'crop' => ( isset( $breakpoint_widths['crop'] ) ) ? $breakpoint_widths['crop'] : true,
@@ -424,15 +450,22 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'width' => $new_size[0],
 							'height' => $new_size[1],
 							'quality' => ( isset( $breakpoint_widths['quality'] ) ) ? $breakpoint_widths['quality'] : null,
-						);
+						), $attachment_id, $current_size, $args );
 						$this->transform->setup( $transform_args );
 						$img_src = $this->get_img_src( $attachment_id, $new_size );
-						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
+						$image_sizes[ $breakpoint ] = array(
+							'size' => $this->breakpoints[ $breakpoint ],
+							'src' => $img_src,
+						);
 					}
-				}
+				} // End if().
 
-				return array( 'id' => $attachment_id, 'sizes' => $image_sizes, 'args' => $args );
-			}
+				return array(
+					'id' => $attachment_id,
+					'sizes' => $image_sizes,
+					'args' => $args,
+				);
+			} // End if().
 			return false;
 		}
 
@@ -454,7 +487,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$default = ( ! empty( $img_size['default'] ) ) ? true : false;
 						$current_w = empty( $img_size['width'] ) ? 0 : $img_size['width'];
 						$current_h = empty( $img_size['height'] ) ? 0 : $img_size['height'];
-						$transform_args = array(
+						$transform_args = apply_filters( 'photonfill_pre_transform_args', array(
 							'callback' => ( isset( $img_size['callback'] ) ) ? $img_size['callback'] : null,
 							'crop' => ( isset( $img_size['crop'] ) ) ? $img_size['crop'] : true,
 							'breakpoint' => $breakpoint,
@@ -462,10 +495,13 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'width' => $current_w,
 							'height' => $current_h,
 							'quality' => ( isset( $img_size['quality'] ) ) ? $img_size['quality'] : null,
-						);
+						), $this->external_url_slug, $current_size, $args );
 						$this->transform->setup( $transform_args );
 						$img_src = $this->get_url_img_src( $img_url, array( $current_w, $current_h ), $default );
-						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
+						$image_sizes[ $breakpoint ] = array(
+							'size' => $this->breakpoints[ $breakpoint ],
+							'src' => $img_src,
+						);
 					}
 				} elseif ( is_array( $current_size ) ) {
 					// If our size in an array of ints parse it differently.
@@ -473,7 +509,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$breakpoint_width = $this->get_breakpoint_width( $breakpoint );
 						$breakpoint_height = ( ! empty( $breakpoint_widths['height'] ) ) ? $breakpoint_widths['height'] : 9999;
 						$new_size = wp_constrain_dimensions( $current_size[0], $current_size[1], $breakpoint_width, $breakpoint_height );
-						$transform_args = array(
+						$transform_args = apply_filters( 'photonfill_pre_transform_args', array(
 							'callback' => ( isset( $img_size['callback'] ) ) ? $img_size['callback'] : null,
 							'crop' => ( isset( $breakpoint_widths['crop'] ) ) ? $breakpoint_widths['crop'] : true,
 							'breakpoint' => $breakpoint,
@@ -481,15 +517,22 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'width' => $new_size[0],
 							'height' => $new_size[1],
 							'quality' => ( isset( $breakpoint_widths['quality'] ) ) ? $breakpoint_widths['quality'] : null,
-						);
+						), $this->external_url_slug, $current_size, $args );
 						$this->transform->setup( $transform_args );
 						$img_src = $this->get_url_img_src( $img_url, $new_size );
-						$image_sizes[ $breakpoint ] = array( 'size' => $this->breakpoints[ $breakpoint ], 'src' => $img_src );
+						$image_sizes[ $breakpoint ] = array(
+							'size' => $this->breakpoints[ $breakpoint ],
+							'src' => $img_src,
+						);
 					}
-				}
+				} // End if().
 
-				return array( 'id' => 'external_url', 'sizes' => $image_sizes, 'args' => $args );
-			}
+				return array(
+					'id' => $this->external_url_slug,
+					'sizes' => $image_sizes,
+					'args' => $args,
+				);
+			} // End if().
 			return false;
 		}
 
@@ -619,7 +662,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			// @codingStandardsIgnoreStart
 			if ( ! empty( $_POST['attachment'] ) ) {
 				$attachment_id = absint( $_POST['attachment'] );
-				echo wp_kses( $this->get_attachment_image( $attachment_id, 'full', array( 'style' => 'max-width:100%' ) ) );
+				echo wp_kses( $this->get_attachment_image( $attachment_id, 'full', array(
+					'style' => 'max-width:100%',
+				) ) );
 			}
 			// @codingStandardsIgnoreEnd
 			exit();
@@ -637,7 +682,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		function set_fieldmanager_media( $preview, $value, $attachment ) {
 			if ( ! empty( $attachment->ID ) && strpos( $attachment->post_mime_type, 'image/' ) === 0 ) {
 				$preview = esc_html__( 'Uploaded image:', 'photonfill' ) . '<br />';
-				$preview .= '<a href="#">' . $this->get_attachment_image( $attachment->ID, 'full', array( 'style' => 'max-width:100%' ) ) . '</a>';
+				$preview .= '<a href="#">' . $this->get_attachment_image( $attachment->ID, 'full', array(
+					'style' => 'max-width:100%',
+				) ) . '</a>';
 				$preview .= sprintf( '<br /><a href="#" class="fm-media-remove fm-delete">%s</a>', esc_html__( 'remove', 'photonfill' ) );
 			}
 			return $preview;
@@ -675,8 +722,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					// Support Jetpack Photon and My Photon.
 					$photon_url_function = photonfill_hook_prefix() . '_photon_url';
 					$attachment_src = wp_get_attachment_url( $attachment_id );
-					$img_src['url'] = $photon_url_function( $attachment_src, array( 'attachment_id' => $attachment_id, 'width' => $img_src['width'], 'height' => $img_src['height'] ) );
-					$img_src['url2x'] = $photon_url_function( $attachment_src, array( 'attachment_id' => $attachment_id, 'width' => ( absint( $img_src['width'] ) * 2 ), 'height' => ( absint( $img_src['height'] ) * 2 ) ) );
+					$img_src['url'] = $photon_url_function( $attachment_src, array(
+						'attachment_id' => $attachment_id,
+						'width' => $img_src['width'],
+						'height' => $img_src['height'],
+					) );
+					$img_src['url2x'] = $photon_url_function( $attachment_src, array(
+						'attachment_id' => $attachment_id,
+						'width' => ( absint( $img_src['width'] ) * 2 ),
+						'height' => ( absint( $img_src['height'] ) * 2 ),
+					) );
 				} else {
 					$attachment_src = wp_get_attachment_image_src( $attachment_id, $size );
 					$attachment_src_2x = wp_get_attachment_image_src( $attachment_id, array( absint( $width ) * 2, absint( $height ) * 2 ) );
@@ -685,7 +740,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				}
 
 				return $img_src;
-			}
+			} // End if().
 			return false;
 		}
 
@@ -710,8 +765,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 				// Support Jetpack photon and My Photon.
 				$photon_url_function = photonfill_hook_prefix() . '_photon_url';
-				$img_src['url'] = $photon_url_function( $img_url, array( 'width' => $img_src['width'], 'height' => $img_src['height'] ) );
-				$img_src['url2x'] = $photon_url_function( $img_url, array( 'width' => ( absint( $img_src['width'] ) * 2 ), 'height' => ( absint( $img_src['height'] ) * 2 ) ) );
+				$img_src['url'] = $photon_url_function( $img_url, array(
+					'width' => $img_src['width'],
+					'height' => $img_src['height'],
+				) );
+				$img_src['url2x'] = $photon_url_function( $img_url, array(
+					'width' => ( absint( $img_src['width'] ) * 2 ),
+					'height' => ( absint( $img_src['height'] ) * 2 ),
+				) );
 
 				return $img_src;
 			}
@@ -906,7 +967,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 							// Write source element.
 							$html .= "<source srcset=\"{$srcset_url}\" media=\"{$srcset_media}\" />";
-						}
+						} // End foreach().
 
 						// No fallback default has been set.
 						if ( ( empty( $default_srcset ) && is_array( $default_breakpoint ) ) || is_string( $default_breakpoint ) ) {
@@ -918,10 +979,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$attr['srcset'] = $default_srcset;
 						$html .= $this->build_attachment_image( $attachment_id, $attr );
 						$html .= '</picture>';
-					}
-				}
+					} // End if().
+				} // End if().
 				return $html;
-			}
+			} // End if().
 			return;
 		}
 
@@ -1007,7 +1068,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$attr[] = trim( $maxsize . 'px' );
 				}
 				return implode( ',', $attr );
-			}
+			} // End if().
 			return '';
 		}
 
@@ -1067,7 +1128,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function get_url_image( $img_url, $size, $attr = array() ) {
 			if ( ! empty( $img_url ) ) {
-				$attr = array_merge( $attr, array( 'sizes' => array(), 'srcset' => array() ) );
+				$attr = array_merge( $attr, array(
+					'sizes' => array(),
+					'srcset' => array(),
+				) );
 				$attr['class'] = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), null, $size );
 
 				// Ensure size value is valid. Use 'full' if not.
@@ -1112,7 +1176,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 				$html = $this->build_attachment_image( null, $attr );
 				return $html;
-			}
+			} // End if().
 			return;
 		}
 
@@ -1159,7 +1223,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			return $allowed;
 		}
 	}
-}
+} // End if().
 
 /**
  * Return Photonfill instance.

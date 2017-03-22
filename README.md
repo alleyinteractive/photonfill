@@ -1,20 +1,20 @@
-#PhotonFill
+# PhotonFill
 
 PhotonFill is a Developer focused WordPress plugin that allows for easy implementation of responsive images using [picturefill](https://github.com/scottjehl/picturefill) while integrating the powerful free CDN of [Jetpack Photon](https://jetpack.me/support/photon/). This plugin optionally allows the implementation of lazy loaded responsive images using [lazysizes](https://github.com/aFarkas/lazysizes).
 
-##Installation
+## Installation
 
 1. Download and install the [Jetpack Plugin](https://jetpack.me/). Photon must be active which requires an internet connection. For local development environments where Jetpack cannot connect your account and thus Photon cannot be active, PhotonFill also works with the [My Photon Plugin](https://github.com/alleyinteractive/my-photon) which allows you to run self hosted version of Photon.
 2. PhotonFill should work out of the box with default default breakpoints and image sizes. It will attempt to guess the correct size images to serve from Photon based on intermediate images sizes that have been defined in your theme by ``add_image_size()`` and the default breakpoints. This of course was not the intended way for Photonfill to work and it's real power lies in the advanced configuration.
 
-##Advanced Configuration
+## Advanced Configuration
 
 The power of PhotonFill is that it allows different mainpulations of a single image within a set of defined breakpoints.
 
-###Intermediate Image Size File Creation
+### Intermediate Image Size File Creation
 PhotonFill by default disables creation of subsizes of images when calling ``add_image_size()``. This saves a ton of space server side and can make future data migrations of a site's uploads directory substantially smaller. If for some reason you need to have the intermediate image sizes created physically on upload, you can re-enabled it with the filter hook ``photonfill_enable_resize_upload``.
 
-###Defining Breakpoints
+### Defining Breakpoints
 By default, PhotonFill defines the following breakpoints:
 ```
 array(
@@ -57,7 +57,7 @@ add_filter( 'photonfill_breakpoints', 'mytheme_define_breakpoints' );
 ```
 You can specify any breakpoint name. No need to keep the device themed keys.
 
-###Defining Image Sizes and the Image Stack
+### Defining Image Sizes and the Image Stack
 For already established themes that have used ``add_image_size()`` to create multiple crops of an image, PhotonFill will use these image sizes to create an image stack that will scale with the breakpoints defined above. Using the default breakpoints and the default WordPress core image sizes, the PhotonFill image stack would look like:
 ```
 array(
@@ -143,7 +143,7 @@ function mytheme_set_image_stack( $image_stack ) {
 add_filter( 'photonfill_image_sizes', 'mytheme_set_image_stack' );
 ```
 
-##Photon Transforms and Callbacks
+## Photon Transforms and Callbacks
 Photon uses an url parameter based [API](https://developer.wordpress.com/docs/photon/api/) for manipulation of images. The PhotonFill Transform class has a basic set of transforms and defaults to the center_crop transform.  You can alter the default crop by using the ``photonfill_default_transform`` filter hook. For anything that can't be handled with PhotonFill's transform methods, you can create your own transform easily by specifying a callback in the image stack. It will first check to see if a theme function exists of that callback name. If not it will then check the PhotonFill Transform class methods. Finally if no callback is found, it will return the PhotonFill default transform. PhotonFill hooks into the Photon process early and sets custom args that are then parsed right before the CDN url is generated. In this new process, you can expect to find these parameters available to you when the callback is run, but not part of the final CDN url that generated. Your callbacks should return a new array of Photon args instead of appending to the args passed to the callback. This will help avoid the generation of invalid CDN Urls
 
 * ``attachment_id`` (int) The attachment id of the image
@@ -168,3 +168,4 @@ PhotonFill also has the option of lazy loading responsive images and allowing th
 * ``photonfill_use_picture_as_default`` Use a picture element as the default when calling `the_post_thumbnail` or `wp_get_attachment_image`
 * ``photonfill_bypass_image_downsize`` Bypass the image downsize hooks which can be problematic on some environments. Set `true` if all of your image URLs are returning the original URL.
 * ``photonfill_fallback_image_size`` Plugins may define image sizes not in your image stack. If that is the case, photonfill will fallback on size `full`. Use this filter hook to change that fallback.
+* ``photonfill_pre_transform_args`` Usefull to set transform arguments for individual image sizes.

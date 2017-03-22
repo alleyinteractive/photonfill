@@ -119,6 +119,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			// If not then photon_url is being called directly and image downsize has been skipped.
 			// We can only set width and height at this point.
 			// This is easily remidied by simply passing the minimum args of attachment_id, width & height to the jetpack_photon_url() function.
+			if ( ! empty( $this->args ) ) {
+				$args = wp_parse_args( $args, $this->args );
+			}
+
 			if ( empty( $args['attachment_id'] ) && ! empty( $this->args['attachment_id'] ) ) {
 				if ( empty( $this->args['width'] ) && empty( $this->args['height'] ) ) {
 					$size = explode( ',', reset( $args ) );
@@ -128,7 +132,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				$args = $this->args;
 			}
 			// If we have a resize parameter grab those dimensions as height & width.
-			if ( ! empty( $args['resize'] ) ) {
+			if ( ! empty( $args['resize'] ) && is_string( $args['resize'] ) ) {
 				$size = explode( ',', $args['resize'] );
 				$args['width'] = empty( $size[0] ) ? 0 : absint( $size[0] );
 				$args['height'] = empty( $size[1] ) ? 0 : absint( $size[1] );
@@ -158,7 +162,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				$h = $args['height'] . 'px';
 			}
 
-			return array( 'width' => $args['width'], 'height' => $h );
+			return array(
+				'width' => $args['width'],
+				'height' => $h,
+			);
 		}
 
 		/**
@@ -257,6 +264,21 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		}
 
 		/**
+		 * Crop original image from specified crop dimensions, then scale to width.
+		 * Will always fit width of image. Will only crop height if scaled height is greater than defined height.
+		 *
+		 * @param array $args Transform args.
+		 * @return array Processed args.
+		 */
+		public function custom_crop( $args ) {
+			$size = $this->get_dimensions( $args );
+			return $this->set_conditional_args( array(
+				'crop' => $args['crop'],
+				'w' => $size['width'],
+			) );
+		}
+
+		/**
 		 * Resize and crop an image to exact width,height pixel dimensions.
 		 *
 		 * @param array $args Transform args.
@@ -286,8 +308,23 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				'fit' => $size['width'] . ',' . $size['height'],
 			) );
 		}
+
+		/**
+		 * Fit an image to a containing box of width. Image aspect ratio is maintained.
+		 * Image is never cropped.
+		 *
+		 * @param array $args Transform args.
+		 * @return array Processed args.
+		 */
+		public function scale_by_width( $args ) {
+			$size = $this->get_dimensions( $args );
+			// return only required args.
+			return $this->set_conditional_args( array(
+				'w' => $size['width'],
+			) );
+		}
 	}
-}
+} // End if().
 
 /**
  * Ignore coding standards for camelcase.
