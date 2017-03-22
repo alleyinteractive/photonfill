@@ -308,6 +308,21 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				'fit' => $size['width'] . ',' . $size['height'],
 			) );
 		}
+
+		/**
+		 * Fit an image to a containing box of width. Image aspect ratio is maintained.
+		 * Image is never cropped.
+		 *
+		 * @param array $args Transform args.
+		 * @return array Processed args.
+		 */
+		public function scale_by_width( $args ) {
+			$size = $this->get_dimensions( $args );
+			// return only required args.
+			return $this->set_conditional_args( array(
+				'w' => $size['width'],
+			) );
+		}
 	}
 } // End if().
 
