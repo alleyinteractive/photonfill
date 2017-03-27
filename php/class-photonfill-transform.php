@@ -21,6 +21,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		private static $instance;
 
+		/**
+		 * Our hook prefix ('jetpack' or 'my').
+		 *
+		 * @var $hook_prefix
+		 */
+		private $hook_prefix;
 
 		/**
 		 * Breakpoint.
@@ -61,20 +67,25 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * Set our transform hooks.
 		 */
 		public function set_hooks() {
-			$hook_prefix = photonfill_hook_prefix();
+			$this->hook_prefix = photonfill_hook_prefix();
 
 			// Override Photon arg.
-			add_filter( $hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
-			add_filter( $hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( $this->hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( $this->hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
 
 			// If we're using the photonfill_bypass_image_downsize, we skip downsize, and now need to
 			// ensure the Photon args are being set (but with a lower priority).
 			if ( apply_filters( 'photonfill_bypass_image_downsize', false ) ) {
-				add_filter( $hook_prefix . '_photon_pre_args', array( $this, 'set_photon_args' ), 4, 3 );
+				add_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'set_photon_args' ), 4, 3 );
+			}
+
+			// Skip inline image anchor tags
+			if ( apply_filters( 'photonfill_use_full_size_as_link', true ) ) {
+				add_filter( $this->hook_prefix . '_photon_post_image_args', array( $this, 'skip_inline_anchor_links' ), 10, 2 );
 			}
 
 			// Transform our Photon url.
-			add_filter( $hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
+			add_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
 		}
 
 		/**
@@ -323,6 +334,59 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 				'w' => $size['width'],
 			) );
 		}
+
+		/**
+		 * BEGIN INLINE IMAGE HANDLING
+		 *
+		 * The functions below are used to handle parsing the anchor tags in the content.
+		 * You can disable this using the hook `photonfill_use_full_size_as_link`
+		 */
+
+		/**
+		 * This is only called when we filter images in the content.
+		 * We set a hook an track what image we are on. If ${prefix}_photon_get_url has no args passed to it, this means it is asking for a link.
+		 * We simply set the action hook here.
+		 *
+		 * @param boolean $boolean
+		 * @param string $src URL src.
+		 * @return boolean
+		 */
+		public function skip_inline_anchor_links( $boolean, $src ) {
+			add_filter( $this->hook_prefix . '_photon_pre_image_url', array( $this, 'set_full_img_url' ), 20, 2 );
+			return $boolean;
+		}
+
+		/**
+		 * Before photonfill touches the image args, check to see if it has been called without args.
+		 * If it has set a hook to return the full image.
+		 *
+		 * @param string $url Original URL.
+		 * @param array $args New args for Photon.
+		 * @return string Modified url string.
+		 */
+		public function set_full_img_url( $url, $args ) {
+			if ( empty( $args ) ) {
+				add_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'set_full_img_url_args' ), 250, 2 );
+				remove_filter( $this->hook_prefix . '_photon_pre_image_url', array( $this, 'set_full_img_url' ), 20, 2 );
+			}
+			return $url;
+		}
+
+		/**
+		 * Kill all the args and server up the cdn original image.
+		 *
+		 * @param array $args Default args for Photon.
+		 * @param array $data New args for Photon.
+		 * @return array
+		 */
+		public function set_full_img_url_args( $args, $url ) {
+			remove_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'set_full_img_url_args' ), 250, 2 );
+			return array();
+		}
+
+		/**
+		 * END INLINE IMAGE HANDLING
+		 */
 	}
 } // End if().
 
