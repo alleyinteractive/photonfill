@@ -152,7 +152,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			// Disable creating multiple images for newly uploaded images.
 			add_filter( 'intermediate_image_sizes_advanced', array( $this, 'disable_image_multi_resize' ) );
 
-			// Skip inline image anchor tags
+			// Skip inline image anchor tags.
 			if ( apply_filters( 'photonfill_use_full_size_as_link', true ) ) {
 				add_filter( $this->hook_prefix . '_photon_post_image_args', array( $this, 'skip_inline_anchor_links' ), 10, 2 );
 			}
@@ -906,6 +906,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 		/**
 		 * Allow lazysizes to better calculate image width by setting img width before calculation.
+		 *
 		 * @return void
 		 */
 		public function add_lazyload_image_size_styles() {
@@ -1183,7 +1184,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Set the size to a valid size if it has not been defined.
 		 *
-		 * @param mixed $size String or array(W,H).
+		 * @param mixed  $size String or array(W,H).
 		 * @return mixed String or array(W,H).
 		 */
 		public function get_valid_size( $size ) {
@@ -1197,8 +1198,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Allow specific tags and attributes to be saved
 		 * which are required for photonfill to properly work
 		 *
-		 * @param array $allowed Allowed tags.
-		 * @param mixed $context Context.
+		 * @param array  $allowed Allowed tags.
+		 * @param mixed  $context Context.
 		 * @return array
 		 */
 		public function photonfill_kses_allowed_html( $allowed, $context ) {
@@ -1237,7 +1238,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * By default this is disabled but can be enabled using the `photonfill_parse_legacy_lazyloaded_content_images`
 		 */
 
-
+		/**
+		 * Parse all inline content and make sure they are being served up responsively.
+		 *
+		 * @param string $the_content The post content.
+		 * @return string
+		 */
 		public function filter_the_content_images( $the_content ) {
 			$class = ucfirst( $this->hook_prefix ) . '_Photon';
 			$images = $class::parse_images_from_html( $the_content );
@@ -1286,8 +1292,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * We set a hook an track what image we are on. If ${prefix}_photon_get_url has no args passed to it, this means it is asking for a link.
 		 * We simply set the action hook here.
 		 *
-		 * @param boolean $boolean
-		 * @param string $src URL src.
+		 * @param boolean  $boolean Conditional.
+		 * @param string  $src URL src.
 		 * @return boolean
 		 */
 		public function skip_inline_anchor_links( $boolean, $src ) {
@@ -1299,8 +1305,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Before photonfill touches the image args, check to see if it has been called without args.
 		 * If it has set a hook to return the full image.
 		 *
-		 * @param string $url Original URL.
-		 * @param array $args New args for Photon.
+		 * @param string  $url Original URL.
+		 * @param array  $args New args for Photon.
 		 * @return string Modified url string.
 		 */
 		public function set_full_img_url( $url, $args ) {
@@ -1315,7 +1321,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Kill all the args and server up the cdn original image.
 		 *
 		 * @param array $args Default args for Photon.
-		 * @param array $data New args for Photon.
+		 * @param array $url New args for Photon.
 		 * @return array
 		 */
 		public function set_full_img_url_args( $args, $url ) {
