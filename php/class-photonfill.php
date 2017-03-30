@@ -1060,7 +1060,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @param int    $attachment_id Attachment id.
 		 * @param string $img_size Image size.
 		 * @param array  $attr_name Image attribute.
-		 * @return string. Comma delimited attribute.
+		 * @return string Comma delimited attribute.
 		 */
 		public function get_responsive_image_attribute( $attachment_id, $img_size, $attr_name ) {
 			$image = ( ! empty( $attachment_id ) && is_numeric( $attachment_id ) ) ? $this->create_image_object( $attachment_id, $img_size ) : $this->create_url_image_object( $attachment_id, $img_size );
@@ -1184,7 +1184,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Set the size to a valid size if it has not been defined.
 		 *
-		 * @param mixed  $size String or array(W,H).
+		 * @param mixed $size String or array(W,H).
 		 * @return mixed String or array(W,H).
 		 */
 		public function get_valid_size( $size ) {
@@ -1198,8 +1198,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Allow specific tags and attributes to be saved
 		 * which are required for photonfill to properly work
 		 *
-		 * @param array  $allowed Allowed tags.
-		 * @param mixed  $context Context.
+		 * @param array $allowed Allowed tags.
+		 * @param mixed $context Context.
 		 * @return array
 		 */
 		public function photonfill_kses_allowed_html( $allowed, $context ) {
@@ -1292,7 +1292,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * We set a hook an track what image we are on. If ${prefix}_photon_get_url has no args passed to it, this means it is asking for a link.
 		 * We simply set the action hook here.
 		 *
-		 * @param boolean  $boolean Conditional.
+		 * @param boolean $boolean Conditional.
 		 * @param string  $src URL src.
 		 * @return boolean
 		 */
@@ -1305,7 +1305,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * Before photonfill touches the image args, check to see if it has been called without args.
 		 * If it has set a hook to return the full image.
 		 *
-		 * @param string  $url Original URL.
+		 * @param string $url Original URL.
 		 * @param array  $args New args for Photon.
 		 * @return string Modified url string.
 		 */
