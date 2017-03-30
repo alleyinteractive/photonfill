@@ -158,9 +158,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			}
 
 			// Parse legacy content images for lazyloading. You can technically use this for non-lazy loaded images as well as it just replaces the entire image tag.
-			if ( apply_filters( 'photonfill_parse_legacy_lazyloaded_content_images', false ) ) {
-				add_filter( 'the_content', array( $this, 'filter_the_content_lazyloaded_images' ) );
-				add_filter( 'get_post_gallery', array( $this, 'filter_the_content_lazyloaded_images' ) );
+			if ( apply_filters( 'photonfill_parse_legacy_content_images', false ) ) {
+				add_filter( 'the_content', array( $this, 'filter_the_content_images' ) );
+				add_filter( 'get_post_gallery', array( $this, 'filter_the_content_images' ) );
+			}
+
+			// If we are lazyloading images add in simle style to help better calculate image sizes on the fly.
+			if ( photonfill_use_lazyload() ) {
+				add_filter( 'wp_head', array( $this, 'add_lazyload_image_size_styles' ) );
 			}
 
 			// Allow image sizes to be set when adding content via the modal in the admin area.
@@ -897,6 +902,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				return $html;
 			}
 			return;
+		}
+
+		/**
+		 * Allow lazysizes to better calculate image width by setting img width before calculation.
+		 * @return void
+		 */
+		public function add_lazyload_image_size_styles() {
+			echo '<style>img[data-sizes="auto"] { display: block; width: 100%; }</style>';
 		}
 
 		/**

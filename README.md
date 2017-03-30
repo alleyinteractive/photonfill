@@ -170,4 +170,4 @@ PhotonFill also has the option of lazy loading responsive images and allowing th
 * ``photonfill_fallback_image_size`` Plugins may define image sizes not in your image stack. If that is the case, photonfill will fallback on size `full`. Use this filter hook to change that fallback.
 * ``photonfill_pre_transform_args`` Usefull to set transform arguments for individual image sizes.
 * ``photonfill_use_full_size_as_link`` This sets inline content anchor tags to use the full image as a link instead of the resized image. Set to false to disable this feature.
-* ``photonfill_parse_legacy_lazyloaded_content_images`` If you want lazyloaded images on legacy content images, enable with this hook.
+* ``photonfill_parse_legacy_content_images`` If you want lazyloaded images on legacy content images, enable with this hook.
