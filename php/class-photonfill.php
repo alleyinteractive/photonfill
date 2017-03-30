@@ -1238,7 +1238,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 
 
-		public function filter_the_content_lazyloaded_images( $the_content ) {
+		public function filter_the_content_images( $the_content ) {
 			$class = ucfirst( $this->hook_prefix ) . '_Photon';
 			$images = $class::parse_images_from_html( $the_content );
 
