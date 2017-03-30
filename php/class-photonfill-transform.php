@@ -155,6 +155,9 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * @return array Dimensions.
 		 */
 		public function get_dimensions( $args ) {
+			if ( empty( $args ) ) {
+				return false;
+			}
 			// We are only going to use the size if none are defined in the transform, which shouldn't happen.
 			if ( isset( $args['crop'] ) && false === $args['crop'] ) {
 				$h = 100;
@@ -241,10 +244,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function top_down_crop( $args ) {
 			$size = $this->get_dimensions( $args );
-			return $this->set_conditional_args( array(
-				'w' => $size['width'],
-				'crop' => '0,0,100,' . $size['height'],
-			) );
+			if ( ! empty( $size ) ) {
+				return $this->set_conditional_args( array(
+					'w' => $size['width'],
+					'crop' => '0,0,100,' . $size['height'],
+				) );
+			}
 		}
 
 		/**
@@ -256,11 +261,13 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function center_crop( $args ) {
 			$size = $this->get_dimensions( $args );
-			$horizontal_offset = $this->get_center_crop_offset( $size );
-			return $this->set_conditional_args( array(
-				'w' => $size['width'],
-				'crop' => '0,' . $horizontal_offset . 'px,100,' . $size['height'],
-			) );
+			if ( ! empty( $size ) ) {
+				$horizontal_offset = $this->get_center_crop_offset( $size );
+				return $this->set_conditional_args( array(
+					'w' => $size['width'],
+					'crop' => '0,' . $horizontal_offset . 'px,100,' . $size['height'],
+				) );
+			}
 		}
 
 		/**
@@ -272,10 +279,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function custom_crop( $args ) {
 			$size = $this->get_dimensions( $args );
-			return $this->set_conditional_args( array(
-				'crop' => $args['crop'],
-				'w' => $size['width'],
-			) );
+			if ( ! empty( $size ) ) {
+				return $this->set_conditional_args( array(
+					'crop' => $args['crop'],
+					'w' => $size['width'],
+				) );
+			}
 		}
 
 		/**
@@ -286,11 +295,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function resize( $args ) {
 			$size = $this->get_dimensions( $args );
-
-			// return only required args.
-			return $this->set_conditional_args( array(
-				'resize' => $size['width'] . ',' . $size['height'],
-			) );
+			if ( ! empty( $size ) ) {
+				// return only required args.
+				return $this->set_conditional_args( array(
+					'resize' => $size['width'] . ',' . $size['height'],
+				) );
+			}
 		}
 
 		/**
@@ -302,11 +312,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function fit( $args ) {
 			$size = $this->get_dimensions( $args );
-
-			// return only required args.
-			return $this->set_conditional_args( array(
-				'fit' => $size['width'] . ',' . $size['height'],
-			) );
+			if ( ! empty( $size ) ) {
+				// return only required args.
+				return $this->set_conditional_args( array(
+					'fit' => $size['width'] . ',' . $size['height'],
+				) );
+			}
 		}
 
 		/**
@@ -318,10 +329,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		public function scale_by_width( $args ) {
 			$size = $this->get_dimensions( $args );
-			// return only required args.
-			return $this->set_conditional_args( array(
-				'w' => $size['width'],
-			) );
+			if ( ! empty( $size ) ) {
+				// return only required args.
+				return $this->set_conditional_args( array(
+					'w' => $size['width'],
+				) );
+			}
 		}
 	}
 } // End if().
