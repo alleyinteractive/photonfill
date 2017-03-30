@@ -21,6 +21,12 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 */
 		private static $instance;
 
+		/**
+		 * Our hook prefix ('jetpack' or 'my').
+		 *
+		 * @var $hook_prefix
+		 */
+		private $hook_prefix;
 
 		/**
 		 * Breakpoint.
@@ -61,20 +67,20 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * Set our transform hooks.
 		 */
 		public function set_hooks() {
-			$hook_prefix = photonfill_hook_prefix();
+			$this->hook_prefix = photonfill_hook_prefix();
 
 			// Override Photon arg.
-			add_filter( $hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
-			add_filter( $hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( $this->hook_prefix . '_photon_image_downsize_array', array( $this, 'set_photon_args' ), 5, 2 );
+			add_filter( $this->hook_prefix . '_photon_image_downsize_string', array( $this, 'set_photon_args' ), 5, 2 );
 
 			// If we're using the photonfill_bypass_image_downsize, we skip downsize, and now need to
 			// ensure the Photon args are being set (but with a lower priority).
 			if ( apply_filters( 'photonfill_bypass_image_downsize', false ) ) {
-				add_filter( $hook_prefix . '_photon_pre_args', array( $this, 'set_photon_args' ), 4, 3 );
+				add_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'set_photon_args' ), 4, 3 );
 			}
 
 			// Transform our Photon url.
-			add_filter( $hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
+			add_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
 		}
 
 		/**
