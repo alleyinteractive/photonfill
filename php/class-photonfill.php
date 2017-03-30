@@ -67,6 +67,13 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		public $transform = null;
 
 		/**
+		 * Our hook prefix ('jetpack' or 'my').
+		 *
+		 * @var $hook_prefix
+		 */
+		private $hook_prefix;
+
+		/**
 		 * Constructor
 		 *
 		 * @return void
@@ -127,6 +134,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			// Set our url transform class.
 			$this->transform = Photonfill_Transform();
 
+			$this->hook_prefix = photonfill_hook_prefix();
+
 			// Make sure to set image sizes after all image sizes have been added in theme.
 			// Set priority to a high number to ensure images have been added.
 			add_action( 'after_setup_theme', array( $this, 'set_image_sizes' ), 100 );
@@ -142,6 +151,17 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 			// Disable creating multiple images for newly uploaded images.
 			add_filter( 'intermediate_image_sizes_advanced', array( $this, 'disable_image_multi_resize' ) );
+
+			// Skip inline image anchor tags
+			if ( apply_filters( 'photonfill_use_full_size_as_link', true ) ) {
+				add_filter( $this->hook_prefix . '_photon_post_image_args', array( $this, 'skip_inline_anchor_links' ), 10, 2 );
+			}
+
+			// Parse legacy content images for lazyloading. You can technically use this for non-lazy loaded images as well as it just replaces the entire image tag.
+			if ( apply_filters( 'photonfill_parse_legacy_lazyloaded_content_images', false ) ) {
+				add_filter( 'the_content', array( $this, 'filter_the_content_lazyloaded_images' ) );
+				add_filter( 'get_post_gallery', array( $this, 'filter_the_content_lazyloaded_images' ) );
+			}
 
 			// Allow image sizes to be set when adding content via the modal in the admin area.
 			if ( is_admin() ) {
@@ -995,7 +1015,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		private function build_attachment_image( $attachment_id = null, $attr ) {
 			$attr = apply_filters( 'photonfill_img_attributes', $attr, $attachment_id );
-			if ( ! empty( $attachment_id ) ) {
+			if ( ! empty( $attachment_id ) && is_numeric( $attachment_id ) ) {
 				$attachment = get_post( $attachment_id );
 
 				if ( empty( $attr['alt'] ) ) {
@@ -1029,7 +1049,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return string. Comma delimited attribute.
 		 */
 		public function get_responsive_image_attribute( $attachment_id, $img_size, $attr_name ) {
-			$image = $this->create_image_object( $attachment_id, $img_size );
+			$image = ( ! empty( $attachment_id ) && is_numeric( $attachment_id ) ) ? $this->create_image_object( $attachment_id, $img_size ) : $this->create_url_image_object( $attachment_id, $img_size );
 			if ( ! empty( $image['id'] ) ) {
 				$attr = array();
 				$maxsize = 0;
@@ -1128,53 +1148,20 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function get_url_image( $img_url, $size, $attr = array() ) {
 			if ( ! empty( $img_url ) ) {
-				$attr = array_merge( $attr, array(
-					'sizes' => array(),
-					'srcset' => array(),
-				) );
-				$attr['class'] = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), null, $size );
-
 				// Ensure size value is valid. Use 'full' if not.
 				$size = $this->get_valid_size( $size );
 
 				$image = $this->create_url_image_object( $img_url, $size );
-				$html = '';
-				$maxsize = 0;
-				$sizes = array();
-				$srcsets = array();
-				foreach ( $image['sizes'] as $breakpoint => $breakpoint_data ) {
-					$src = esc_url( $breakpoint_data['src']['url'] ) . ' ' . esc_attr( $breakpoint_data['src']['width'] . 'w' );
-					if ( ! in_array( $src, $srcsets, true ) ) {
-						$srcsets[] = $src;
-					}
 
-					$maxsize = $breakpoint_data['src']['width'] > $maxsize ? $breakpoint_data['src']['width'] : $maxsize;
-					$unit = ( ! empty( $breakpoint_data['size']['unit'] ) && in_array( $breakpoint_data['size']['unit'], $this->valid_units, true ) ) ? $breakpoint_data['size']['unit'] : 'px';
+				if ( photonfill_use_lazyload() ) {
+					$html = $this->get_lazyload_image( $img_url, $size, $attr );
+				} else {
+					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $img_url, $size );
+					$attr['sizes']  = $this->get_responsive_image_attribute( $img_url, $size, 'sizes' );
+					$attr['srcset'] = $this->get_responsive_image_attribute( $img_url, $size, 'srcset' );
 
-					$breakpoint_size_string = '';
-					if ( ! empty( $breakpoint_data['size']['min'] ) ) {
-						$breakpoint_size_string .= '(min-width: ' . esc_attr( $breakpoint_data['size']['min'] . $unit ) . ')';
-					}
-					if ( ! empty( $breakpoint_data['size']['max'] ) ) {
-						$breakpoint_size_string .= ( ! empty( $breakpoint_data['size']['min'] ) ) ? ' and ' : '';
-						$breakpoint_size_string .= '(max-width: ' . esc_attr( $breakpoint_data['size']['max'] . $unit ) . ')';
-					}
-					if ( ! empty( $breakpoint_size_string ) ) {
-						$size_attr = $breakpoint_size_string . ' ' . esc_attr( $breakpoint_data['src']['width'] ) . 'px';
-						if ( ! in_array( $size_attr, $sizes, true ) ) {
-							$sizes[] = $size_attr;
-						}
-					}
+					$html = $this->build_attachment_image( $img_url, $attr );
 				}
-
-				if ( ! in_array( trim( $maxsize . 'px' ), $attr['sizes'], true ) ) {
-					// Add in our default length.
-					$sizes[] = trim( $maxsize . 'px' );
-				}
-				$attr['srcset'] = implode( ',', $srcsets );
-				$attr['sizes'] = implode( ',', $sizes );
-
-				$html = $this->build_attachment_image( null, $attr );
 				return $html;
 			} // End if().
 			return;
@@ -1222,6 +1209,115 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 			return $allowed;
 		}
+
+		/**
+		 * BEGIN INLINE IMAGE HANDLING
+		 *
+		 * The code below handles parsing images found in the content.
+		 */
+
+		/**
+		 * BEGIN PARSE LAZYLOADED IMAGES
+		 *
+		 * Legacy content on sites that use lazy loading will not have the lazyloaded class set in the content as this is handled when a user inserts media into the content on the admin area.
+		 * The below functions add in the necessary classes to content.
+		 * By default this is disabled but can be enabled using the `photonfill_parse_legacy_lazyloaded_content_images`
+		 */
+
+
+		public function filter_the_content_lazyloaded_images( $the_content ) {
+			$class = ucfirst( $this->hook_prefix ) . '_Photon';
+			$images = $class::parse_images_from_html( $the_content );
+
+			if ( ! empty( $images ) ) {
+				foreach ( $images[0] as $index => $tag ) {
+					if ( preg_match( '#class=["|\']?[^"\']*size-([^"\'\s]+)[^"\']*["|\']?#i', $images['img_tag'][ $index ], $size ) ) {
+						$size = $size[1];
+					} else {
+						$size = 'full';
+					}
+					preg_match( '#alt=["|\']?([^"\']*)["|\']?#i', $images['img_tag'][ $index ], $alt );
+					if ( preg_match( '#class=["|\']?([^"\']*wp-image-([\d]+)[^"\']*)["|\']?#i', $images['img_tag'][ $index ], $matches ) ) {
+						$attr = array(
+							'class' => $matches[1],
+							'alt' => empty( $alt[1] ) ? '' : $alt[1],
+						);
+
+						if ( ! empty( $matches[2] ) && false === get_post_status( $matches[2] ) ) {
+							$new_tag = $this->get_attachment_image( $matches[2], $size, $attr );
+						} else {
+							$new_tag = $this->get_url_image( $images['img_url'][ $index ], $size, $attr );
+						}
+
+						$the_content = str_replace( $images['img_tag'][ $index ], $new_tag, $the_content );
+					}
+				}
+			}
+
+			return $the_content;
+		}
+
+		/**
+		 * END PARSE LAZYLOADED IMAGES
+		 */
+
+		/**
+		 * BEGIN ANCHOR TAG LINKS
+		 *
+		 * The functions below are used to handle parsing the anchor tags in the content.
+		 * You can disable this using the hook `photonfill_use_full_size_as_link`
+		 */
+
+		/**
+		 * This is only called when we filter images in the content.
+		 * We set a hook an track what image we are on. If ${prefix}_photon_get_url has no args passed to it, this means it is asking for a link.
+		 * We simply set the action hook here.
+		 *
+		 * @param boolean $boolean
+		 * @param string $src URL src.
+		 * @return boolean
+		 */
+		public function skip_inline_anchor_links( $boolean, $src ) {
+			add_filter( $this->hook_prefix . '_photon_pre_image_url', array( $this, 'set_full_img_url' ), 20, 2 );
+			return $boolean;
+		}
+
+		/**
+		 * Before photonfill touches the image args, check to see if it has been called without args.
+		 * If it has set a hook to return the full image.
+		 *
+		 * @param string $url Original URL.
+		 * @param array $args New args for Photon.
+		 * @return string Modified url string.
+		 */
+		public function set_full_img_url( $url, $args ) {
+			if ( empty( $args ) ) {
+				add_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'set_full_img_url_args' ), 250, 2 );
+				remove_filter( $this->hook_prefix . '_photon_pre_image_url', array( $this, 'set_full_img_url' ), 20, 2 );
+			}
+			return $url;
+		}
+
+		/**
+		 * Kill all the args and server up the cdn original image.
+		 *
+		 * @param array $args Default args for Photon.
+		 * @param array $data New args for Photon.
+		 * @return array
+		 */
+		public function set_full_img_url_args( $args, $url ) {
+			remove_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'set_full_img_url_args' ), 250, 2 );
+			return array();
+		}
+
+		/**
+		 * END ANCHOR TAG LINKS
+		 */
+
+		/**
+		 * END INLINE IMAGE HANDLING
+		 */
+
 	}
 } // End if().
 
