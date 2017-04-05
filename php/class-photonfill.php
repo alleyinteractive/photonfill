@@ -1250,11 +1250,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 			if ( ! empty( $images ) ) {
 				foreach ( $images[0] as $index => $tag ) {
+					$size = '';
 					if ( preg_match( '#class=["|\']?[^"\']*size-([^"\'\s]+)[^"\']*["|\']?#i', $images['img_tag'][ $index ], $size ) ) {
 						$size = $size[1];
-					} else {
-						$size = 'full';
 					}
+					$size = $this->get_valid_size( $size );
+
 					preg_match( '#alt=["|\']?([^"\']*)["|\']?#i', $images['img_tag'][ $index ], $alt );
 					if ( preg_match( '#class=["|\']?([^"\']*wp-image-([\d]+)[^"\']*)["|\']?#i', $images['img_tag'][ $index ], $matches ) ) {
 						$attr = array(
@@ -1262,11 +1263,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							'alt' => empty( $alt[1] ) ? '' : $alt[1],
 						);
 
+						// Since we don't have an image size, just set it to the full width.
+						add_filter( 'photonfill_default_transform', array( $this, 'set_inline_content_default_transform' ) );
+
 						if ( ! empty( $matches[2] ) && false === get_post_status( $matches[2] ) ) {
 							$new_tag = $this->get_attachment_image( $matches[2], $size, $attr );
 						} else {
 							$new_tag = $this->get_url_image( $images['img_url'][ $index ], $size, $attr );
 						}
+
+						remove_filter( 'photonfill_default_transform', array( $this, 'set_inline_content_default_transform' ) );
 
 						$the_content = str_replace( $images['img_tag'][ $index ], $new_tag, $the_content );
 					}
@@ -1274,6 +1280,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			}
 
 			return $the_content;
+		}
+
+		/**
+		 * Allow a different transform for parsing inline legacy content images.
+		 *
+		 * @param string $transform The default transform. Uses 'scale_by_width' instead of 'center_crop' as plugin defaults.
+		 * @return string
+		 */
+		public function set_inline_content_default_transform( $transform ) {
+			return apply_filters( 'photonfill_legacy_content_images_default_transform', 'scale_by_width' );
 		}
 
 		/**
@@ -1318,7 +1334,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		}
 
 		/**
-		 * Kill all the args and server up the cdn original image.
+		 * Kill all the args and serve up the cdn original image.
 		 *
 		 * @param array $args Default args for Photon.
 		 * @param array $url New args for Photon.
