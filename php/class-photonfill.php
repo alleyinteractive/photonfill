@@ -1187,7 +1187,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @param mixed $size String or array(W,H).
 		 * @return mixed String or array(W,H).
 		 */
-		public function get_valid_size( $size ) {
+		public function get_valid_size( $size = 'full' ) {
 			if ( empty( $size ) || ( is_string( $size ) && ( ! array_key_exists( $size, $this->image_sizes ) || 'post-thumbnail' === $size || 'full' === $size ) ) ) {
 				$size = apply_filters( 'photonfill_fallback_image_size', 'full' );
 			}
