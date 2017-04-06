@@ -80,6 +80,21 @@ function photonfill_enqueue_assets() {
 }
 
 /**
+ * Dequeue devicepx-jetpack.js.
+ * This is used for hi-rez avatars and zoomed browser.
+ * It does nothing we actually want as you should have images defined for hi-rez devices.
+ *
+ * @return void
+ */
+function photonfill_dequeue_devicepx() {
+	wp_dequeue_script( 'devicepx' );
+}
+add_action( 'wp_enqueue_scripts', 'photonfill_dequeue_devicepx', 20 );
+add_action( 'customize_controls_enqueue_scripts', 'photonfill_dequeue_devicepx', 20 );
+add_action( 'admin_enqueue_scripts', 'photonfill_dequeue_devicepx', 20 );
+
+
+/**
  * Load photonfill plugin into TinyMCE.
  *
  * @param array $plugins Array of TinyMCE plugins.
