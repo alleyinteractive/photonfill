@@ -1286,8 +1286,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 						$the_content = str_replace( $images['img_tag'][ $index ], $new_tag, $the_content );
 					}
-				}
-			}
+				} // End foreach().
+			} // End if().
 
 			return $the_content;
 		}
