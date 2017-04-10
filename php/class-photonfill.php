@@ -1266,9 +1266,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						// If a custom width has been set for the image enforce it with inline styles fo lazy loading.
 						if ( photonfill_use_lazyload() && preg_match( '#width=["|\']?([\d]+)["|\']?#', $images['img_tag'][ $index ], $width ) ) {
 							if ( preg_match( '#style=["|\']?([^"\']*)["|\']?#i', $images['img_tag'][ $index ], $style ) ) {
-								$style = "width:{$width[1]}; {$style[1]}";
+								$style = "width:{$width[1]}px; {$style[1]}";
 							} else {
-								$style = "width:{$width[1]}";
+								$style = "width:{$width[1]}px";
 							};
 							$attr['style'] = $style;
 						}
