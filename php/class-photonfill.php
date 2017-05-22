@@ -892,7 +892,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$html = '';
 				if ( is_feed() ) {
 					$html = wp_get_attachment_image( $attachment_id, $size, false, $attr );
-				} else if ( photonfill_use_lazyload() ) {
+				} elseif ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
 					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
@@ -959,7 +959,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$html = '';
 				if ( is_feed() ) {
 					$html = wp_get_attachment_image( $attachment_id, $size, false, $attr );
-				} else if ( photonfill_use_lazyload() ) {
+				} elseif ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
 					$featured_image = $this->create_image_object( $attachment_id, $size );
