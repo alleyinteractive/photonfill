@@ -163,7 +163,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				add_filter( 'get_post_gallery', array( $this, 'filter_the_content_images' ) );
 			}
 
-			// If we are lazyloading images add in simle style to help better calculate image sizes on the fly.
+			// If we are lazyloading images add in simple style to help better calculate image sizes on the fly.
 			if ( photonfill_use_lazyload() ) {
 				add_filter( 'wp_head', array( $this, 'add_lazyload_image_size_styles' ) );
 			}
@@ -351,7 +351,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			if ( ! empty( $attachment->ID ) ) {
 				$image = $this->create_image_object( $attachment->ID, $size );
 				if ( ! empty( $image['id'] ) ) {
-					if ( isset( $attr['src'] ) ) {
+					if ( isset( $attr['src'] ) && ! is_feed() ) {
 						unset( $attr['src'] );
 					}
 					$srcset = array();
@@ -890,7 +890,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				// Ensure size value is valid. Use 'full' if not.
 				$size = $this->get_valid_size( $size );
 				$html = '';
-				if ( photonfill_use_lazyload() ) {
+				if ( is_feed() ) {
+					$html = wp_get_attachment_image( $attachment_id, $size, false, $attr );
+				} elseif ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
 					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
@@ -955,7 +957,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				// Ensure size value is valid. Use 'full' if not.
 				$size = $this->get_valid_size( $size );
 				$html = '';
-				if ( photonfill_use_lazyload() ) {
+				if ( is_feed() ) {
+					$html = wp_get_attachment_image( $attachment_id, $size, false, $attr );
+				} elseif ( photonfill_use_lazyload() ) {
 					$html = $this->get_lazyload_image( $attachment_id, $size, $attr );
 				} else {
 					$featured_image = $this->create_image_object( $attachment_id, $size );
