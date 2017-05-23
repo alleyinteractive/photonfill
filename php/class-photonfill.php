@@ -160,6 +160,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			// Parse legacy content images for lazyloading. You can technically use this for non-lazy loaded images as well as it just replaces the entire image tag.
 			if ( apply_filters( 'photonfill_parse_legacy_content_images', false ) ) {
 				add_filter( 'the_content', array( $this, 'filter_the_content_images' ) );
+				add_filter( 'the_content_feed', array( $this, 'filter_the_content_images' ) );
 				add_filter( 'get_post_gallery', array( $this, 'filter_the_content_images' ) );
 			}
 
