@@ -1172,12 +1172,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 				$image = $this->create_url_image_object( $img_url, $size );
 
-				if ( photonfill_use_lazyload() ) {
+				if ( photonfill_use_lazyload() && ! is_feed() ) {
 					$html = $this->get_lazyload_image( $img_url, $size, $attr );
 				} else {
 					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $img_url, $size );
-					$attr['sizes']  = $this->get_responsive_image_attribute( $img_url, $size, 'sizes' );
-					$attr['srcset'] = $this->get_responsive_image_attribute( $img_url, $size, 'srcset' );
+					if ( is_feed() ) {
+						$attr['src'] = $img_url;
+					} else {
+						$attr['sizes']  = $this->get_responsive_image_attribute( $img_url, $size, 'sizes' );
+						$attr['srcset'] = $this->get_responsive_image_attribute( $img_url, $size, 'srcset' );
+					}
 
 					$html = $this->build_attachment_image( $img_url, $attr );
 				}
