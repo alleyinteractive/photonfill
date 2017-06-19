@@ -30,13 +30,14 @@ add_action( 'plugins_loaded', 'photonfill_init' );
 
 /**
  * Make sure we have the necessary plugins installed and activated.
+ * Special exceptions for VIP and VIP Go.
  *
  * @return void
  */
 function photonfill_dependency() {
 	if ( ! class_exists( 'My_Photon_Settings' ) && ! class_exists( 'Jetpack' ) ) {
 		die( esc_html( __( 'Photonfill requires that either Jetpack Photon or My Photon is installed and active.' ) ) );
-	} elseif ( ! class_exists( 'My_Photon_Settings' ) && class_exists( 'Jetpack' ) && ! Jetpack::is_module_active( 'photon' ) ) {
+	} elseif ( ! class_exists( 'My_Photon_Settings' ) && class_exists( 'Jetpack' ) && ( ! defined( 'VIP_GO_ENV' ) && ! defined( 'WPCOM_IS_VIP_ENV' ) && ! Jetpack::is_module_active( 'photon' ) ) ) {
 		die( esc_html( __( 'Photonfill requires that Jetpack Photon is active.' ) ) );
 	} elseif ( class_exists( 'My_Photon_Settings' ) && ! My_Photon_Settings()->get( 'active' ) ) {
 		die( esc_html( __( 'Photonfill requires that My Photon is active.' ) ) );
