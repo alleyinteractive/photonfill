@@ -1044,7 +1044,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$attr['alt'] = trim( strip_tags( $attachment->post_excerpt ) ); // If not, use the caption.
 				}
 				if ( empty( $attr['alt'] ) ) {
-					$attr['alt'] = trim( strip_tags( $attachment->post_title ) ); // Finally, use the title.
+					$attr['alt'] = ''; // For a11y reasons, an empty string is better than the attachment name.
 				}
 			}
 			$html = '<img ';
