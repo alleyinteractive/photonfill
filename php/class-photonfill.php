@@ -102,9 +102,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			// Set our breakpoints.
 			/**
 			 * A breakpoint can accept the following parameters
-			 *		'max' => int, // Max width of element
-			 *		'min' => int, // Min width of element
-			 *		'unit' => string, // [px(default),em] Currently does not support vw unit, multi units or calc function.
+			 *   'max' => int, // Max width of element
+			 *   'min' => int, // Min width of element
+			 *   'unit' => string, // [px(default),em] Currently does not support vw unit, multi units or calc function.
 			 * )
 			 * wp_get_attachment_image does not use pixel density.
 			 */
@@ -113,7 +113,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$this->breakpoints = apply_filters( 'photonfill_breakpoints', array(
 				'mobile' => array(
 					'max' => 640,
-				 ),
+				),
 				'mini-tablet' => array(
 					'min' => 640,
 				),
