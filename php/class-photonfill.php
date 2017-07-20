@@ -1037,9 +1037,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 			// Update image alt tag if not set.
 			if (
-				! isset( $attr['alt'] ) &&
-				! empty( $attachment_id ) &&
-				is_numeric( $attachment_id )
+				! isset( $attr['alt'] )
+				&& ! empty( $attachment_id )
+				&& is_numeric( $attachment_id )
 			) {
 				$attr['alt'] = $this->get_alt_text( $attachment_id );
 			}
