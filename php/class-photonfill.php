@@ -1233,7 +1233,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Get the alt attribute for image.
 		 *
-		 * @param  int $attachment_id   ID of the attachment
+		 * @param  int $attachment_id   ID of the attachment.
 		 * @return string               Value of alt text
 		 */
 		public function get_alt_text( $attachment_id ) {
@@ -1248,7 +1248,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			}
 
 			// If still empty, set to nothing.
-			// For a11y reasons, an empty string is better than the attachment name
+			// For a11y reasons, an empty string is better than the attachment name.
 			if ( empty( $alt ) ) {
 				$alt = '';
 			}
