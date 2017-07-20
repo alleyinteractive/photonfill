@@ -100,6 +100,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function setup() {
 			// Set our breakpoints.
+			$this->base_unit_pixel = apply_filters( 'photonfill_base_unit_pixel', $this->base_unit_pixel );
+
 			/**
 			 * A breakpoint can accept the following parameters
 			 *   'max' => int, // Max width of element
@@ -108,8 +110,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			 * )
 			 * wp_get_attachment_image does not use pixel density.
 			 */
-			$this->base_unit_pixel = apply_filters( 'photonfill_base_unit_pixel', $this->base_unit_pixel );
-
 			$this->breakpoints = apply_filters( 'photonfill_breakpoints', array(
 				'mobile' => array(
 					'max' => 640,
