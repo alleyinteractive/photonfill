@@ -1232,6 +1232,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 		/**
 		 * Get the alt attribute for image.
+		 *
 		 * @param  int $attachment_id   ID of the attachment
 		 * @return string               Value of alt text
 		 */
