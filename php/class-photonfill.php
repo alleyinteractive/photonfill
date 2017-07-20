@@ -100,20 +100,20 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function setup() {
 			// Set our breakpoints.
+			$this->base_unit_pixel = apply_filters( 'photonfill_base_unit_pixel', $this->base_unit_pixel );
+
 			/**
 			 * A breakpoint can accept the following parameters
-			 *		'max' => int, // Max width of element
-			 *		'min' => int, // Min width of element
-			 *		'unit' => string, // [px(default),em] Currently does not support vw unit, multi units or calc function.
+			 *   'max' => int, // Max width of element
+			 *   'min' => int, // Min width of element
+			 *   'unit' => string, // [px(default),em] Currently does not support vw unit, multi units or calc function.
 			 * )
 			 * wp_get_attachment_image does not use pixel density.
 			 */
-			$this->base_unit_pixel = apply_filters( 'photonfill_base_unit_pixel', $this->base_unit_pixel );
-
 			$this->breakpoints = apply_filters( 'photonfill_breakpoints', array(
 				'mobile' => array(
 					'max' => 640,
-				 ),
+				),
 				'mini-tablet' => array(
 					'min' => 640,
 				),
@@ -1034,19 +1034,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		private function build_attachment_image( $attachment_id = null, $attr ) {
 			$attr = apply_filters( 'photonfill_img_attributes', $attr, $attachment_id );
-			if ( ! empty( $attachment_id ) && is_numeric( $attachment_id ) ) {
-				$attachment = get_post( $attachment_id );
 
-				if ( empty( $attr['alt'] ) ) {
-					$attr['alt'] = trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) );
-				}
-				if ( empty( $attr['alt'] ) ) {
-					$attr['alt'] = trim( strip_tags( $attachment->post_excerpt ) ); // If not, use the caption.
-				}
-				if ( empty( $attr['alt'] ) ) {
-					$attr['alt'] = ''; // For a11y reasons, an empty string is better than the attachment name.
-				}
+			// Update image alt tag if not set.
+			if (
+				! isset( $attr['alt'] )
+				&& ! empty( $attachment_id )
+				&& is_numeric( $attachment_id )
+			) {
+				$attr['alt'] = $this->get_alt_text( $attachment_id );
 			}
+
 			$html = '<img ';
 			foreach ( $attr as $key => $value ) {
 				if ( is_bool( $value ) && $value ) {
@@ -1231,6 +1228,32 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			}
 
 			return $allowed;
+		}
+
+		/**
+		 * Get the alt attribute for image.
+		 *
+		 * @param  int $attachment_id   ID of the attachment.
+		 * @return string               Value of alt text
+		 */
+		public function get_alt_text( $attachment_id ) {
+			$attachment = get_post( $attachment_id );
+
+			// First choose image's meta.
+			$alt = trim( wp_strip_all_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) );
+
+			// If still empty, try this fallback.
+			if ( empty( $alt ) ) {
+				$alt = trim( wp_strip_all_tags( $attachment->post_excerpt ) ); // If not, use the caption.
+			}
+
+			// If still empty, set to nothing.
+			// For a11y reasons, an empty string is better than the attachment name.
+			if ( empty( $alt ) ) {
+				$alt = '';
+			}
+
+			return $alt;
 		}
 
 		/**
