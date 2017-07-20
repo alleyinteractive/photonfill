@@ -1239,11 +1239,11 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$attachment = get_post( $attachment_id );
 
 			// First choose image's meta.
-			$alt = trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) );
+			$alt = trim( wp_strip_all_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) );
 
 			// If still empty, try this fallback.
 			if ( empty( $alt ) ) {
-				$alt = trim( strip_tags( $attachment->post_excerpt ) ); // If not, use the caption.
+				$alt = trim( wp_strip_all_tags( $attachment->post_excerpt ) ); // If not, use the caption.
 			}
 
 			// If still empty, set to nothing.
