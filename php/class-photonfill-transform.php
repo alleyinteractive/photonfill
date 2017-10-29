@@ -100,7 +100,16 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * @return array of merged args for Photon.
 		 */
 		public function set_photon_args( $args, $data ) {
+
 			$args = $this->args;
+
+			// Ensure $data has the arguments we need
+			$data = wp_parse_args( $data, array(
+				'attachment_id' => 0,
+				'height' => '',
+				'width' => '',
+			) );
+
 			// Fall back on data if empty.
 			if ( ! empty( $data['size'] ) && ! empty( $data['transform'] ) ) {
 				$args['width'] = empty( $args['width'] ) ? $data['image_args']['width'] : $args['width'];
