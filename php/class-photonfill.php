@@ -635,7 +635,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						'height' => $medium_size['height'],
 					)
 				);
-			} else {
+			} elseif ( ! empty( $attachment['sizes']['full']['url'] ) ) {
 				$attachment['sizes']['medium']['url'] = $photon_url_function(
 					$attachment['sizes']['full']['url'],
 					array(
