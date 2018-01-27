@@ -621,6 +621,12 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 			if ( ! empty( $attachment['sizes']['medium'] ) ) {
 				$medium_size = $attachment['sizes']['medium'];
+
+				$this->transform->setup( array(
+					'width' => $medium_size['width'],
+					'height' => $medium_size['height'],
+				) );
+
 				$attachment['sizes']['medium']['url'] = $photon_url_function(
 					$medium_size['url'],
 					array(
