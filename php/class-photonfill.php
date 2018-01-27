@@ -613,8 +613,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Pass Photon URLs to media browser so it doesn't show full-sized images
 		 *
-		 * @param object $attachment Attachment object.
-		 * @return Attachment object.
+		 * @param array $attachment Attachment object.
+		 * @return array Attachment object.
 		 */
 		public function prepare_attachment_for_js( $attachment ) {
 			$photon_url_function = photonfill_hook_prefix() . '_photon_url';
