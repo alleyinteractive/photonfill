@@ -636,12 +636,19 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					)
 				);
 			} elseif ( ! empty( $attachment['sizes']['full']['url'] ) ) {
+				$medium_size = array(
+					'width' => 300,
+					'height' => 225,
+				);
+
+				$this->transform->setup( $medium_size );
+
 				$attachment['sizes']['medium']['url'] = $photon_url_function(
 					$attachment['sizes']['full']['url'],
 					array(
 						'attachment_id' => $attachment['id'],
-						'width' => 300,
-						'height' => 225,
+						'width' => $medium_size['width'],
+						'height' => $medium_size['height'],
 					)
 				);
 			}
