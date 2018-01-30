@@ -96,7 +96,7 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * Add in necessary args expected with photonfill
 		 *
 		 * @param array $args Default args for Photon.
-		 * @param array $data New args for Photon.
+		 * @param mixed $data New args for Photon.
 		 * @return array of merged args for Photon.
 		 */
 		public function set_photon_args( $args, $data ) {

@@ -613,14 +613,20 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Pass Photon URLs to media browser so it doesn't show full-sized images
 		 *
-		 * @param object $attachment Attachment object.
-		 * @return Attachment object.
+		 * @param array $attachment Attachment object.
+		 * @return array Attachment object.
 		 */
 		public function prepare_attachment_for_js( $attachment ) {
 			$photon_url_function = photonfill_hook_prefix() . '_photon_url';
 
 			if ( ! empty( $attachment['sizes']['medium'] ) ) {
 				$medium_size = $attachment['sizes']['medium'];
+
+				$this->transform->setup( array(
+					'width' => $medium_size['width'],
+					'height' => $medium_size['height'],
+				) );
+
 				$attachment['sizes']['medium']['url'] = $photon_url_function(
 					$medium_size['url'],
 					array(
@@ -629,13 +635,20 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						'height' => $medium_size['height'],
 					)
 				);
-			} else {
+			} elseif ( ! empty( $attachment['sizes']['full']['url'] ) ) {
+				$medium_size = array(
+					'width' => 300,
+					'height' => 225,
+				);
+
+				$this->transform->setup( $medium_size );
+
 				$attachment['sizes']['medium']['url'] = $photon_url_function(
 					$attachment['sizes']['full']['url'],
 					array(
 						'attachment_id' => $attachment['id'],
-						'width' => 300,
-						'height' => 225,
+						'width' => $medium_size['width'],
+						'height' => $medium_size['height'],
 					)
 				);
 			}
