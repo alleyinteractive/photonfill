@@ -9,11 +9,11 @@
 
 /*
 Plugin Name: Photonfill
-Plugin URI: http://github.com/alleyinteractive/photonfill
+Plugin URI: https://github.com/alleyinteractive/photonfill
 Description: Integrate Jetpack Photon and Picturefill into WP images
 Author: Will Gladstone
-Version: 0.2.0
-Author URI: http://www.alleyinteractive.com/
+Version: 0.2.1
+Author URI: https://www.alleyinteractive.com/
 */
 
 /**
