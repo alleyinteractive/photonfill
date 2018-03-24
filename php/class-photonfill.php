@@ -847,11 +847,11 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Alter the_post_thumbnail html.
 		 *
-		 * @param string $html Markup for image.
-		 * @param int    $post_id Post id.
-		 * @param int    $post_thumbnail_id Post thumbnail image id.
-		 * @param string $size Image size.
-		 * @param array  $attr Image attributes.
+		 * @param string       $html Markup for image.
+		 * @param int          $post_id Post id.
+		 * @param int          $post_thumbnail_id Post thumbnail image id.
+		 * @param string       $size Image size.
+		 * @param array|string $attr Image attributes.
 		 * @return string Image markup.
 		 */
 		public function get_picturefill_html( $html, $post_id, $post_thumbnail_id, $size, $attr ) {
