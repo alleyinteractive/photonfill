@@ -855,6 +855,16 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return string Image markup.
 		 */
 		public function get_picturefill_html( $html, $post_id, $post_thumbnail_id, $size, $attr ) {
+			// Core permits $attr to be a query string or an array, but Photonfill expects an array.
+			if ( ! is_array( $attr ) ) {
+				$original = $attr;
+				$attr = array();
+
+				if ( is_string( $original ) && ! empty( $original ) ) {
+					wp_parse_str( $original, $attr );
+				}
+			}
+
 			if ( apply_filters( 'photonfill_use_picture_as_default', false ) ) {
 				return $this->get_attachment_picture( $post_thumbnail_id, $size, $attr );
 			} else {
@@ -917,7 +927,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				}
 				return $html;
 			}
-			return;
+			return '';
 		}
 
 		/**
