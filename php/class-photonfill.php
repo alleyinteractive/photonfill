@@ -398,7 +398,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					if ( photonfill_use_lazyload() ) {
 						$attr['class'] .= ' lazyload';
 						$attr['data-sizes'] = 'auto';
-						$attr['data-srcset'] = implode( ',' , $srcset );
+						$attr['data-srcset'] = implode( ',', $srcset );
 						$full_src = wp_get_attachment_image_src( $attachment->ID, 'full' );
 						$attr['data-src'] = esc_url( $full_src[0] );
 
@@ -410,8 +410,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							unset( $attr['srcset'] );
 						}
 					} else {
-						$attr['sizes'] = implode( ',' , $sizes );
-						$attr['srcset'] = implode( ',' , $srcset );
+						$attr['sizes'] = implode( ',', $sizes );
+						$attr['srcset'] = implode( ',', $srcset );
 					}
 				} // End if().
 			} // End if().
