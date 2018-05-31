@@ -121,6 +121,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * @param string $image_url URL of image.
 		 */
 		public function transform_photon_url( $args, $image_url ) {
+			if ( ! photonfill_is_enabled() ) {
+				return $args;
+			}
+
 			// Make sure we've properly instantiated our args.
 			// If not then photon_url is being called directly and image downsize has been skipped.
 			// We can only set width and height at this point.
