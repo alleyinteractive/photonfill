@@ -352,9 +352,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			if ( ! empty( $attachment->ID ) ) {
 				$image = $this->create_image_object( $attachment->ID, $size );
 				if ( ! empty( $image['id'] ) ) {
-					if ( isset( $attr['src'] ) && ! is_feed() ) {
-						unset( $attr['src'] );
-					}
 					$srcset = array();
 					$sizes = array();
 
@@ -1196,9 +1193,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$html = $this->get_lazyload_image( $img_url, $size, $attr );
 				} else {
 					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $img_url, $size );
-					if ( is_feed() ) {
 						$attr['src'] = $img_url;
-					} else {
+					if ( ! is_feed() ) {
 						$attr['sizes']  = $this->get_responsive_image_attribute( $img_url, $size, 'sizes' );
 						$attr['srcset'] = $this->get_responsive_image_attribute( $img_url, $size, 'srcset' );
 					}
@@ -1242,7 +1238,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$allowed['img']['srcset'] = true;
 				$allowed['img']['sizes'] = true;
 				$allowed['img']['media'] = true;
-
+				$allowed['img']['src'] = true;
 				$allowed['source']['data-src'] = true;
 				$allowed['source']['data-srcset'] = true;
 				$allowed['source']['srcset'] = true;
