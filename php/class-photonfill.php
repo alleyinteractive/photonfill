@@ -987,7 +987,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 					if ( ! empty( $featured_image['id'] ) ) {
 						$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id=' . esc_attr( $featured_image['id'] ) . '">';
+						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id="' . esc_attr( $featured_image['id'] ) . '">';
 						// Here we set our source elements.
 						foreach ( $featured_image['sizes'] as $breakpoint => $breakpoint_data ) {
 							// If specified as default img fallback.
