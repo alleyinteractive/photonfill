@@ -12,7 +12,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 	/** Photonfill class **/
 	class Photonfill {
 
-
 		/**
 		 * Instance.
 		 *
@@ -352,9 +351,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			if ( ! empty( $attachment->ID ) ) {
 				$image = $this->create_image_object( $attachment->ID, $size );
 				if ( ! empty( $image['id'] ) ) {
-					if ( isset( $attr['src'] ) && ! is_feed() ) {
-						unset( $attr['src'] );
-					}
 					$srcset = array();
 					$sizes = array();
 
@@ -398,7 +394,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					if ( photonfill_use_lazyload() ) {
 						$attr['class'] .= ' lazyload';
 						$attr['data-sizes'] = 'auto';
-						$attr['data-srcset'] = implode( ',' , $srcset );
+						$attr['data-srcset'] = implode( ',', $srcset );
 						$full_src = wp_get_attachment_image_src( $attachment->ID, 'full' );
 						$attr['data-src'] = esc_url( $full_src[0] );
 
@@ -410,8 +406,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 							unset( $attr['srcset'] );
 						}
 					} else {
-						$attr['sizes'] = implode( ',' , $sizes );
-						$attr['srcset'] = implode( ',' , $srcset );
+						$attr['sizes'] = implode( ',', $sizes );
+						$attr['srcset'] = implode( ',', $srcset );
 					}
 				} // End if().
 			} // End if().
@@ -922,7 +918,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
 					$attr['sizes']  = $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' );
 					$attr['srcset'] = $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' );
-
 					$html = $this->build_attachment_image( $attachment_id, $attr );
 				}
 				return $html;
@@ -992,7 +987,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 					if ( ! empty( $featured_image['id'] ) ) {
 						$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id=' . esc_attr( $featured_image['id'] ) . '">';
+						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id="' . esc_attr( $featured_image['id'] ) . '">';
 						// Here we set our source elements.
 						foreach ( $featured_image['sizes'] as $breakpoint => $breakpoint_data ) {
 							// If specified as default img fallback.
@@ -1058,13 +1053,22 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		private function build_attachment_image( $attachment_id = null, $attr ) {
 			$attr = apply_filters( 'photonfill_img_attributes', $attr, $attachment_id );
 
-			// Update image alt tag if not set.
+			// Update image alt attribute if not set.
 			if (
 				! isset( $attr['alt'] )
 				&& ! empty( $attachment_id )
 				&& is_numeric( $attachment_id )
 			) {
 				$attr['alt'] = $this->get_alt_text( $attachment_id );
+			}
+
+			// Update image src attribute if not set.
+			if (
+				! isset( $attr['src'] )
+				&& ! empty( $attachment_id )
+				&& is_numeric( $attachment_id )
+			) {
+				$attr['src'] = wp_get_attachment_url( $attachment_id );
 			}
 
 			$html = '<img ';
@@ -1196,9 +1200,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$html = $this->get_lazyload_image( $img_url, $size, $attr );
 				} else {
 					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $img_url, $size );
-					if ( is_feed() ) {
 						$attr['src'] = $img_url;
-					} else {
+					if ( ! is_feed() ) {
 						$attr['sizes']  = $this->get_responsive_image_attribute( $img_url, $size, 'sizes' );
 						$attr['srcset'] = $this->get_responsive_image_attribute( $img_url, $size, 'srcset' );
 					}
@@ -1242,7 +1245,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$allowed['img']['srcset'] = true;
 				$allowed['img']['sizes'] = true;
 				$allowed['img']['media'] = true;
-
+				$allowed['img']['src'] = true;
 				$allowed['source']['data-src'] = true;
 				$allowed['source']['data-srcset'] = true;
 				$allowed['source']['srcset'] = true;
