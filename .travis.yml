@@ -1,6 +1,4 @@
 language: php
-sudo: false
-dist: trusty
 
 notifications:
   email:
@@ -21,8 +19,6 @@ php:
   - 5.3
 
 matrix:
-  fast_finish: true
-
   include:
     - php: 5.3
       dist: precise
