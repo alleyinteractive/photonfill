@@ -691,17 +691,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 *
 		 * @return void Echos image markup.
 		 */
-		function ajax_get_img_object() {
+		public function ajax_get_img_object() {
 			check_ajax_referer( 'photonfill_get_img_object', 'nonce' );
-			// Disable PHPCS warning on inspecting super global.
-			// @codingStandardsIgnoreStart
 			if ( ! empty( $_POST['attachment'] ) ) {
 				$attachment_id = absint( $_POST['attachment'] );
-				echo wp_kses( $this->get_attachment_image( $attachment_id, 'full', array(
+				echo wp_kses_post( $this->get_attachment_image( $attachment_id, 'full', array(
 					'style' => 'max-width:100%',
 				) ) );
 			}
-			// @codingStandardsIgnoreEnd
 			exit();
 		}
 
@@ -714,7 +711,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @param string $value Current field value (not used).
 		 * @param object $attachment Attachment object.
 		 */
-		function set_fieldmanager_media( $preview, $value, $attachment ) {
+		public function set_fieldmanager_media( $preview, $value, $attachment ) {
 			if ( ! empty( $attachment->ID ) && strpos( $attachment->post_mime_type, 'image/' ) === 0 ) {
 				$preview = esc_html__( 'Uploaded image:', 'photonfill' ) . '<br />';
 				$preview .= '<a href="#">' . $this->get_attachment_image( $attachment->ID, 'full', array(
