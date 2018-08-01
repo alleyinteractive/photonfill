@@ -58,7 +58,7 @@ function photonfill_get_baseurl() {
 /**
  * Disable incompatible Jetpack modules
  *
- * @param array $modules Available Jetpack modules
+ * @param array $modules Available Jetpack modules.
  * @return array
  */
 function photonfill_jetpack_compat( $modules ) {
