@@ -23,6 +23,7 @@ function photonfill_init() {
 	require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
 	require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
 	require_once( dirname( __FILE__ ) . '/functions.php' );
+	add_filter( 'jetpack_get_available_modules', 'photonfill_jetpack_compat' );
 	add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
 	add_action( 'admin_enqueue_scripts', 'photonfill_enqueue_assets' );
 }
@@ -52,6 +53,19 @@ register_activation_hook( __FILE__, 'photonfill_dependency' );
  */
 function photonfill_get_baseurl() {
 	return plugin_dir_url( __FILE__ );
+}
+
+/**
+ * Disable incompatible Jetpack modules
+ *
+ * @param array $modules Available Jetpack modules.
+ * @return array
+ */
+function photonfill_jetpack_compat( $modules ) {
+	// Incompatible with figure markup, duplicative of this plugin's features.
+	unset( $modules['lazy-images'] );
+
+	return $modules;
 }
 
 /**
