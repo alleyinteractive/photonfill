@@ -1059,13 +1059,17 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$attr['alt'] = $this->get_alt_text( $attachment_id );
 			}
 
-			// Update image src attribute if not set.
+			// Update image src attribute if not set and if lazyload is not requested.
 			if (
-				! isset( $attr['src'] )
+				isset( $attr['src'] )
 				&& ! empty( $attachment_id )
 				&& is_numeric( $attachment_id )
+				&& ( ! photonfill_use_lazyload() || is_feed() )
 			) {
-				$attr['src'] = wp_get_attachment_url( $attachment_id );
+				$img_src = $this->get_img_src( $attachment_id );
+				if ( ! empty( $img_src['url'] ) ) {
+					$attr['src'] = $img_src['url'];
+				}
 			}
 
 			$html = '<img ';
