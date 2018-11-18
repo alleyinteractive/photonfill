@@ -1063,8 +1063,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			}
 
 			// Update image src attribute if not set and if lazyload is not requested.
-			if (
-				isset( $attr['src'] )
+			if ( ! isset( $attr['src'] )
 				&& ! empty( $attachment_id )
 				&& is_numeric( $attachment_id )
 				&& ( ! photonfill_use_lazyload() || is_feed() )
