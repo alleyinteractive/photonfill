@@ -351,6 +351,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			if ( ! empty( $attachment->ID ) ) {
 				$image = $this->create_image_object( $attachment->ID, $size );
 				if ( ! empty( $image['id'] ) ) {
+					if ( isset( $attr['src'] ) && ! is_feed() && photonfill_use_lazyload() ) {
+						unset( $attr['src'] );
+					}
 					$srcset = array();
 					$sizes = array();
 
