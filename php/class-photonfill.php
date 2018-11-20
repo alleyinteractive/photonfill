@@ -351,9 +351,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			if ( ! empty( $attachment->ID ) ) {
 				$image = $this->create_image_object( $attachment->ID, $size );
 				if ( ! empty( $image['id'] ) ) {
-					if ( isset( $attr['src'] ) && ! is_feed() && photonfill_use_lazyload() ) {
-						unset( $attr['src'] );
-					}
 					$srcset = array();
 					$sizes = array();
 
@@ -401,12 +398,18 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						$full_src = wp_get_attachment_image_src( $attachment->ID, 'full' );
 						$attr['data-src'] = esc_url( $full_src[0] );
 
-						// Make sure core attributes arent't set here to ensure lazysizes will calculate it's own data attributes.
+						// Make sure core attributes aren't set here to ensure lazysizes will calculate its own data attributes.
 						if ( isset( $attr['sizes'] ) ) {
 							unset( $attr['sizes'] );
 						}
 						if ( isset( $attr['srcset'] ) ) {
 							unset( $attr['srcset'] );
+						}
+
+						// Attempt to set a low-quality image src for initial load.
+						$lofi_src = self::get_src_from_srcset( $attr['data-srcset'], true );
+						if ( ! empty( $lofi_src ) ) {
+							$attr['src'] = $lofi_src;
 						}
 					} else {
 						$attr['sizes'] = implode( ',', $sizes );
@@ -1062,15 +1065,26 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$attr['alt'] = $this->get_alt_text( $attachment_id );
 			}
 
-			// Update image src attribute if not set and if lazyload is not requested.
-			if ( ! isset( $attr['src'] )
+			// Update image src attribute if not set.
+			if (
+				! isset( $attr['src'] )
 				&& ! empty( $attachment_id )
 				&& is_numeric( $attachment_id )
-				&& ( ! photonfill_use_lazyload() || is_feed() )
 			) {
-				$img_src = $this->get_img_src( $attachment_id );
-				if ( ! empty( $img_src['url'] ) ) {
-					$attr['src'] = $img_src['url'];
+				if ( ! empty( $attr['data-srcset'] ) ) {
+					$attr['src'] = self::get_src_from_srcset( $attr['data-srcset'] );
+				} elseif ( ! empty( $attr['srcset'] ) ) {
+					$attr['src'] = self::get_src_from_srcset( $attr['srcset'] );
+				} elseif ( ! empty( $attr['data-src'] ) ) {
+					$attr['src'] = $attr['data-src'];
+				}
+			}
+
+			// If we are lazyloading, attempt to get a low-quality placeholder image.
+			if ( photonfill_use_lazyload() && ! empty( $attr['data-srcset'] ) ) {
+				$lofi_src = self::get_src_from_srcset( $attr['data-srcset'], true );
+				if ( ! empty( $lofi_src ) ) {
+					$attr['src'] = $lofi_src;
 				}
 			}
 
@@ -1424,6 +1438,73 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * END INLINE IMAGE HANDLING
 		 */
 
+		/**
+		 * Given a srcset string, returns a value for the `src` attribute to be
+		 * used while lazyloading that is a small size and low quality. This
+		 * ensures that there is a value for the `src` attribute to ensure that
+		 * the document is valid HTML and works with assistive technology, but
+		 * also ensures that the placeholder image that loads will use a
+		 * fraction of the bandwidth of the original.
+		 *
+		 * @param string $srcset   The srcset string to parse.
+		 * @param bool   $lazyload Whether to get a lo-fi placeholder for lazyload.
+		 * @return string The URL to use in the `src` attribute on the image.
+		 */
+		private static function get_src_from_srcset( $srcset, $lazyload = false ) {
+
+			// If $srcset is not a string, bail.
+			if ( ! is_string( $srcset ) ) {
+				return '';
+			}
+
+			// Attempt to split srcset by commas.
+			$sources = explode( ',', $srcset );
+			if ( empty( $sources ) ) {
+				return '';
+			}
+
+			// Loop through srcset values and find the smallest one.
+			$min = 0;
+			$src = '';
+			foreach ( $sources as $source ) {
+				// Attempt to split the source.
+				$source_parts = array_values(
+					array_filter(
+						explode( ' ', $source )
+					)
+				);
+				if ( 2 !== count( $source_parts ) ) {
+					continue;
+				}
+
+				// Determine if the specified width is smaller than the reference value.
+				$width = (int) trim( $source_parts[1], 'w' );
+				if ( 0 === $min || $width < $min ) {
+					$min = $width;
+					$src = $source_parts[0];
+				}
+
+				// If we don't want a lo-fi image, just return the first match.
+				if ( ! $lazyload && ! empty( $src ) ) {
+					return $src;
+				}
+			}
+
+			// If we didn't net a src value, bail.
+			if ( empty( $src ) ) {
+				return '';
+			}
+
+			// Append the low-quality flag to the image URL.
+			$src_query = (string) wp_parse_url( $src, PHP_URL_QUERY );
+			parse_str( $src_query, $src_query_parts );
+			$src_query_parts['quality'] = 1;
+			return str_replace(
+				$src_query,
+				http_build_query( $src_query_parts ),
+				$src
+			);
+		}
 	}
 } // End if().
 
