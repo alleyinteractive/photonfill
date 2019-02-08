@@ -12,7 +12,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 	/** Photonfill class **/
 	class Photonfill {
 
-
 		/**
 		 * Instance.
 		 *
@@ -360,9 +359,6 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			if ( ! empty( $attachment->ID ) ) {
 				$image = $this->create_image_object( $attachment->ID, $size );
 				if ( ! empty( $image['id'] ) ) {
-					if ( isset( $attr['src'] ) && ! is_feed() ) {
-						unset( $attr['src'] );
-					}
 					$srcset = array();
 					$sizes = array();
 
@@ -406,20 +402,26 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					if ( photonfill_use_lazyload() ) {
 						$attr['class'] .= ' lazyload';
 						$attr['data-sizes'] = 'auto';
-						$attr['data-srcset'] = implode( ',' , $srcset );
+						$attr['data-srcset'] = implode( ',', $srcset );
 						$full_src = wp_get_attachment_image_src( $attachment->ID, 'full' );
 						$attr['data-src'] = esc_url( $full_src[0] );
 
-						// Make sure core attributes arent't set here to ensure lazysizes will calculate it's own data attributes.
+						// Make sure core attributes aren't set here to ensure lazysizes will calculate its own data attributes.
 						if ( isset( $attr['sizes'] ) ) {
 							unset( $attr['sizes'] );
 						}
 						if ( isset( $attr['srcset'] ) ) {
 							unset( $attr['srcset'] );
 						}
+
+						// Attempt to set a low-quality image src for initial load.
+						$lofi_src = self::get_src_from_srcset( $attr['data-srcset'], true );
+						if ( ! empty( $lofi_src ) ) {
+							$attr['src'] = $lofi_src;
+						}
 					} else {
-						$attr['sizes'] = implode( ',' , $sizes );
-						$attr['srcset'] = implode( ',' , $srcset );
+						$attr['sizes'] = implode( ',', $sizes );
+						$attr['srcset'] = implode( ',', $srcset );
 					}
 				} // End if().
 			} // End if().
@@ -621,14 +623,20 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Pass Photon URLs to media browser so it doesn't show full-sized images
 		 *
-		 * @param object $attachment Attachment object.
-		 * @return Attachment object.
+		 * @param array $attachment Attachment object.
+		 * @return array Attachment object.
 		 */
 		public function prepare_attachment_for_js( $attachment ) {
 			$photon_url_function = photonfill_hook_prefix() . '_photon_url';
 
 			if ( ! empty( $attachment['sizes']['medium'] ) ) {
 				$medium_size = $attachment['sizes']['medium'];
+
+				$this->transform->setup( array(
+					'width' => $medium_size['width'],
+					'height' => $medium_size['height'],
+				) );
+
 				$attachment['sizes']['medium']['url'] = $photon_url_function(
 					$medium_size['url'],
 					array(
@@ -637,13 +645,20 @@ if ( ! class_exists( 'Photonfill' ) ) {
 						'height' => $medium_size['height'],
 					)
 				);
-			} else {
+			} elseif ( ! empty( $attachment['sizes']['full']['url'] ) ) {
+				$medium_size = array(
+					'width' => 300,
+					'height' => 225,
+				);
+
+				$this->transform->setup( $medium_size );
+
 				$attachment['sizes']['medium']['url'] = $photon_url_function(
 					$attachment['sizes']['full']['url'],
 					array(
 						'attachment_id' => $attachment['id'],
-						'width' => 300,
-						'height' => 225,
+						'width' => $medium_size['width'],
+						'height' => $medium_size['height'],
 					)
 				);
 			}
@@ -690,17 +705,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 *
 		 * @return void Echos image markup.
 		 */
-		function ajax_get_img_object() {
+		public function ajax_get_img_object() {
 			check_ajax_referer( 'photonfill_get_img_object', 'nonce' );
-			// Disable PHPCS warning on inspecting super global.
-			// @codingStandardsIgnoreStart
 			if ( ! empty( $_POST['attachment'] ) ) {
 				$attachment_id = absint( $_POST['attachment'] );
-				echo wp_kses( $this->get_attachment_image( $attachment_id, 'full', array(
+				echo wp_kses_post( $this->get_attachment_image( $attachment_id, 'full', array(
 					'style' => 'max-width:100%',
 				) ) );
 			}
-			// @codingStandardsIgnoreEnd
 			exit();
 		}
 
@@ -713,7 +725,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @param string $value Current field value (not used).
 		 * @param object $attachment Attachment object.
 		 */
-		function set_fieldmanager_media( $preview, $value, $attachment ) {
+		public function set_fieldmanager_media( $preview, $value, $attachment ) {
 			if ( ! empty( $attachment->ID ) && strpos( $attachment->post_mime_type, 'image/' ) === 0 ) {
 				$preview = esc_html__( 'Uploaded image:', 'photonfill' ) . '<br />';
 				$preview .= '<a href="#">' . $this->get_attachment_image( $attachment->ID, 'full', array(
@@ -842,16 +854,26 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Alter the_post_thumbnail html.
 		 *
-		 * @param string $html Markup for image.
-		 * @param int    $post_id Post id.
-		 * @param int    $post_thumbnail_id Post thumbnail image id.
-		 * @param string $size Image size.
-		 * @param array  $attr Image attributes.
+		 * @param string       $html Markup for image.
+		 * @param int          $post_id Post id.
+		 * @param int          $post_thumbnail_id Post thumbnail image id.
+		 * @param string       $size Image size.
+		 * @param array|string $attr Image attributes.
 		 * @return string Image markup.
 		 */
 		public function get_picturefill_html( $html, $post_id, $post_thumbnail_id, $size, $attr ) {
 			if ( ! photonfill_is_enabled() ) {
 				return $html;
+			}
+
+			// Core permits $attr to be a query string or an array, but Photonfill expects an array.
+			if ( ! is_array( $attr ) ) {
+				$original = $attr;
+				$attr = array();
+
+				if ( is_string( $original ) && ! empty( $original ) ) {
+					wp_parse_str( $original, $attr );
+				}
 			}
 
 			if ( apply_filters( 'photonfill_use_picture_as_default', false ) ) {
@@ -915,12 +937,11 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
 					$attr['sizes']  = $this->get_responsive_image_attribute( $attachment_id, $size, 'sizes' );
 					$attr['srcset'] = $this->get_responsive_image_attribute( $attachment_id, $size, 'srcset' );
-
 					$html = $this->build_attachment_image( $attachment_id, $attr );
 				}
 				return $html;
 			}
-			return;
+			return '';
 		}
 
 		/**
@@ -987,7 +1008,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 					if ( ! empty( $featured_image['id'] ) ) {
 						$classes = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $attachment_id, $size );
-						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id=' . esc_attr( $featured_image['id'] ) . '">';
+						$html = '<picture id="picture-' . esc_attr( $attachment_id ) . '" class="' . esc_attr( $classes ) . ' " data-id="' . esc_attr( $featured_image['id'] ) . '">';
 						// Here we set our source elements.
 						foreach ( $featured_image['sizes'] as $breakpoint => $breakpoint_data ) {
 							// If specified as default img fallback.
@@ -1053,13 +1074,36 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		private function build_attachment_image( $attachment_id = null, $attr ) {
 			$attr = apply_filters( 'photonfill_img_attributes', $attr, $attachment_id );
 
-			// Update image alt tag if not set.
+			// Update image alt attribute if not set.
 			if (
 				! isset( $attr['alt'] )
 				&& ! empty( $attachment_id )
 				&& is_numeric( $attachment_id )
 			) {
 				$attr['alt'] = $this->get_alt_text( $attachment_id );
+			}
+
+			// Update image src attribute if not set.
+			if (
+				! isset( $attr['src'] )
+				&& ! empty( $attachment_id )
+				&& is_numeric( $attachment_id )
+			) {
+				if ( ! empty( $attr['data-srcset'] ) ) {
+					$attr['src'] = self::get_src_from_srcset( $attr['data-srcset'] );
+				} elseif ( ! empty( $attr['srcset'] ) ) {
+					$attr['src'] = self::get_src_from_srcset( $attr['srcset'] );
+				} elseif ( ! empty( $attr['data-src'] ) ) {
+					$attr['src'] = $attr['data-src'];
+				}
+			}
+
+			// If we are lazyloading, attempt to get a low-quality placeholder image.
+			if ( photonfill_use_lazyload() && ! empty( $attr['data-srcset'] ) ) {
+				$lofi_src = self::get_src_from_srcset( $attr['data-srcset'], true );
+				if ( ! empty( $lofi_src ) ) {
+					$attr['src'] = $lofi_src;
+				}
 			}
 
 			$html = '<img ';
@@ -1191,9 +1235,8 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$html = $this->get_lazyload_image( $img_url, $size, $attr );
 				} else {
 					$attr['class']  = $this->get_image_classes( ( empty( $attr['class'] ) ? array() : $attr['class'] ), $img_url, $size );
-					if ( is_feed() ) {
 						$attr['src'] = $img_url;
-					} else {
+					if ( ! is_feed() ) {
 						$attr['sizes']  = $this->get_responsive_image_attribute( $img_url, $size, 'sizes' );
 						$attr['srcset'] = $this->get_responsive_image_attribute( $img_url, $size, 'srcset' );
 					}
@@ -1237,7 +1280,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				$allowed['img']['srcset'] = true;
 				$allowed['img']['sizes'] = true;
 				$allowed['img']['media'] = true;
-
+				$allowed['img']['src'] = true;
 				$allowed['source']['data-src'] = true;
 				$allowed['source']['data-srcset'] = true;
 				$allowed['source']['srcset'] = true;
@@ -1417,6 +1460,73 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * END INLINE IMAGE HANDLING
 		 */
 
+		/**
+		 * Given a srcset string, returns a value for the `src` attribute to be
+		 * used while lazyloading that is a small size and low quality. This
+		 * ensures that there is a value for the `src` attribute to ensure that
+		 * the document is valid HTML and works with assistive technology, but
+		 * also ensures that the placeholder image that loads will use a
+		 * fraction of the bandwidth of the original.
+		 *
+		 * @param string $srcset   The srcset string to parse.
+		 * @param bool   $lazyload Whether to get a lo-fi placeholder for lazyload.
+		 * @return string The URL to use in the `src` attribute on the image.
+		 */
+		private static function get_src_from_srcset( $srcset, $lazyload = false ) {
+
+			// If $srcset is not a string, bail.
+			if ( ! is_string( $srcset ) ) {
+				return '';
+			}
+
+			// Attempt to split srcset by commas.
+			$sources = explode( ',', $srcset );
+			if ( empty( $sources ) ) {
+				return '';
+			}
+
+			// Loop through srcset values and find the smallest one.
+			$min = 0;
+			$src = '';
+			foreach ( $sources as $source ) {
+				// Attempt to split the source.
+				$source_parts = array_values(
+					array_filter(
+						explode( ' ', $source )
+					)
+				);
+				if ( 2 !== count( $source_parts ) ) {
+					continue;
+				}
+
+				// Determine if the specified width is smaller than the reference value.
+				$width = (int) trim( $source_parts[1], 'w' );
+				if ( 0 === $min || $width < $min ) {
+					$min = $width;
+					$src = $source_parts[0];
+				}
+
+				// If we don't want a lo-fi image, just return the first match.
+				if ( ! $lazyload && ! empty( $src ) ) {
+					return $src;
+				}
+			}
+
+			// If we didn't net a src value, bail.
+			if ( empty( $src ) ) {
+				return '';
+			}
+
+			// Append the low-quality flag to the image URL.
+			$src_query = (string) wp_parse_url( $src, PHP_URL_QUERY );
+			parse_str( $src_query, $src_query_parts );
+			$src_query_parts['quality'] = 1;
+			return str_replace(
+				$src_query,
+				http_build_query( $src_query_parts ),
+				$src
+			);
+		}
 	}
 } // End if().
 

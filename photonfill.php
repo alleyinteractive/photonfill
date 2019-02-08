@@ -4,16 +4,16 @@
  *
  * @package Photonfill
  * @subpackage Plugin
- * @version 0.2.0
+ * @version 0.2.2
  */
 
 /*
 Plugin Name: Photonfill
-Plugin URI: http://github.com/alleyinteractive/photonfill
+Plugin URI: https://github.com/alleyinteractive/photonfill
 Description: Integrate Jetpack Photon and Picturefill into WP images
 Author: Will Gladstone
-Version: 0.2.0
-Author URI: http://www.alleyinteractive.com/
+Version: 0.2.2
+Author URI: https://www.alleyinteractive.com/
 */
 
 /**
@@ -23,6 +23,7 @@ function photonfill_init() {
 	require_once( dirname( __FILE__ ) . '/php/class-photonfill-transform.php' );
 	require_once( dirname( __FILE__ ) . '/php/class-photonfill.php' );
 	require_once( dirname( __FILE__ ) . '/functions.php' );
+	add_filter( 'jetpack_get_available_modules', 'photonfill_jetpack_compat' );
 	add_action( 'wp_enqueue_scripts', 'photonfill_enqueue_assets' );
 	add_action( 'admin_enqueue_scripts', 'photonfill_enqueue_assets' );
 }
@@ -55,6 +56,19 @@ function photonfill_get_baseurl() {
 }
 
 /**
+ * Disable incompatible Jetpack modules
+ *
+ * @param array $modules Available Jetpack modules.
+ * @return array
+ */
+function photonfill_jetpack_compat( $modules ) {
+	// Incompatible with figure markup, duplicative of this plugin's features.
+	unset( $modules['lazy-images'] );
+
+	return $modules;
+}
+
+/**
  * Enqueue scripts and styles
  */
 function photonfill_enqueue_assets() {
@@ -69,7 +83,7 @@ function photonfill_enqueue_assets() {
 
 	// Fieldmanager Media Metabox Fixes.
 	if ( is_admin() ) {
-		wp_enqueue_script( 'photonfill-admin', photonfill_get_baseurl() . 'js/photonfill-admin.js', array( 'jquery' ) );
+		wp_enqueue_script( 'photonfill-admin', photonfill_get_baseurl() . 'js/photonfill-admin.js', array( 'jquery' ), 1.0 );
 		wp_localize_script( 'photonfill-admin', 'photonfill_wp_vars', array(
 			'wp_ajax_url' => admin_url( 'admin-ajax.php' ),
 			'photonfill_get_img_object_nonce' => wp_create_nonce( 'photonfill_get_img_object' ),
