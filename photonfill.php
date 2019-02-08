@@ -120,7 +120,6 @@ function photonfill_admin_tinymce_js( $plugins ) {
 	return $plugins;
 }
 
-
 /**
  * Are we using lazyloads?
  *
@@ -128,6 +127,15 @@ function photonfill_admin_tinymce_js( $plugins ) {
  */
 function photonfill_use_lazyload() {
 	return apply_filters( 'photonfill_use_lazyload', false );
+}
+
+/**
+ * Determine if Photonfill is enabled for the current request.
+ *
+ * @return bool
+ */
+function photonfill_is_enabled() {
+	return apply_filters( 'photonfill_enabled', true );
 }
 
 /**

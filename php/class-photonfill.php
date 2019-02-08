@@ -207,6 +207,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return object Image object
 		 */
 		public function set_original_src( $image, $attachment_id, $size, $icon ) {
+			if ( ! photonfill_is_enabled() ) {
+				return $image;
+			}
+
 			if ( is_string( $size ) && 'full' !== $size && wp_attachment_is_image( $attachment_id ) ) {
 				remove_filter( 'wp_get_attachment_image_src', array( $this, 'set_original_src' ), 20, 4 );
 				$full_src = wp_get_attachment_image_src( $attachment_id, 'full' );
@@ -348,6 +352,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return array attributes for image
 		 */
 		public function add_img_srcset_attr( $attr, $attachment, $size ) {
+			if ( ! photonfill_is_enabled() ) {
+				return $attr;
+			}
+
 			if ( ! empty( $attachment->ID ) ) {
 				$image = $this->create_image_object( $attachment->ID, $size );
 				if ( ! empty( $image['id'] ) ) {
@@ -854,6 +862,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return string Image markup.
 		 */
 		public function get_picturefill_html( $html, $post_id, $post_thumbnail_id, $size, $attr ) {
+			if ( ! photonfill_is_enabled() ) {
+				return $html;
+			}
+
 			// Core permits $attr to be a query string or an array, but Photonfill expects an array.
 			if ( ! is_array( $attr ) ) {
 				$original = $attr;
@@ -883,6 +895,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return string Image markup.
 		 */
 		public function get_image_tag_html( $html, $id, $alt, $title, $align, $size ) {
+			if ( ! photonfill_is_enabled() ) {
+				return $html;
+			}
+
 			$attr = array();
 			if ( ! empty( $alt ) ) {
 				$attr['alt'] = $alt;
@@ -934,7 +950,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return void
 		 */
 		public function add_lazyload_image_size_styles() {
-			echo '<style>img[data-sizes="auto"] { display: block; width: 100%; }</style>';
+			if ( photonfill_is_enabled() ) {
+				echo '<style>img[data-sizes="auto"] { display: block; width: 100%; }</style>';
+			}
 		}
 
 		/**
@@ -1320,6 +1338,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return string
 		 */
 		public function filter_the_content_images( $the_content ) {
+			if ( ! photonfill_is_enabled() ) {
+				return $the_content;
+			}
+
 			$class = ucfirst( $this->hook_prefix ) . '_Photon';
 			$images = $class::parse_images_from_html( $the_content );
 
