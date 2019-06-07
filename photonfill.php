@@ -84,13 +84,17 @@ function photonfill_enqueue_assets() {
 	// Fieldmanager Media Metabox Fixes.
 	if ( is_admin() ) {
 		wp_enqueue_script( 'photonfill-admin', photonfill_get_baseurl() . 'js/photonfill-admin.js', array( 'jquery' ), 1.0 );
-		wp_localize_script( 'photonfill-admin', 'photonfill_wp_vars', array(
-			'wp_ajax_url' => admin_url( 'admin-ajax.php' ),
-			'photonfill_get_img_object_nonce' => wp_create_nonce( 'photonfill_get_img_object' ),
-			'photonfill_i18n' => array(
-				'remove' => __( 'remove', 'photonfill' ),
-			),
-		) );
+		wp_localize_script(
+			'photonfill-admin',
+			'photonfill_wp_vars',
+			array(
+				'wp_ajax_url' => admin_url( 'admin-ajax.php' ),
+				'photonfill_get_img_object_nonce' => wp_create_nonce( 'photonfill_get_img_object' ),
+				'photonfill_i18n' => array(
+					'remove' => __( 'remove', 'photonfill' ),
+				),
+			)
+		);
 	}
 }
 
