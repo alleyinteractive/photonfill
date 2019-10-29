@@ -1390,7 +1390,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 						remove_filter( 'photonfill_default_transform', array( $this, 'set_inline_content_default_transform' ) );
 
-						$the_content = str_replace( $images['img_tag'][ $index ], $new_tag, $the_content );
+						if ( ! empty( $new_tag ) ) {
+							$the_content = str_replace( $images['img_tag'][ $index ], $new_tag, $the_content );
+						}
 					}
 				} // End foreach().
 			} // End if().
