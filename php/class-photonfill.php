@@ -168,33 +168,42 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				add_filter( 'wp_head', array( $this, 'add_lazyload_image_size_styles' ) );
 			}
 
-			// Allow image sizes to be set when adding content via the modal in the admin area.
+			// Allow image sizes to be set when adding content via the modal in the admin area or via REST.
 			if ( is_admin() ) {
-				// Add breakpoint data to image metadata.
-				add_filter( 'wp_get_attachment_metadata', array( $this, 'add_image_metadata' ), 20, 2 );
-
-				// Add breakpoint data to image size dropdowns.
-				add_filter( 'image_size_names_choose', array( $this, 'image_size_names_choose' ), 20 );
-
-				add_filter( 'image_send_to_editor_url', array( $this, 'image_send_to_editor_url' ), 20, 4 );
-
-				// When adding captions, set a width for the image so it can generate shortcode correctly.
-				add_filter( 'image_send_to_editor', array( $this, 'add_width_for_captions' ), 10, 8 );
-
-				// Ajax handlers used for Fieldmanager specific fixes for media meta boxes but can be used globally for any external ajax calls.
-				add_action( 'wp_ajax_get_img_object', array( $this, 'ajax_get_img_object' ) );
-				add_action( 'wp_ajax_nopriv_get_img_object', array( $this, 'ajax_get_img_object' ) );
-
-				add_filter( 'fieldmanager_media_preview', array( $this, 'set_fieldmanager_media' ), 10, 3 );
-
-				// Make sure we only prepare js attachment data for the query-attachments action.
-				add_action( 'ajax_query_attachments_args', array( $this, 'set_prepare_js_hook' ) );
-
-				add_filter( 'content_save_pre', array( $this, 'swap_lazyload_classes' ), 10, 1 );
-
-				// Ensure the required attributes are allowed in the editor.
-				add_filter( 'wp_kses_allowed_html', array( $this, 'photonfill_kses_allowed_html' ), 10, 2 );
+				$this->setup_admin();
+			} else {
+				add_action( 'rest_api_init', [ $this, 'setup_admin' ] );
 			}
+		}
+
+		/**
+		 * A function to set up actions and filters to be run in an admin or REST context.
+		 */
+		public function setup_admin() {
+			// Add breakpoint data to image metadata.
+			add_filter( 'wp_get_attachment_metadata', array( $this, 'add_image_metadata' ), 20, 2 );
+
+			// Add breakpoint data to image size dropdowns.
+			add_filter( 'image_size_names_choose', array( $this, 'image_size_names_choose' ), 20 );
+
+			add_filter( 'image_send_to_editor_url', array( $this, 'image_send_to_editor_url' ), 20, 4 );
+
+			// When adding captions, set a width for the image so it can generate shortcode correctly.
+			add_filter( 'image_send_to_editor', array( $this, 'add_width_for_captions' ), 10, 8 );
+
+			// Ajax handlers used for Fieldmanager specific fixes for media meta boxes but can be used globally for any external ajax calls.
+			add_action( 'wp_ajax_get_img_object', array( $this, 'ajax_get_img_object' ) );
+			add_action( 'wp_ajax_nopriv_get_img_object', array( $this, 'ajax_get_img_object' ) );
+
+			add_filter( 'fieldmanager_media_preview', array( $this, 'set_fieldmanager_media' ), 10, 3 );
+
+			// Make sure we only prepare js attachment data for the query-attachments action.
+			add_action( 'ajax_query_attachments_args', array( $this, 'set_prepare_js_hook' ) );
+
+			add_filter( 'content_save_pre', array( $this, 'swap_lazyload_classes' ), 10, 1 );
+
+			// Ensure the required attributes are allowed in the editor.
+			add_filter( 'wp_kses_allowed_html', array( $this, 'photonfill_kses_allowed_html' ), 10, 2 );
 		}
 
 		/**
