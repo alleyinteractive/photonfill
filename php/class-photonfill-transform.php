@@ -103,13 +103,30 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			$args = $this->args;
 			// Fall back on data if empty.
 			if ( ! empty( $data['size'] ) && ! empty( $data['transform'] ) ) {
-				$args['width'] = empty( $args['width'] ) ? $data['image_args']['width'] : $args['width'];
-				$args['height'] = empty( $args['height'] ) ? $data['image_args']['height'] : $args['height'];
+				if ( empty( $args['width'] && ! empty( $data['image_args']['width'] ) ) ) {
+					$args['width'] = $data['image_args']['width'];
+				}
+				if ( empty( $args['height'] && ! empty( $data['image_args']['height'] ) ) ) {
+					$args['height'] = $data['image_args']['height'];
+				}
 			} else {
-				$args['width'] = empty( $args['width'] ) ? $data['width'] : $args['width'];
-				$args['height'] = empty( $args['height'] ) ? $data['height'] : $args['height'];
+				if ( empty( $args['width'] ) && ! empty( $data['width'] ) ) {
+					$args['width'] = $data['width'];
+				}
+				if ( empty( $args['height'] ) && ! empty( $data['height'] ) ) {
+					$args['height'] = $data['height'];
+				}
 			}
-			$args['attachment_id'] = empty( $args['attachment_id'] ) ? $data['attachment_id'] : $args['attachment_id'];
+			if ( empty( $args['attachment_id'] ) && ! empty( $data['attachment_id'] ) ) {
+				$args['attachment_id'] = $data['attachment_id'];
+			}
+
+			// Ensure attachment_id / height / width are at least set, if negotiation failed.
+			foreach ( [ 'attachment_id', 'height', 'width' ] as $required_property ) {
+				if ( ! isset( $args[ $required_property ] ) ) {
+					$args[ $required_property ] = 0;
+				}
+			}
 
 			return $args;
 		}
