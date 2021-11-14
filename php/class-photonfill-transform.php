@@ -81,6 +81,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 
 			// Transform our Photon url.
 			add_filter( $this->hook_prefix . '_photon_pre_args', array( $this, 'transform_photon_url' ), 5, 3 );
+
+			// Transform Photon URL when using VIP filters.
+			// @link https://github.com/Automattic/vip-go-mu-plugins/blob/master/a8c-files.php#L285
+			add_filter( 'vip_go_image_resize_pre_args', array( $this, 'transform_photon_url' ), 10, 2 );
 		}
 
 		/**
