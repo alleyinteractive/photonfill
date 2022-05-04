@@ -973,6 +973,11 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @return string Image markup.
 		 */
 		public function get_lazyload_image( $attachment_id, $size = 'full', $attr = array() ) {
+			$lazyload_disable = false;
+			if ( array_key_exists( 'class', $attr ) && false !== strpos( $attr['class'], 'skip-lazy' ) ) {
+				$lazyload_disable = true;
+			}
+			
 			if ( empty( $attr['class'] ) ) {
 				$attr['class'] = array( 'lazyload' );
 			} else {
@@ -980,7 +985,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 					$attr['class'] = explode( ' ', $attr['class'] );
 				}
 				
-				if ( ! in_array( 'skip-lazy' , $attr['class'] ) ) {
+				if ( false === $lazyload_disable ) {
 					$attr['class'][] = 'lazyload';
 				}
 			}
@@ -990,9 +995,9 @@ if ( ! class_exists( 'Photonfill' ) ) {
 
 			$attr['data-sizes'] = 'auto';
 			
-			if ( ! in_array( 'skip-lazy', $attr['class'] ) ) {
+			if ( false === $lazyload_disable ) {
+				$attr['data-src']    = $src[0];
 				$attr['data-srcset'] = $srcset;
-				$attr['data-src'] = $src[0];
 			} else {
 				$attr['srcset'] = $srcset;
 			}
