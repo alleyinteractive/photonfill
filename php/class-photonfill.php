@@ -979,7 +979,10 @@ if ( ! class_exists( 'Photonfill' ) ) {
 				if ( ! is_array( $attr['class'] ) ) {
 					$attr['class'] = explode( ' ', $attr['class'] );
 				}
-				$attr['class'][] = 'lazyload';
+				
+				if ( ! in_array( 'skip-lazy' , $attr['class'] ) ) {
+					$attr['class'][] = 'lazyload';
+				}
 			}
 			$srcset = $this->get_responsive_image_attribute( $attachment_id, $size, 'data-srcset' );
 			$sources = explode( ',', $srcset );
