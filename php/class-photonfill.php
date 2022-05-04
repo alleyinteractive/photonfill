@@ -989,8 +989,14 @@ if ( ! class_exists( 'Photonfill' ) ) {
 			$src = explode( ' ', $sources[0] );
 
 			$attr['data-sizes'] = 'auto';
-			$attr['data-src'] = $src[0];
-			$attr['data-srcset'] = $srcset;
+			
+			if ( ! in_array( 'skip-lazy', $attr['class'] ) ) {
+				$attr['data-srcset'] = $srcset;
+				$attr['data-src'] = $src[0];
+			} else {
+				$attr['srcset'] = $srcset;
+			}
+			
 			$attr['class'] = $this->get_image_classes( $attr['class'], $attachment_id, $size );
 
 			return $this->build_attachment_image( $attachment_id, $attr );
