@@ -182,7 +182,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 		 * @return array Dimensions.
 		 */
 		public function get_dimensions( $args ) {
-			if ( empty( $args ) ) {
+			if (
+				empty( $args['height'] )
+				&& empty( $args['width'] )
+			) {
 				return false;
 			}
 			// We are only going to use the size if none are defined in the transform, which shouldn't happen.
