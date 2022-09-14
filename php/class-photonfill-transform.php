@@ -103,10 +103,10 @@ if ( ! class_exists( 'Photonfill_Transform' ) ) {
 			$args = $this->args;
 			// Fall back on data if empty.
 			if ( ! empty( $data['size'] ) && ! empty( $data['transform'] ) ) {
-				if ( empty( $args['width'] && ! empty( $data['image_args']['width'] ) ) ) {
+				if ( empty( $args['width'] ) && ! empty( $data['image_args']['width'] ) ) {
 					$args['width'] = $data['image_args']['width'];
 				}
-				if ( empty( $args['height'] && ! empty( $data['image_args']['height'] ) ) ) {
+				if ( empty( $args['height'] ) && ! empty( $data['image_args']['height'] ) ) {
 					$args['height'] = $data['image_args']['height'];
 				}
 			} else {
