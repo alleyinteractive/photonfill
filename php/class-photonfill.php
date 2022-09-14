@@ -1001,7 +1001,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @param array  $attr Image attributes.
 		 * @return string Picture markup.
 		 */
-		public function get_attachment_picture( $attachment_id, $size = 'full', $attr ) {
+		public function get_attachment_picture( $attachment_id, $size = 'full', $attr = array() ) {
 			if ( ! empty( $attachment_id ) && wp_attachment_is_image( $attachment_id ) ) {
 				// Ensure size value is valid. Use 'full' if not.
 				$size = $this->get_valid_size( $size );
@@ -1080,7 +1080,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @param array $attr Image attributes.
 		 * @return string
 		 */
-		private function build_attachment_image( $attachment_id = null, $attr ) {
+		private function build_attachment_image( $attachment_id = null, $attr = array() ) {
 			$attr = apply_filters( 'photonfill_img_attributes', $attr, $attachment_id );
 
 			// Update image alt attribute if not set.
