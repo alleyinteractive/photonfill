@@ -933,7 +933,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 * @param array  $attr Image attributes.
 		 * @return string Image markup.
 		 */
-		public function get_attachment_image( $attachment_id, $size = 'full', $attr ) {
+		public function get_attachment_image( $attachment_id, $size = 'full', $attr = array() ) {
 			if ( ! empty( $attachment_id ) && wp_attachment_is_image( $attachment_id ) ) {
 				// Ensure size value is valid. Use 'full' if not.
 				$size = $this->get_valid_size( $size );
