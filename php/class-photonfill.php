@@ -235,7 +235,7 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function set_image_sizes() {
 			// Get theme set image sizes.
-			$this->image_sizes = apply_filters( 'photonfill_image_sizes', $this->image_sizes );
+			$this->image_sizes = (array) apply_filters( 'photonfill_image_sizes', $this->image_sizes );
 
 			// If none, lets guess.
 			if ( empty( $this->image_sizes ) ) {
@@ -254,35 +254,35 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		/**
 		 * Use all image sizes to create a set of image sizes and breakpoints that can be used by picturefill
 		 *
-		 * @return array of image sizes & breakpoints for picturefill.
+		 * @return array of image sizes & breakpoints for picturefill or empty array.
 		 */
 		public function create_image_sizes() {
 			global $_wp_additional_image_sizes;
 
-			$images_sizes = array();
+			$image_sizes        = array();
+			$intermediate_sizes = get_intermediate_image_sizes(); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_intermediate_image_sizes_get_intermediate_image_sizes
 
-			// @codingStandardsIgnoreStart
-			$intermediate_sizes = get_intermediate_image_sizes();
-			// @codingStandardsIgnoreEnd
+			if ( empty( $intermediate_sizes ) ) {
+				return $image_sizes;
+			}
 
-			if ( ! empty( $intermediate_sizes ) ) {
-				foreach ( $intermediate_sizes as $size ) {
-					$width = isset( $_wp_additional_image_sizes[ $size ]['width'] ) ? intval( $_wp_additional_image_sizes[ $size ]['width'] ) : get_option( "{$size}_size_w" );
-					$height = isset( $_wp_additional_image_sizes[ $size ]['height'] ) ? intval( $_wp_additional_image_sizes[ $size ]['height'] ) : get_option( "{$size}_size_h" );
+			foreach ( $intermediate_sizes as $size ) {
+				$width  = isset( $_wp_additional_image_sizes[ $size ]['width'] ) ? intval( $_wp_additional_image_sizes[ $size ]['width'] ) : get_option( "{$size}_size_w" );
+				$height = isset( $_wp_additional_image_sizes[ $size ]['height'] ) ? intval( $_wp_additional_image_sizes[ $size ]['height'] ) : get_option( "{$size}_size_h" );
 
-					foreach ( $this->breakpoints as $breakpoint => $breakpoint_widths ) {
-						$breakpoint_width = $this->get_breakpoint_width( $breakpoint );
-						if ( ! empty( $breakpoint_width ) ) {
-							// Don't constrain the height.
-							$new_size = wp_constrain_dimensions( $width, $height, $breakpoint_width, $height );
-							$image_sizes[ $size ][ $breakpoint ] = array(
-								'width' => $new_size[0],
-								'height' => $new_size[1],
-							);
-						}
+				foreach ( $this->breakpoints as $breakpoint => $breakpoint_widths ) {
+					$breakpoint_width = $this->get_breakpoint_width( $breakpoint );
+					if ( ! empty( $breakpoint_width ) ) {
+						// Don't constrain the height.
+						$new_size                            = wp_constrain_dimensions( $width, $height, $breakpoint_width, $height );
+						$image_sizes[ $size ][ $breakpoint ] = array(
+							'width'  => $new_size[0],
+							'height' => $new_size[1],
+						);
 					}
 				}
 			}
+
 			return $image_sizes;
 		}
 
