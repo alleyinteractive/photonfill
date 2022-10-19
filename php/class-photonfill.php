@@ -235,9 +235,13 @@ if ( ! class_exists( 'Photonfill' ) ) {
 		 */
 		public function set_image_sizes() {
 			// Get theme set image sizes.
-			$this->image_sizes = (array) apply_filters( 'photonfill_image_sizes', $this->image_sizes );
+			$this->image_sizes = apply_filters( 'photonfill_image_sizes', $this->image_sizes );
 
-			// If none, lets guess.
+			if ( ! is_array( $this->image_sizes ) ) {
+				$this->image_sizes = array();
+			}
+
+			// If none, let's guess.
 			if ( empty( $this->image_sizes ) ) {
 				$this->image_sizes = $this->create_image_sizes();
 			}
