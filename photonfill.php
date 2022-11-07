@@ -135,6 +135,13 @@ function photonfill_use_lazyload() {
  * @return bool
  */
 function photonfill_is_enabled() {
+	// Bail if Jetpack Photon or My Photon isn't loaded
+	$class = ucfirst( photonfill_hook_prefix() ) . '_Photon';
+
+	if ( ! class_exists( $class ) ) {
+		return false;
+	}
+
 	return apply_filters( 'photonfill_enabled', true );
 }
 
